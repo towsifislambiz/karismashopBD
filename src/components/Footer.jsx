@@ -85,14 +85,9 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/account" className="hover:text-brand-gold transition">
-                  📦 {t('trackOrder')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/account" className="hover:text-brand-gold transition">
-                  🪙 {lang === 'bn' ? 'কারিশমা কয়েন ও ওয়ালেট' : 'Coin Rewards & Wallet'}
-                </Link>
+                <span className="text-slate-300">
+                  ✨ {lang === 'bn' ? '১০০% অরিজিনাল বুটিক নিশ্চয়তা' : '100% Authentic Boutique Fabric'}
+                </span>
               </li>
               <li>
                 <span className="text-slate-400">

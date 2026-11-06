@@ -213,24 +213,6 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* User Account / Profile Button */}
-            <Link
-              to="/account"
-              className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 rounded-xl bg-brand-surface border border-brand-border hover:border-brand-gold/50 text-slate-200 transition group"
-            >
-              <div className="size-7 rounded-lg bg-brand-gold/20 text-brand-gold flex items-center justify-center font-bold text-xs border border-brand-gold/40">
-                {currentUser?.displayName ? currentUser.displayName.slice(0, 1).toUpperCase() : <User className="size-4" />}
-              </div>
-              <div className="hidden lg:flex flex-col text-left text-xs">
-                <span className="font-bold text-slate-200 group-hover:text-brand-gold transition leading-tight">
-                  {currentUser ? (currentUser.displayName || (lang === 'bn' ? 'প্রোফাইল' : 'Profile')) : t('login')}
-                </span>
-                <span className="text-[10px] text-amber-400 font-mono font-bold">
-                  🪙 {userCoins} {lang === 'bn' ? 'কয়েন' : 'Coins'}
-                </span>
-              </div>
-            </Link>
-
             {/* Cart Drawer Trigger Button */}
             <button
               onClick={openCart}
@@ -399,15 +381,6 @@ export default function Navbar() {
                 className="block p-2 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold"
               >
                 🔥 {lang === 'bn' ? 'ফ্ল্যাশ সেল অফার' : 'Flash Sale'}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/account"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg hover:bg-brand-surface text-slate-200 hover:text-brand-gold transition"
-              >
-                👤 {t('account')}
               </Link>
             </li>
           </ul>
