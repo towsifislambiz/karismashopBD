@@ -67,7 +67,7 @@ export default function CustomerAuthModal() {
         {/* Modal Branding Header */}
         <div className="text-center space-y-1.5 pb-3">
           <div className="size-12 rounded-2xl bg-brand-card border border-brand-gold/40 p-1 mx-auto flex items-center justify-center">
-            <img src="/assets/brand/logo.png" alt="Karishma Shop" className="size-full object-contain" />
+            <img src="/assets/brand/ks-logo.svg" alt="Karishma Shop" className="size-full object-contain" />
           </div>
           <h3 className="font-serif text-xl font-bold text-white">
             {mode === 'login' ? (lang === 'bn' ? 'কাস্টমার লগইন' : 'Customer Login') : (lang === 'bn' ? 'নতুন একাউন্ট খুলুন' : 'Create Account')}

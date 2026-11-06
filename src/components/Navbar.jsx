@@ -133,7 +133,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="relative size-10 sm:size-12 rounded-xl bg-brand-surface p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center overflow-hidden">
               <img
-                src="/assets/brand/logo.png"
+                src="/assets/brand/ks-logo.svg"
                 alt="Karishma Shop BD"
                 className="size-full object-contain filter drop-shadow group-hover:scale-105 transition duration-300"
               />

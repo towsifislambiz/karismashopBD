@@ -9,11 +9,9 @@ export default function ProductCard({ product, onOneClickOrder }) {
   const { addToCart, toggleWishlist, isInWishlist } = useCart();
 
   const [activeColorIdx, setActiveColorIdx] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
 
   const activeColor = product.colors?.[activeColorIdx] || null;
   const currentImage = activeColor?.image || product.images?.[0] || '/assets/brand/logo.png';
-  const secondaryImage = product.images?.[1] || currentImage;
   const isFav = isInWishlist(product.id);
 
   const discountPercent = product.originalPrice
@@ -22,20 +20,21 @@ export default function ProductCard({ product, onOneClickOrder }) {
 
   return (
     <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group flex flex-col rounded-3xl bg-brand-surface border border-brand-border hover:border-brand-gold/60 transition-all duration-300 shadow-luxury hover:shadow-gold-soft overflow-hidden"
+      className="group flex flex-col rounded-3xl bg-brand-surface border border-brand-border hover:border-brand-gold/60 transition-all duration-500 hover:-translate-y-1.5 shadow-luxury hover:shadow-gold-soft overflow-hidden"
     >
       {/* 1. Image Container */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-brand-noir flex items-center justify-center">
-        <Link to={`/product/${product.id}`} className="size-full flex items-center justify-center p-2">
+        <Link to={`/product/${product.id}`} className="size-full flex items-center justify-center p-2.5 overflow-hidden">
           <img
-            src={isHovered ? secondaryImage : currentImage}
+            src={currentImage}
             alt={product.name}
-            className="size-full object-contain group-hover:scale-105 transition-transform duration-500"
+            className="size-full object-contain transition-transform duration-700 ease-out group-hover:scale-110 select-none"
             loading="lazy"
           />
         </Link>
+
+        {/* Subtle luxury vignette & overlay on hover */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-noir/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         {/* Top Badges: Discount & Status */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
