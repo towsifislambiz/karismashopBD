@@ -19,7 +19,8 @@ import {
   Edit,
   Save,
   ShieldCheck,
-  Phone
+  Phone,
+  RefreshCw
 } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useProducts } from '../context/ProductContext';
@@ -30,7 +31,7 @@ import { generateMonthlyReportPDF } from '../utils/pdfGenerator';
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
   const { orders, updateOrderStatus, updatePaymentStatus, deleteOrder } = useOrders();
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct, resetToDefault } = useProducts();
   const { settings, updateSettings } = useStoreSettings();
 
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
@@ -45,15 +46,18 @@ export default function AdminDashboard() {
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState({
-    hotline: settings?.hotline || '01749765271',
-    whatsappNumber: settings?.whatsappNumber || '01749765271',
-    bkashNumber: settings?.bkashNumber || '01749765271',
+    hotline: settings?.hotline || '01819305805',
+    whatsappNumber: settings?.whatsappNumber || '01819305805',
+    bkashNumber: settings?.bkashNumber || '01819305805',
     deliveryFeeInside: settings?.deliveryFeeInside || 80,
     deliveryFeeOutside: settings?.deliveryFeeOutside || 150,
     freeDeliveryThreshold: settings?.freeDeliveryThreshold || 3500,
-    announcementText: settings?.announcementText || ''
+    announcementText: settings?.announcementText || '✨ প্রিমিয়াম বুটিক কালেকশন | ৩,৫০০ টাকার অর্ডারে সারা দেশে ডেলিভারি সম্পূর্ণ ফ্রি!',
+    address: settings?.address || 'AlHajj Fajal Member Mansion (1st floor), Shikalbaha, Karnafully - 4371, Chittagong',
+    email: settings?.email || 'karishmashop786@gmail.com'
   });
   const [settingsSuccess, setSettingsSuccess] = useState('');
+  const [catalogSuccess, setCatalogSuccess] = useState('');
 
   // Admin Pin Auth
   const handlePinSubmit = (e) => {
@@ -442,18 +446,102 @@ export default function AdminDashboard() {
 
       {/* Tab 2: Products Catalog */}
       {activeTab === 'products' && (
-        <div className="space-y-4">
+        <div className="space-y-5">
+          {/* Action Bar */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-brand-surface p-4 rounded-2xl border border-brand-border">
+            <div>
+              <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
+                <ShoppingBag className="size-4 text-brand-gold" />
+                <span>প্রোডাক্ট ক্যাটালগ ও ইনভেন্টরি ({products.length} টি প্রোডাক্ট)</span>
+              </h3>
+              <p className="text-[11px] text-slate-400">সকল আবায়া, থ্রি-পিস, গাউন ও ব্যাগের স্টক ও মূল্য নিয়ন্ত্রণ করুন</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  resetToDefault();
+                  setCatalogSuccess('ক্যাটালগ সফলভাবে রিস্টোর হয়েছে!');
+                  setTimeout(() => setCatalogSuccess(''), 2500);
+                }}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-brand-gold text-xs font-bold border border-brand-gold/40 flex items-center gap-1.5 transition active:scale-95"
+                title="রিসেট করুন"
+              >
+                <RefreshCw className="size-3.5" />
+                <span>ডিফল্ট ক্যাটালগ রিসেট</span>
+              </button>
+            </div>
+          </div>
+
+          {catalogSuccess && (
+            <p className="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold text-xs">{catalogSuccess}</p>
+          )}
+
+          {/* Product Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((p) => (
-              <div key={p.id} className="p-4 rounded-2xl bg-brand-surface border border-brand-border space-y-2 text-xs">
-                <img src={p.images[0]} alt="" className="w-full aspect-[3/4] object-contain rounded-xl bg-brand-noir" />
-                <h4 className="font-bold text-white truncate">{p.nameBn}</h4>
-                <div className="flex items-center justify-between text-brand-gold font-mono font-bold">
-                  <span>৳{p.price}</span>
-                  <span className="text-[10px] text-slate-400 capitalize">{p.category}</span>
+            {products.map((p) => {
+              const mainImg = p.image || p.images?.[0] || '/assets/brand/logo.png';
+              return (
+                <div key={p.id} className="p-3.5 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-gold/40 transition space-y-2 text-xs flex flex-col justify-between">
+                  <div>
+                    <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-brand-noir border border-brand-border/60 p-2 flex items-center justify-center">
+                      <img src={mainImg} alt="" className="size-full object-contain" />
+                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded bg-brand-noir/80 text-brand-gold border border-brand-gold/30">
+                        {p.category.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <h4 className="font-bold text-white truncate mt-2 text-xs" title={p.nameBn}>
+                      {p.nameBn}
+                    </h4>
+
+                    <div className="flex items-center justify-between text-brand-gold font-mono font-bold mt-1">
+                      <span className="text-sm">৳{p.price}</span>
+                      <span className="text-[10px] text-slate-400">স্টক: {p.stockCount || 10}টি</span>
+                    </div>
+
+                    {p.colors && p.colors.length > 0 && (
+                      <div className="flex items-center gap-1 pt-1.5 overflow-x-auto">
+                        <span className="text-[10px] text-slate-400 font-semibold">ভ্যারিয়েন্ট:</span>
+                        {p.colors.map((c, i) => (
+                          <span
+                            key={i}
+                            className="size-3 rounded-full border border-black/40 shrink-0"
+                            style={{ backgroundColor: c.hex }}
+                            title={c.name}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-brand-border flex items-center justify-between gap-2">
+                    <button
+                      onClick={() => updateProduct(p.id, { inStock: !p.inStock })}
+                      className={`flex-1 py-1 px-2 rounded-lg text-[10px] font-bold transition ${
+                        p.inStock !== false
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                      }`}
+                    >
+                      {p.inStock !== false ? '✓ ইন স্টক' : '✕ স্টক আউট'}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (confirm(`'${p.nameBn}' পণ্যটি মুছে ফেলতে চান?`)) {
+                          deleteProduct(p.id);
+                        }
+                      }}
+                      className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                      title="মুছুন"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -471,33 +559,57 @@ export default function AdminDashboard() {
           )}
 
           <form onSubmit={handleSaveSettings} className="space-y-4">
-            <div>
-              <label className="block font-bold text-slate-300 mb-1">হটলাইন নম্বর</label>
-              <input
-                type="text"
-                value={settingsForm.hotline}
-                onChange={(e) => setSettingsForm(s => ({ ...s, hotline: e.target.value }))}
-                className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">হটলাইন নম্বর</label>
+                <input
+                  type="text"
+                  value={settingsForm.hotline}
+                  onChange={(e) => setSettingsForm(s => ({ ...s, hotline: e.target.value }))}
+                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">হোয়াটসঅ্যাপ সাপোর্ট নম্বর</label>
+                <input
+                  type="text"
+                  value={settingsForm.whatsappNumber}
+                  onChange={(e) => setSettingsForm(s => ({ ...s, whatsappNumber: e.target.value }))}
+                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">বিকাশ পার্সোনাল নম্বর (টাকা পাঠানোর জন্য)</label>
+                <input
+                  type="text"
+                  value={settingsForm.bkashNumber}
+                  onChange={(e) => setSettingsForm(s => ({ ...s, bkashNumber: e.target.value }))}
+                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-300 mb-1">সাপোর্ট ইমেইল</label>
+                <input
+                  type="email"
+                  value={settingsForm.email}
+                  onChange={(e) => setSettingsForm(s => ({ ...s, email: e.target.value }))}
+                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block font-bold text-slate-300 mb-1">হোয়াটসঅ্যাপ সাপোর্ট নম্বর</label>
-              <input
-                type="text"
-                value={settingsForm.whatsappNumber}
-                onChange={(e) => setSettingsForm(s => ({ ...s, whatsappNumber: e.target.value }))}
-                className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-300 mb-1">বিকাশ পার্সোনাল নম্বর (টাকা পাঠানোর জন্য)</label>
-              <input
-                type="text"
-                value={settingsForm.bkashNumber}
-                onChange={(e) => setSettingsForm(s => ({ ...s, bkashNumber: e.target.value }))}
-                className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+              <label className="block font-bold text-slate-300 mb-1">শোরুম / অফিস ঠিকানা</label>
+              <textarea
+                value={settingsForm.address}
+                onChange={(e) => setSettingsForm(s => ({ ...s, address: e.target.value }))}
+                rows="2"
+                className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white resize-none"
               />
             </div>
 

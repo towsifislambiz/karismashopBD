@@ -124,7 +124,7 @@ export default function ShopPage() {
       {/* Products Grid */}
       {filteredProducts.length === 0 ? (
         <div className="py-20 text-center space-y-3">
-          <p className="text-lg font-serif font-bold text-slate-300">
+          <p className="text-lg font-serif font-bold text-slate-800">
             {lang === 'bn' ? 'এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।' : 'No products found in this category.'}
           </p>
           <button

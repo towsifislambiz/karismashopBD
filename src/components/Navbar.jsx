@@ -74,12 +74,12 @@ export default function Navbar() {
           {/* Hotline & WhatsApp */}
           <div className="flex items-center gap-4 text-[11px] sm:text-xs">
             <a
-              href={`tel:${settings?.hotline || '01749765271'}`}
+              href={`tel:${settings?.hotline || '01819305805'}`}
               className="flex items-center gap-1.5 text-brand-gold hover:text-brand-goldLight transition font-semibold"
             >
               <Phone className="size-3.5" />
               <span className="hidden sm:inline">{t('hotline')}:</span>
-              <span className="font-mono">{settings?.hotline || '01749765271'}</span>
+              <span className="font-mono">{settings?.hotline || '01819305805'}</span>
             </a>
             <span className="hidden md:inline-block text-slate-600">|</span>
             <span className="hidden md:inline-flex items-center gap-1 text-slate-300">
@@ -104,16 +104,6 @@ export default function Navbar() {
               <Globe className="size-3.5" />
               <span>{lang === 'bn' ? 'English' : 'বাংলা'}</span>
             </button>
-
-            {/* Admin shortcut */}
-            <Link
-              to="/admin"
-              className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand-gold transition px-1.5 py-0.5"
-              title="Admin Panel"
-            >
-              <Crown className="size-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Admin</span>
-            </Link>
           </div>
         </div>
       </div>
@@ -201,7 +191,7 @@ export default function Navbar() {
 
             {/* Wishlist Button */}
             <Link
-              to="/shop?filter=wishlist"
+              to="/wishlist"
               className="relative p-2 sm:p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-brand-gold text-slate-700 hover:text-brand-goldDark transition shadow-sm"
               title={t('wishlist')}
             >
@@ -342,7 +332,7 @@ export default function Navbar() {
               <Link
                 to="/shop?category=three-piece"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg hover:bg-brand-surface text-slate-200 hover:text-brand-gold transition"
+                className="block p-2 rounded-lg hover:bg-slate-50 text-slate-800 hover:text-brand-goldDark transition"
               >
                 👗 {t('threePiece')}
               </Link>
@@ -351,7 +341,7 @@ export default function Navbar() {
               <Link
                 to="/shop?category=abaya"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg hover:bg-brand-surface text-slate-200 hover:text-brand-gold transition"
+                className="block p-2 rounded-lg hover:bg-slate-50 text-slate-800 hover:text-brand-goldDark transition"
               >
                 🧕 {t('abaya')}
               </Link>
@@ -360,7 +350,7 @@ export default function Navbar() {
               <Link
                 to="/shop?category=gowns"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg hover:bg-brand-surface text-slate-200 hover:text-brand-gold transition"
+                className="block p-2 rounded-lg hover:bg-slate-50 text-slate-800 hover:text-brand-goldDark transition"
               >
                 ✨ {t('gowns')}
               </Link>
@@ -369,16 +359,30 @@ export default function Navbar() {
               <Link
                 to="/shop?category=handbags"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg hover:bg-brand-surface text-slate-200 hover:text-brand-gold transition"
+                className="block p-2 rounded-lg hover:bg-slate-50 text-slate-800 hover:text-brand-goldDark transition"
               >
                 👜 {t('handbags')}
               </Link>
             </li>
             <li>
               <Link
+                to="/wishlist"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block p-2 rounded-lg hover:bg-slate-50 text-slate-800 hover:text-brand-goldDark transition flex items-center justify-between"
+              >
+                <span>❤️ {lang === 'bn' ? 'উইশলিস্ট' : 'Wishlist'}</span>
+                {wishlist.length > 0 && (
+                  <span className="px-2 py-0.5 text-[10px] rounded-full bg-brand-gold text-brand-noir font-bold">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/shop?filter=flash"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg bg-brand-surface border border-brand-gold/40 text-brand-gold font-bold"
+                className="block p-2 rounded-lg bg-amber-50 border border-brand-gold/40 text-brand-goldDark font-bold"
               >
                 ✦ {lang === 'bn' ? 'ফ্ল্যাশ সেল অফার' : 'Flash Sale'}
               </Link>

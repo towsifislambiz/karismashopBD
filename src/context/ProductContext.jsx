@@ -6,8 +6,15 @@ const ProductContext = createContext();
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState(() => {
     try {
-      const saved = localStorage.getItem('karishma_products');
-      return saved ? JSON.parse(saved) : initialProducts;
+      const saved = localStorage.getItem('karishma_products_v3');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= initialProducts.length) {
+          return parsed;
+        }
+      }
+      localStorage.removeItem('karishma_products');
+      return initialProducts;
     } catch {
       return initialProducts;
     }
@@ -15,11 +22,20 @@ export const ProductProvider = ({ children }) => {
 
   useEffect(() => {
     try {
-      localStorage.setItem('karishma_products', JSON.stringify(products));
+      localStorage.setItem('karishma_products_v3', JSON.stringify(products));
     } catch (e) {
       console.warn('Failed saving products locally:', e);
     }
   }, [products]);
+
+  const resetToDefault = () => {
+    setProducts(initialProducts);
+    try {
+      localStorage.setItem('karishma_products_v3', JSON.stringify(initialProducts));
+    } catch (e) {
+      console.warn(e);
+    }
+  };
 
   const addProduct = (newProduct) => {
     const id = `ks-prod-${Date.now()}`;
@@ -47,7 +63,8 @@ export const ProductProvider = ({ children }) => {
         addProduct,
         updateProduct,
         deleteProduct,
-        getProductById
+        getProductById,
+        resetToDefault
       }}
     >
       {children}

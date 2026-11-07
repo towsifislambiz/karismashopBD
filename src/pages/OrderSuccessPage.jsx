@@ -55,25 +55,25 @@ export default function OrderSuccessPage() {
     }
   };
 
-  const rawWa = (settings?.whatsappNumber || '01749765271').replace(/[^0-9]/g, '');
+  const rawWa = (settings?.whatsappNumber || '01819305805').replace(/[^0-9]/g, '');
   const waNumber = rawWa.startsWith('880') ? rawWa : rawWa.startsWith('0') ? '88' + rawWa : '880' + rawWa;
   const waMsg = encodeURIComponent(
     `আসসালামু আলাইকুম Karishma Shop BD, আমার অর্ডার #${displayId} কনফার্ম হয়েছে। বিস্তারিত আপডেট জানাতে অনুরোধ করছি। ধন্যবাদ!`
   );
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-slate-100 space-y-8">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-slate-900 space-y-8">
       {/* 1. Success Hero Box */}
-      <div className="text-center p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-brand-surface via-brand-card to-brand-noir border border-brand-gold/40 shadow-2xl space-y-4">
+      <div className="text-center p-8 sm:p-10 rounded-3xl bg-white border border-brand-gold/40 shadow-luxury-white space-y-4">
         <div className="size-20 rounded-3xl bg-gradient-to-tr from-brand-gold to-brand-goldDark text-brand-noir flex items-center justify-center mx-auto shadow-gold-glow animate-bounce">
           <CheckCircle2 className="size-10 stroke-[2.5]" />
         </div>
 
         <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
             {t('orderSuccessTitle')}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-600">
             {lang === 'bn'
               ? 'আমাদের কাস্টমার কেয়ার টিম শীঘ্রই আপনার সাথে ফোনে যোগাযোগ করে পার্সেলটি পাঠিয়ে দেবে।'
               : 'Our fulfillment team will confirm and dispatch your parcel shortly.'}
@@ -81,7 +81,7 @@ export default function OrderSuccessPage() {
         </div>
 
         {/* Tracking ID Badge */}
-        <div className="inline-flex items-center gap-3 p-2.5 sm:px-4 rounded-2xl bg-brand-noir border border-brand-gold/50 shadow-inner">
+        <div className="inline-flex items-center gap-3 p-2.5 sm:px-4 rounded-2xl bg-slate-900 text-white border border-brand-gold/50 shadow-inner">
           <span className="text-xs text-slate-400 font-bold">{t('orderTrackingId')}:</span>
           <span className="font-mono text-base sm:text-lg font-black text-brand-gold tracking-wider">
             #{displayId}
@@ -99,46 +99,46 @@ export default function OrderSuccessPage() {
 
       {/* 2. Order Summary Card if Available */}
       {order && (
-        <div className="p-6 rounded-3xl bg-brand-surface border border-brand-border space-y-4 text-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-brand-border">
-            <h3 className="font-serif text-sm sm:text-base font-bold text-white flex items-center gap-2">
-              <Package className="size-4 text-brand-gold" />
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-luxury-white space-y-4 text-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <h3 className="font-serif text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+              <Package className="size-4 text-brand-goldDark" />
               <span>{lang === 'bn' ? 'অর্ডারের সারাংশ' : 'Order Breakdown'}</span>
             </h3>
-            <span className="text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-md">
+            <span className="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
               ✓ {order.status || 'Pending'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-300">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-700">
             <div>
-              <p><strong className="text-white">গ্রাহকের নাম:</strong> {order.customerName}</p>
-              <p><strong className="text-white">মোবাইল:</strong> {order.phone}</p>
-              <p><strong className="text-white">ডেলিভারি ঠিকানা:</strong> {order.address}</p>
+              <p><strong className="text-slate-900">গ্রাহকের নাম:</strong> {order.customerName}</p>
+              <p><strong className="text-slate-900">মোবাইল:</strong> {order.phone}</p>
+              <p><strong className="text-slate-900">ডেলিভারি ঠিকানা:</strong> {order.address}</p>
             </div>
             <div>
-              <p><strong className="text-white">পেমেন্ট মেথড:</strong> {order.paymentMethod === 'bkash' ? `বিকাশ (${order.bkashSender || 'Sent'})` : 'ক্যাশ অন ডেলিভারি'}</p>
-              <p><strong className="text-white">ডেলিভারি চার্জ:</strong> ৳{order.deliveryFee}</p>
-              <p className="text-sm font-black text-brand-gold pt-1">
+              <p><strong className="text-slate-900">পেমেন্ট মেথড:</strong> {order.paymentMethod === 'bkash' ? `বিকাশ (${order.bkashSender || 'Sent'})` : 'ক্যাশ অন ডেলিভারি'}</p>
+              <p><strong className="text-slate-900">ডেলিভারি চার্জ:</strong> ৳{order.deliveryFee}</p>
+              <p className="text-base font-black text-brand-goldDark pt-1">
                 সর্বমোট প্রদেয়: ৳{order.totalAmount}
               </p>
             </div>
           </div>
 
           {/* Items Preview */}
-          <div className="pt-3 border-t border-brand-border space-y-2">
+          <div className="pt-3 border-t border-slate-200 space-y-2">
             {order.items?.map((it, idx) => (
-              <div key={idx} className="flex items-center gap-3 bg-brand-card p-2 rounded-xl">
+              <div key={idx} className="flex items-center gap-3 bg-slate-50 border border-slate-200 p-2.5 rounded-xl">
                 <img
                   src={it.product?.image || it.product?.images?.[0] || '/assets/brand/logo.png'}
                   alt=""
-                  className="size-10 rounded-lg object-contain bg-black"
+                  className="size-11 rounded-lg object-contain bg-white border border-slate-200 p-0.5"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-white truncate">{it.product?.nameBn || it.product?.name}</p>
-                  <p className="text-[11px] text-slate-400">{it.selectedColor} • পরিমাণ: {it.quantity} টি</p>
+                  <p className="font-bold text-slate-900 truncate">{it.product?.nameBn || it.product?.name}</p>
+                  <p className="text-[11px] text-slate-500">{it.selectedColor} • পরিমাণ: {it.quantity} টি</p>
                 </div>
-                <span className="font-mono font-bold text-brand-gold">৳{(it.product?.price || 0) * it.quantity}</span>
+                <span className="font-mono font-bold text-brand-goldDark">৳{(it.product?.price || 0) * it.quantity}</span>
               </div>
             ))}
           </div>
@@ -150,7 +150,7 @@ export default function OrderSuccessPage() {
         {/* Download PDF Button */}
         <button
           onClick={handleDownloadPDF}
-          className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-brand-gold via-brand-goldLight to-brand-goldDark text-brand-noir font-black text-xs sm:text-sm shadow-gold-glow hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2"
+          className="btn-gold-primary w-full py-4 px-4 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2"
         >
           <Download className="size-4" />
           <span>{t('downloadInvoice')}</span>
@@ -161,7 +161,7 @@ export default function OrderSuccessPage() {
           href={`https://wa.me/${waNumber}?text=${waMsg}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-950/40 transition flex items-center justify-center gap-2 active:scale-95"
+          className="w-full py-4 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 active:scale-95"
         >
           <MessageSquare className="size-4 fill-white" />
           <span>{t('whatsappSupport')}</span>
@@ -171,7 +171,7 @@ export default function OrderSuccessPage() {
       <div className="text-center pt-4">
         <Link
           to="/shop"
-          className="text-xs font-bold text-brand-gold hover:underline inline-flex items-center gap-1"
+          className="text-xs font-bold text-brand-goldDark hover:underline inline-flex items-center gap-1"
         >
           <span>← {t('continueShopping')}</span>
         </Link>

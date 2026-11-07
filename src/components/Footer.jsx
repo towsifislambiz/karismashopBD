@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { Phone, Mail, MapPin, ShieldCheck, Heart, Sparkles, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useStoreSettings } from '../context/StoreSettingsContext';
 
@@ -110,17 +110,26 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs">
               <li className="flex items-start gap-2">
                 <Phone className="size-4 text-brand-gold shrink-0 mt-0.5" />
-                <a href={`tel:${settings?.hotline || '01749765271'}`} className="hover:text-white font-mono">
-                  {settings?.hotline || '01749765271'}
-                </a>
+                <div className="flex flex-col">
+                  <a href={`tel:${settings?.hotline || '01819305805'}`} className="hover:text-white font-mono font-bold text-slate-200">
+                    {settings?.hotline || '01819305805'} (WhatsApp)
+                  </a>
+                  <a href="tel:01965643684" className="hover:text-white font-mono text-[11px] text-slate-400">
+                    01965643684 (হেল্পলাইন)
+                  </a>
+                </div>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="size-4 text-brand-gold shrink-0 mt-0.5" />
-                <span>{settings?.email || 'support@karishmashop.com'}</span>
+                <a href={`mailto:${settings?.email || 'karishmashop786@gmail.com'}`} className="hover:text-white">
+                  {settings?.email || 'karishmashop786@gmail.com'}
+                </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="size-4 text-brand-gold shrink-0 mt-0.5" />
-                <span>{settings?.address || 'Dhanmondi, Dhaka, Bangladesh'}</span>
+                <span className="leading-relaxed">
+                  {settings?.addressBn || 'আলহাজ্ব ফজল মেম্বার ম্যানশন (১ম তলা), শিকলবাহা (৩নং ওয়ার্ড), কর্ণফুলী - ৪৩৭১, চট্টগ্রাম'}
+                </span>
               </li>
             </ul>
 
@@ -134,7 +143,7 @@ export default function Footer() {
                   🚚 ক্যাশ অন ডেলিভারি
                 </span>
                 <span className="px-2 py-1 rounded bg-pink-950/40 border border-pink-500/40 text-[10px] font-bold text-pink-300">
-                  bKash
+                  bKash / Nagad
                 </span>
               </div>
             </div>
@@ -143,7 +152,17 @@ export default function Footer() {
 
         {/* Bottom Strip */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-[11px] text-slate-500">
-          <p>© {new Date().getFullYear()} Karishma Shop BD. All rights reserved.</p>
+          <p className="flex items-center justify-center sm:justify-start gap-1.5">
+            <span>© {new Date().getFullYear()} Karishma Shop BD. All rights reserved.</span>
+            {/* Secret discreet agency admin link */}
+            <Link
+              to="/admin"
+              className="opacity-20 hover:opacity-100 hover:text-brand-gold transition p-0.5 inline-flex items-center"
+              title="Secure Staff Portal"
+            >
+              <Lock className="size-3" />
+            </Link>
+          </p>
           <p className="flex items-center justify-center gap-1">
             <span>Crafted with</span>
             <Heart className="size-3 text-rose-500 fill-rose-500" />

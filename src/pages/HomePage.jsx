@@ -26,7 +26,7 @@ export default function HomePage() {
   const flashSaleProducts = products.filter(p => p.isFlashSale).slice(0, 4);
   const threePieceProducts = products.filter(p => p.category === 'three-piece').slice(0, 4);
   const handbagProducts = products.filter(p => p.category === 'handbags').slice(0, 4);
-  const abayaProducts = products.filter(p => p.category === 'abaya').slice(0, 4);
+  const abayaProducts = products.filter(p => p.category === 'abaya').slice(0, 8);
 
   return (
     <div className="space-y-12 sm:space-y-16 pb-16">

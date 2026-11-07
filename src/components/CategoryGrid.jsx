@@ -2,12 +2,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useProducts } from '../context/ProductContext';
 import { categories } from '../data/products';
 
 export default function CategoryGrid() {
   const { lang, t } = useLanguage();
+  const { products } = useProducts();
 
   const displayCategories = categories.filter(c => c.id !== 'all');
+
+  const getCatCount = (catId) => {
+    return products.filter(p => p.category === catId).length;
+  };
 
   return (
     <section className="py-12 sm:py-16 bg-brand-canvas px-4 sm:px-6">
@@ -56,7 +62,7 @@ export default function CategoryGrid() {
               <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 flex items-end justify-between gap-2 z-10">
                 <div>
                   <span className="text-[10px] sm:text-xs text-brand-gold font-bold uppercase tracking-wider block font-sans">
-                    {cat.count} {lang === 'bn' ? 'টি ডিজাইন' : 'Designs'}
+                    {getCatCount(cat.id)} {lang === 'bn' ? 'টি ডিজাইন' : 'Designs'}
                   </span>
                   <h3 className="text-base sm:text-xl font-serif font-bold text-white group-hover:text-brand-gold transition leading-snug">
                     {lang === 'bn' ? cat.nameBn : cat.name}

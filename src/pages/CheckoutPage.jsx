@@ -7,9 +7,13 @@ import {
   Copy,
   AlertCircle,
   Tag,
-  Coins,
   ArrowLeft,
-  ShoppingBag
+  ShoppingBag,
+  Zap,
+  Lock,
+  Phone,
+  User,
+  MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useLanguage } from '../context/LanguageContext';
@@ -21,9 +25,9 @@ import { useCustomerAuth } from '../context/CustomerAuthContext';
 export default function CheckoutPage() {
   const { lang, t } = useLanguage();
   const { cartItems, subtotal, isFreeDeliveryCart, clearCart, appliedCoupon, applyCoupon, removeCoupon, couponDiscount } = useCart();
-  const { settings, coinSettings } = useStoreSettings();
+  const { settings } = useStoreSettings();
   const { placeOrder, loading } = useOrders();
-  const { currentUser, userData, userCoins, redeemCoins, awardCoins } = useCustomerAuth();
+  const { currentUser, userData } = useCustomerAuth();
   const navigate = useNavigate();
 
   const [customerName, setCustomerName] = useState(currentUser?.displayName || userData?.displayName || '');
@@ -32,7 +36,6 @@ export default function CheckoutPage() {
   const [deliveryZone, setDeliveryZone] = useState('inside_dhaka');
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [bkashSender, setBkashSender] = useState('');
-  const [useCoins, setUseCoins] = useState(false);
   const [couponInput, setCouponInput] = useState('');
   const [couponMsg, setCouponMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -40,14 +43,19 @@ export default function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="max-w-md mx-auto py-24 text-center px-4 space-y-4 text-slate-100">
-        <div className="size-16 rounded-full bg-brand-surface mx-auto flex items-center justify-center text-slate-500 border border-brand-border">
-          <ShoppingBag className="size-8" />
+      <div className="max-w-md mx-auto py-24 text-center px-4 space-y-4">
+        <div className="size-20 rounded-full bg-white border border-brand-gold/30 shadow-luxury-white mx-auto flex items-center justify-center text-brand-goldDark">
+          <ShoppingBag className="size-9" />
         </div>
-        <h2 className="text-xl font-serif font-bold text-white">আপনার কার্ট খালি!</h2>
-        <p className="text-xs text-slate-400">অর্ডার সম্পন্ন করতে আগে কিছু পণ্য কার্টে যোগ করুন।</p>
-        <Link to="/shop" className="inline-block px-6 py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs">
-          শপে পণ্য দেখুন →
+        <h2 className="text-2xl font-serif font-bold text-slate-900">
+          {lang === 'bn' ? 'আপনার ব্যাগ খালি!' : 'Your Cart is Empty!'}
+        </h2>
+        <p className="text-xs text-slate-500">
+          {lang === 'bn' ? 'অর্ডার সম্পন্ন করতে আগে কিছু বুটিক পোশাক বা ব্যাগ যোগ করুন।' : 'Add some boutique items to cart first.'}
+        </p>
+        <Link to="/shop" className="btn-gold-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black shadow-md mt-2">
+          <span>{lang === 'bn' ? 'শপে পণ্য দেখুন' : 'Explore Shop'}</span>
+          <ArrowLeft className="size-4 rotate-180" />
         </Link>
       </div>
     );
@@ -58,19 +66,10 @@ export default function CheckoutPage() {
     : (settings?.deliveryFeeOutside || 150);
 
   const effectiveDeliveryFee = isFreeDeliveryCart ? 0 : deliveryFee;
-
-  // Coin Calculations
-  const maxCoinsUsable = Math.min(
-    userCoins,
-    Math.round(subtotal * ((coinSettings?.maxCoinRedeemPercent || 20) / 100))
-  );
-  const coinsDeduction = useCoins ? maxCoinsUsable : 0;
-
-  const grandTotal = Math.max(0, subtotal + effectiveDeliveryFee - couponDiscount - coinsDeduction);
-  const coinsToEarn = Math.round(grandTotal * ((coinSettings?.cashbackPercentage || 2) / 100));
+  const grandTotal = Math.max(0, subtotal + effectiveDeliveryFee - couponDiscount);
 
   const handleCopyBkash = () => {
-    const num = settings?.bkashNumber || '01749765271';
+    const num = settings?.bkashNumber || '01819305805';
     navigator.clipboard.writeText(num);
     setCopiedBkash(true);
     setTimeout(() => setCopiedBkash(false), 2000);
@@ -94,7 +93,7 @@ export default function CheckoutPage() {
 
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     if (cleanPhone.length < 11 || !cleanPhone.startsWith('01')) {
-      setErrorMsg(lang === 'bn' ? 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)।' : 'Please provide a valid 11-digit mobile number.');
+      setErrorMsg(lang === 'bn' ? 'সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 018XXXXXXXX)।' : 'Please provide a valid 11-digit mobile number.');
       return;
     }
 
@@ -122,8 +121,6 @@ export default function CheckoutPage() {
       isFreeDelivery: isFreeDeliveryCart,
       paymentMethod,
       bkashSender: paymentMethod === 'bkash' ? bkashSender.trim() : null,
-      coinsEarned: coinsToEarn,
-      coinsRedeemed: coinsDeduction,
       couponUsed: appliedCoupon?.code || null,
       couponDiscount,
       items: cartItems.map(item => ({
@@ -144,16 +141,6 @@ export default function CheckoutPage() {
     try {
       const placed = await placeOrder(orderData);
 
-      // Deduct coins if used
-      if (coinsDeduction > 0) {
-        await redeemCoins(coinsDeduction);
-      }
-
-      // Award cashback coins
-      if (currentUser && coinsToEarn > 0) {
-        await awardCoins(coinsToEarn);
-      }
-
       clearCart();
 
       try {
@@ -173,27 +160,34 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-brand-border pb-4">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-4">
         <div>
-          <Link to="/shop" className="text-xs text-brand-gold hover:underline flex items-center gap-1 mb-1 font-bold">
+          <Link to="/shop" className="text-xs text-brand-goldDark hover:underline flex items-center gap-1 mb-1 font-bold">
             <ArrowLeft className="size-3.5" />
             <span>{lang === 'bn' ? 'শপে ফিরে যান' : 'Continue Shopping'}</span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white">
-            {lang === 'bn' ? 'অর্ডার চেকআউট' : 'Complete Checkout'}
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
+            {lang === 'bn' ? 'অর্ডার ও চেকআউট' : 'Complete Checkout'}
           </h1>
+        </div>
+        <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+          <Lock className="size-3.5 text-emerald-600" />
+          <span>{lang === 'bn' ? 'SSL এনক্রিপ্টেড ও ১০০% নিরাপদ' : '100% Secure Checkout'}</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Customer Form & Payment (7 cols) */}
-        <div className="lg:col-span-7 bg-brand-surface border border-brand-gold/30 rounded-3xl p-5 sm:p-7 shadow-luxury space-y-5">
-          <h3 className="font-serif text-lg font-bold text-white border-b border-brand-border pb-3 flex items-center gap-2">
-            <span>১. গ্রাহক ও ডেলিভারি তথ্য</span>
+        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-luxury-white space-y-5">
+          <h3 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+            <span className="size-7 rounded-lg bg-slate-900 text-brand-gold flex items-center justify-center text-xs font-bold font-mono">
+              ১
+            </span>
+            <span>{lang === 'bn' ? 'গ্রাহক ও ডেলিভারি তথ্য' : 'Customer & Delivery Info'}</span>
           </h3>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="size-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -202,60 +196,69 @@ export default function CheckoutPage() {
           <form id="checkout-form" onSubmit={handleSubmit} className="space-y-4 text-xs">
             {/* Customer Name */}
             <div>
-              <label className="block font-bold text-slate-300 mb-1">
+              <label className="block font-bold text-slate-700 mb-1">
                 {t('customerName')} *
               </label>
-              <input
-                type="text"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder={t('namePlaceholder')}
-                className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
-                required
-              />
+              <div className="relative">
+                <User className="absolute left-3.5 top-3 size-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder={lang === 'bn' ? 'আপনার পূর্ণ নাম লিখুন' : 'Full Name'}
+                  className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-gold rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
+                  required
+                />
+              </div>
             </div>
 
             {/* Mobile Number */}
             <div>
-              <label className="block font-bold text-slate-300 mb-1">
+              <label className="block font-bold text-slate-700 mb-1">
                 {t('phoneNumber')} *
               </label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder={t('phonePlaceholder')}
-                className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none font-mono"
-                required
-              />
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-3 size-4 text-slate-400" />
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="018XXXXXXXX"
+                  className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-gold rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none font-mono"
+                  required
+                />
+              </div>
             </div>
 
             {/* Full Address */}
             <div>
-              <label className="block font-bold text-slate-300 mb-1">
+              <label className="block font-bold text-slate-700 mb-1">
                 {t('deliveryAddress')} *
               </label>
-              <textarea
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder={t('addressPlaceholder')}
-                rows="2"
-                className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none resize-none"
-                required
-              />
+              <div className="relative">
+                <MapPin className="absolute left-3.5 top-3 size-4 text-slate-400" />
+                <textarea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={lang === 'bn' ? 'বাসা/রোড নম্বর, এলাকা, থানা এবং জেলার নাম বিস্তারিত লিখুন' : 'Full address, Area, Thana, District'}
+                  rows="2"
+                  className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-brand-gold rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none resize-none"
+                  required
+                />
+              </div>
             </div>
 
             {/* Delivery Zone */}
-            <div>
-              <label className="block font-bold text-slate-300 mb-1">
+            <div className="space-y-1.5 pt-1">
+              <label className="block font-bold text-slate-700">
                 {t('deliveryZone')}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label
                   className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition ${
                     deliveryZone === 'inside_dhaka'
-                      ? 'border-brand-gold bg-brand-gold/10 text-white font-bold'
-                      : 'border-brand-border bg-brand-card text-slate-400'
+                      ? 'border-brand-gold bg-amber-50/80 text-slate-900 font-bold ring-1 ring-brand-gold/40'
+                      : 'border-slate-200 bg-slate-50 text-slate-600'
                   }`}
                 >
                   <input
@@ -263,16 +266,16 @@ export default function CheckoutPage() {
                     name="checkout-zone"
                     checked={deliveryZone === 'inside_dhaka'}
                     onChange={() => setDeliveryZone('inside_dhaka')}
-                    className="accent-brand-gold"
+                    className="accent-brand-goldDark"
                   />
-                  <span>{t('insideDhaka')}</span>
+                  <span>{lang === 'bn' ? 'ঢাকার ভেতরে (৳৮০)' : 'Inside Dhaka (৳80)'}</span>
                 </label>
 
                 <label
                   className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition ${
                     deliveryZone === 'outside_dhaka'
-                      ? 'border-brand-gold bg-brand-gold/10 text-white font-bold'
-                      : 'border-brand-border bg-brand-card text-slate-400'
+                      ? 'border-brand-gold bg-amber-50/80 text-slate-900 font-bold ring-1 ring-brand-gold/40'
+                      : 'border-slate-200 bg-slate-50 text-slate-600'
                   }`}
                 >
                   <input
@@ -280,24 +283,24 @@ export default function CheckoutPage() {
                     name="checkout-zone"
                     checked={deliveryZone === 'outside_dhaka'}
                     onChange={() => setDeliveryZone('outside_dhaka')}
-                    className="accent-brand-gold"
+                    className="accent-brand-goldDark"
                   />
-                  <span>{t('outsideDhaka')}</span>
+                  <span>{lang === 'bn' ? 'ঢাকার বাইরে (৳১৫০)' : 'Outside Dhaka (৳150)'}</span>
                 </label>
               </div>
             </div>
 
             {/* Payment Method */}
-            <div className="pt-2">
-              <label className="block font-bold text-slate-300 mb-1">
+            <div className="space-y-1.5 pt-2">
+              <label className="block font-bold text-slate-700">
                 {t('paymentMethod')}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label
                   className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition ${
                     paymentMethod === 'cod'
-                      ? 'border-emerald-500 bg-emerald-500/10 text-white font-bold'
-                      : 'border-brand-border bg-brand-card text-slate-400'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold ring-1 ring-emerald-600/30'
+                      : 'border-slate-200 bg-slate-50 text-slate-600'
                   }`}
                 >
                   <input
@@ -305,7 +308,7 @@ export default function CheckoutPage() {
                     name="checkout-payment"
                     checked={paymentMethod === 'cod'}
                     onChange={() => setPaymentMethod('cod')}
-                    className="accent-emerald-500"
+                    className="accent-emerald-600"
                   />
                   <span>ক্যাশ অন ডেলিভারি</span>
                 </label>
@@ -313,8 +316,8 @@ export default function CheckoutPage() {
                 <label
                   className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition ${
                     paymentMethod === 'bkash'
-                      ? 'border-pink-500 bg-pink-500/10 text-white font-bold'
-                      : 'border-brand-border bg-brand-card text-slate-400'
+                      ? 'border-pink-500 bg-pink-50 text-pink-900 font-bold ring-1 ring-pink-500/30'
+                      : 'border-slate-200 bg-slate-50 text-slate-600'
                   }`}
                 >
                   <input
@@ -322,7 +325,7 @@ export default function CheckoutPage() {
                     name="checkout-payment"
                     checked={paymentMethod === 'bkash'}
                     onChange={() => setPaymentMethod('bkash')}
-                    className="accent-pink-500"
+                    className="accent-pink-600"
                   />
                   <span>বিকাশ সেন্ড মানি</span>
                 </label>
@@ -331,182 +334,169 @@ export default function CheckoutPage() {
 
             {/* bKash instructions if selected */}
             {paymentMethod === 'bkash' && (
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-950/40 via-brand-card to-pink-950/20 border border-pink-500/40 space-y-2.5">
-                <p className="text-slate-200 leading-relaxed">
-                  {t('bkashInstructions')}
+              <div className="p-4 rounded-2xl bg-pink-50 border border-pink-200 space-y-2.5">
+                <p className="text-pink-950 leading-relaxed font-medium">
+                  {lang === 'bn'
+                    ? 'নিচের বিকাশ পার্সোনাল নম্বরে মোট প্রদেয় টাকা "Send Money" করে প্রেরক নম্বরটি নিচে লিখুন:'
+                    : 'Send money to the bKash personal number below and enter your sender number:'}
                 </p>
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-brand-noir border border-pink-500/40">
-                  <span className="font-mono font-bold text-pink-400 text-sm">
-                    {settings?.bkashNumber || '01749765271'} (Personal)
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-pink-200 shadow-sm">
+                  <span className="font-mono font-bold text-pink-700 text-sm">
+                    {settings?.bkashNumber || '01819305805'} (Personal)
                   </span>
                   <button
                     type="button"
                     onClick={handleCopyBkash}
-                    className="px-3 py-1 rounded-lg bg-pink-600 hover:bg-pink-500 text-white font-bold text-[11px] flex items-center gap-1 transition"
+                    className="px-3 py-1 rounded-lg bg-pink-600 hover:bg-pink-700 text-white font-bold text-[11px] flex items-center gap-1 transition"
                   >
                     <Copy className="size-3" />
-                    <span>{copiedBkash ? t('copied') : t('copyNumber')}</span>
+                    <span>{copiedBkash ? 'কপি হয়েছে' : 'নম্বর কপি'}</span>
                   </button>
                 </div>
-
-                <div>
-                  <label className="text-[11px] font-bold text-pink-300 block mb-1">
-                    {t('senderBkashNumber')} *
-                  </label>
-                  <input
-                    type="tel"
-                    value={bkashSender}
-                    onChange={(e) => setBkashSender(e.target.value)}
-                    placeholder="01XXXXXXXXX"
-                    className="w-full bg-brand-noir border border-pink-500/40 focus:border-pink-400 rounded-xl px-3 py-2 text-xs text-white font-mono"
-                    required
-                  />
-                </div>
+                <input
+                  type="tel"
+                  value={bkashSender}
+                  onChange={(e) => setBkashSender(e.target.value)}
+                  placeholder={lang === 'bn' ? 'যে বিকাশ নম্বর থেকে টাকা পাঠিয়েছেন (01XXXXXXXXX)' : 'Sender bKash number'}
+                  className="w-full bg-white border border-pink-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 font-mono focus:outline-none"
+                />
               </div>
             )}
           </form>
         </div>
 
-        {/* Right Column: Order Summary, Coupons & Coin Redemption (5 cols) */}
-        <div className="lg:col-span-5 bg-brand-surface border border-brand-gold/30 rounded-3xl p-5 sm:p-7 shadow-luxury space-y-5">
-          <h3 className="font-serif text-lg font-bold text-white border-b border-brand-border pb-3">
-            ২. অর্ডারের বিবরণ ({cartItems.length})
+        {/* Right Column: Order Summary (5 cols) */}
+        <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-luxury-white space-y-5">
+          <h3 className="font-serif text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center justify-between">
+            <span>{lang === 'bn' ? 'অর্ডারের বিবরণ' : 'Order Summary'}</span>
+            <span className="text-xs font-bold text-slate-500 font-sans">
+              ({cartItems.length} {lang === 'bn' ? 'টি পণ্য' : 'items'})
+            </span>
           </h3>
 
-          {/* Items Mini List */}
-          <div className="space-y-3 max-h-60 overflow-y-auto pr-1 divide-y divide-brand-border/60">
+          {/* Cart Items List */}
+          <div className="max-h-72 overflow-y-auto space-y-3 pr-1 divide-y divide-slate-100">
             {cartItems.map((item) => (
-              <div key={item.id} className="pt-2 first:pt-0 flex items-center gap-3 text-xs">
+              <div key={item.id} className="pt-3 first:pt-0 flex items-center gap-3">
                 <img
                   src={item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.png'}
                   alt=""
-                  className="size-12 rounded-lg object-contain bg-brand-noir border border-brand-border"
+                  className="size-14 rounded-xl object-contain bg-[#F8F9FA] p-1 border border-slate-200 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-100 truncate">
+                  <h4 className="text-xs font-bold text-slate-900 truncate">
                     {lang === 'bn' ? item.product?.nameBn : item.product?.name}
-                  </p>
-                  <p className="text-[11px] text-slate-400">
-                    {item.selectedColor} • Qty: {item.quantity}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {item.selectedColor ? `${item.selectedColor} • ` : ''}
+                    {item.selectedSize ? `${item.selectedSize} • ` : ''}
+                    পরিমাণ: {item.quantity}টি
                   </p>
                 </div>
-                <span className="font-mono font-bold text-brand-gold">
+                <span className="font-mono text-xs font-bold text-slate-900 shrink-0">
                   ৳{(item.product?.price || 0) * item.quantity}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Coupon Code Box */}
-          <div className="pt-3 border-t border-brand-border space-y-2">
-            <form onSubmit={handleApplyCoupon} className="flex gap-2 text-xs">
-              <input
-                type="text"
-                value={couponInput}
-                onChange={(e) => setCouponInput(e.target.value)}
-                placeholder="কুপন কোড (যেমন: KARISHMA100)"
-                className="flex-1 bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3 py-2 text-white uppercase placeholder:normal-case focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-brand-surface border border-brand-gold/50 text-brand-gold font-bold rounded-xl hover:bg-brand-gold hover:text-brand-noir transition"
-              >
-                প্রয়োগ
-              </button>
-            </form>
-            {couponMsg && (
-              <p className="text-[11px] text-brand-gold">{couponMsg}</p>
-            )}
-            {appliedCoupon && (
-              <div className="flex items-center justify-between text-xs bg-brand-gold/10 border border-brand-gold/30 px-3 py-1.5 rounded-xl text-brand-gold font-bold">
-                <span>🏷️ কুপন ছাড় ({appliedCoupon.code})</span>
-                <div className="flex items-center gap-2">
-                  <span>-৳{appliedCoupon.discount}</span>
-                  <button type="button" onClick={removeCoupon} className="text-slate-400 hover:text-white">✕</button>
-                </div>
+          {/* Coupon Code Input */}
+          <div className="pt-2 border-t border-slate-100">
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
+                <span className="font-bold text-emerald-800 flex items-center gap-1.5">
+                  <Tag className="size-3.5" />
+                  <span>কুপন '{appliedCoupon.code}' প্রয়োগ হয়েছে (-৳{couponDiscount})</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={removeCoupon}
+                  className="text-rose-600 font-bold hover:underline text-[11px]"
+                >
+                  মুছুন
+                </button>
               </div>
+            ) : (
+              <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                <div className="relative flex-1">
+                  <Tag className="absolute left-3 top-2.5 size-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value)}
+                    placeholder="কুপন কোড (যেমন: EID2026)"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-brand-gold uppercase font-mono"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-3 py-2 rounded-xl bg-slate-900 text-brand-gold text-xs font-bold hover:bg-slate-800"
+                >
+                  প্রয়োগ
+                </button>
+              </form>
+            )}
+            {couponMsg && (
+              <p className="text-[11px] text-brand-goldDark font-bold mt-1">{couponMsg}</p>
             )}
           </div>
 
-          {/* Coin Redemption Box */}
-          {userCoins > 0 && (
-            <div className="p-3 rounded-2xl bg-brand-card border border-brand-gold/30 space-y-1.5 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-300 flex items-center gap-1.5">
-                  <Coins className="size-4" />
-                  <span>কারিশমা কয়েন ব্যালেন্স: {userCoins}</span>
-                </span>
-                <label className="flex items-center gap-1.5 cursor-pointer font-bold text-white">
-                  <input
-                    type="checkbox"
-                    checked={useCoins}
-                    onChange={(e) => setUseCoins(e.target.checked)}
-                    className="accent-brand-gold"
-                  />
-                  <span>কয়েন ছাড় নিন</span>
-                </label>
-              </div>
-              {useCoins && (
-                <p className="text-[11px] text-slate-300">
-                  সর্বোচ্চ {maxCoinsUsable} কয়েন ব্যবহার করে ৳{maxCoinsUsable} ছাড় পেয়েছেন!
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Bill Breakdown */}
-          <div className="pt-3 border-t border-brand-border space-y-1.5 text-xs text-slate-300">
+          {/* Financial Calculation */}
+          <div className="space-y-2 text-xs text-slate-600 border-t border-slate-100 pt-3">
             <div className="flex justify-between">
-              <span>পণ্যের মোট মূল্য:</span>
-              <span className="font-mono text-white">৳{subtotal}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>ডেলিভারি চার্জ:</span>
-              <span className="font-mono text-white">
-                {isFreeDeliveryCart ? <strong className="text-emerald-400">ফ্রি</strong> : `৳${effectiveDeliveryFee}`}
-              </span>
+              <span>{t('subtotal')}:</span>
+              <span className="font-mono font-bold text-slate-900">৳{subtotal}</span>
             </div>
             {couponDiscount > 0 && (
-              <div className="flex justify-between text-emerald-400 font-bold">
+              <div className="flex justify-between text-emerald-700 font-bold">
                 <span>কুপন ছাড়:</span>
                 <span className="font-mono">-৳{couponDiscount}</span>
               </div>
             )}
-            {coinsDeduction > 0 && (
-              <div className="flex justify-between text-amber-400 font-bold">
-                <span>কয়েন ডিসকাউন্ট:</span>
-                <span className="font-mono">-৳{coinsDeduction}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-base font-black text-brand-gold pt-2 border-t border-brand-border">
-              <span>সর্বমোট প্রদেয়:</span>
-              <span className="font-mono text-xl text-white">৳{grandTotal}</span>
+            <div className="flex justify-between">
+              <span>{t('deliveryFee')}:</span>
+              <span className="font-mono font-bold text-slate-800">
+                {isFreeDeliveryCart ? (
+                  <span className="text-emerald-700 font-bold">সম্পূর্ণ ফ্রি!</span>
+                ) : (
+                  `৳${effectiveDeliveryFee}`
+                )}
+              </span>
             </div>
-
-            {/* Cashback pill */}
-            <div className="pt-2 text-center">
-              <span className="text-[11px] text-amber-300 font-bold bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full inline-block">
-                🪙 এই অর্ডারে আপনি পাচ্ছেন +{coinsToEarn} কয়েন ক্যাশব্যাক!
+            <div className="flex justify-between text-base font-black text-slate-900 pt-3 border-t border-slate-200">
+              <span>{lang === 'bn' ? 'সর্বমোট প্রদেয়:' : 'Grand Total:'}</span>
+              <span className="font-mono text-2xl font-black text-brand-goldDark">
+                ৳{grandTotal}
               </span>
             </div>
           </div>
 
-          {/* Submit Trigger (Signature Liquid Gold) */}
+          {/* Place Order CTA Button */}
           <button
             type="submit"
             form="checkout-form"
             disabled={loading}
-            className="btn-gold-primary w-full py-4 rounded-2xl text-sm font-black tracking-wide flex items-center justify-center gap-2 disabled:opacity-50"
+            className="btn-gold-primary w-full py-4 rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-lg"
           >
-            {loading ? (
-              <span>{t('processingOrder')}</span>
-            ) : (
-              <>
-                <CheckCircle2 className="size-5 stroke-[2.5]" />
-                <span>অর্ডার কনফার্ম করুন — ৳{grandTotal}</span>
-              </>
-            )}
+            <Zap className="size-4 fill-brand-noir" />
+            <span>
+              {loading
+                ? (lang === 'bn' ? 'অর্ডার তৈরি হচ্ছে...' : 'Placing Order...')
+                : (lang === 'bn' ? `অর্ডার নিশ্চিত করুন • ৳${grandTotal}` : `Confirm Order • ৳${grandTotal}`)}
+            </span>
           </button>
+
+          {/* Security & Guarantees */}
+          <div className="space-y-1.5 pt-1 text-[11px] text-slate-500">
+            <div className="flex items-center gap-2">
+              <Truck className="size-3.5 text-brand-goldDark" />
+              <span>সারা দেশে দ্রুততম সময়ে হোম ডেলিভারি</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="size-3.5 text-emerald-600" />
+              <span>পণ্য হাতে পেয়ে চেক করে মূল্য পরিশোধের সুযোগ</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

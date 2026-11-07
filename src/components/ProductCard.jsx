@@ -77,8 +77,8 @@ export default function ProductCard({ product, onOneClickOrder }) {
       </div>
 
       {/* 2. Product Information (Crisp White Canvas) */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3 bg-white">
-        <div className="space-y-1.5">
+      <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-3 bg-white">
+        <div className="space-y-1 sm:space-y-1.5">
           {/* Category Tag */}
           <span className="text-[10px] font-bold text-brand-goldDark uppercase tracking-wider block font-sans">
             {lang === 'bn' ? product.categoryBn : product.category}
@@ -86,18 +86,18 @@ export default function ProductCard({ product, onOneClickOrder }) {
 
           {/* Title (Jet Black) */}
           <Link to={`/product/${product.id}`}>
-            <h3 className="font-serif text-sm sm:text-base font-bold text-slate-900 hover:text-brand-goldDark transition line-clamp-2 leading-snug">
+            <h3 className="font-serif text-xs sm:text-base font-bold text-slate-900 hover:text-brand-goldDark transition line-clamp-2 leading-snug">
               {lang === 'bn' ? product.nameBn : product.name}
             </h3>
           </Link>
 
           {/* Price (Imperial Gold & Strikethrough) */}
-          <div className="flex items-baseline gap-2 pt-1">
-            <span className="font-mono text-base sm:text-lg font-black text-brand-goldDark">
+          <div className="flex items-baseline gap-1.5 sm:gap-2 pt-0.5 sm:pt-1">
+            <span className="font-mono text-sm sm:text-lg font-black text-brand-goldDark">
               ৳{product.price}
             </span>
             {product.originalPrice && (
-              <span className="font-mono text-xs text-slate-400 line-through">
+              <span className="font-mono text-[10px] sm:text-xs text-slate-400 line-through">
                 ৳{product.originalPrice}
               </span>
             )}
@@ -106,8 +106,8 @@ export default function ProductCard({ product, onOneClickOrder }) {
 
         {/* Color Swatches */}
         {product.colors && product.colors.length > 1 && (
-          <div className="flex items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-slate-500 font-semibold mr-1">
+          <div className="flex items-center gap-1.5 pt-0.5">
+            <span className="text-[10px] text-slate-500 font-semibold mr-0.5">
               {lang === 'bn' ? 'কালার:' : 'Colors:'}
             </span>
             {product.colors.map((color, idx) => (
@@ -116,7 +116,7 @@ export default function ProductCard({ product, onOneClickOrder }) {
                 type="button"
                 onClick={() => setActiveColorIdx(idx)}
                 style={{ backgroundColor: color.hex }}
-                className={`size-4 rounded-full border transition-all ${
+                className={`size-3.5 sm:size-4 rounded-full border transition-all ${
                   activeColorIdx === idx
                     ? 'border-brand-gold scale-125 ring-2 ring-brand-gold/40'
                     : 'border-slate-300 hover:scale-110'
@@ -128,14 +128,14 @@ export default function ProductCard({ product, onOneClickOrder }) {
         )}
 
         {/* 3. Action Buttons - White, Black & Gold Mix */}
-        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-2 border-t border-slate-100">
           {/* 1-Click Fast Buy Button (Liquid Gold) */}
           <button
             type="button"
             onClick={() => onOneClickOrder && onOneClickOrder(product, activeColor?.name)}
-            className="btn-gold-primary w-full py-2.5 px-1.5 rounded-xl text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 active:scale-95"
+            className="btn-gold-primary w-full py-2 sm:py-2.5 px-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black flex items-center justify-center gap-1 active:scale-95 shadow-sm"
           >
-            <Zap className="size-3.5 fill-brand-noir stroke-brand-noir shrink-0" />
+            <Zap className="size-3 sm:size-3.5 fill-brand-noir stroke-brand-noir shrink-0" />
             <span className="whitespace-nowrap tracking-tight">{t('orderNow')}</span>
           </button>
 
@@ -143,9 +143,9 @@ export default function ProductCard({ product, onOneClickOrder }) {
           <button
             type="button"
             onClick={() => addToCart(product, 1, activeColor?.name)}
-            className="btn-black-secondary w-full py-2.5 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 active:scale-95"
+            className="btn-black-secondary w-full py-2 sm:py-2.5 px-1 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1 active:scale-95 shadow-sm"
           >
-            <ShoppingBag className="size-3.5 text-brand-gold shrink-0" />
+            <ShoppingBag className="size-3 sm:size-3.5 text-brand-gold shrink-0" />
             <span className="whitespace-nowrap tracking-tight">{t('addToCart')}</span>
           </button>
         </div>

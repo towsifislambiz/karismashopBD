@@ -192,15 +192,25 @@ export default function ProductDetailsPage() {
                 </span>
               )}
             </div>
+
+            {/* Scarcity Stock Urgency */}
+            <div className="flex items-center gap-2 pt-1 text-xs">
+              <span className="inline-block size-2 rounded-full bg-rose-500 animate-ping" />
+              <span className="text-rose-600 font-bold">
+                {lang === 'bn'
+                  ? `🔥 আর মাত্র ${product.stockCount || 7}টি পণ্য স্টকে অবশিষ্ট আছে!`
+                  : `🔥 Only ${product.stockCount || 7} items left in stock!`}
+              </span>
+            </div>
           </div>
 
           {/* Color Variants Selection */}
           {product.colors && product.colors.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-slate-300">
+                <span className="text-slate-700">
                   {lang === 'bn' ? 'কালার বেছে নিন:' : 'Select Color:'}{' '}
-                  <strong className="text-brand-gold font-normal">
+                  <strong className="text-brand-goldDark font-bold">
                     {lang === 'bn' ? activeColor?.nameBn : activeColor?.name}
                   </strong>
                 </span>
@@ -213,12 +223,12 @@ export default function ProductDetailsPage() {
                     onClick={() => handleColorSelect(idx)}
                     className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition ${
                       selectedColorIdx === idx
-                        ? 'border-brand-gold bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/40'
-                        : 'border-brand-border bg-brand-surface text-slate-300 hover:border-slate-600'
+                        ? 'border-brand-gold bg-amber-50 text-slate-900 ring-2 ring-brand-gold/40 shadow-sm'
+                        : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-gold'
                     }`}
                   >
                     <span
-                      className="size-3.5 rounded-full border border-black/40"
+                      className="size-3.5 rounded-full border border-black/30 shadow-xs"
                       style={{ backgroundColor: c.hex }}
                     />
                     <span>{lang === 'bn' ? c.nameBn : c.name}</span>
@@ -232,14 +242,14 @@ export default function ProductDetailsPage() {
           {product.sizes && product.sizes.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-300">
+                <span className="font-bold text-slate-700">
                   {lang === 'bn' ? 'সাইজ বেছে নিন:' : 'Select Size:'}{' '}
-                  <strong className="text-brand-gold font-normal">{selectedSize}</strong>
+                  <strong className="text-brand-goldDark font-bold">{selectedSize}</strong>
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsSizeChartOpen(true)}
-                  className="text-brand-gold hover:underline flex items-center gap-1 font-bold"
+                  className="text-brand-goldDark hover:underline flex items-center gap-1 font-bold"
                 >
                   <Ruler className="size-3.5" />
                   <span>{t('sizeGuide')}</span>
@@ -254,8 +264,8 @@ export default function ProductDetailsPage() {
                     onClick={() => setSelectedSize(s)}
                     className={`px-4 py-2 rounded-xl text-xs font-bold border transition ${
                       selectedSize === s
-                        ? 'border-brand-gold bg-brand-gold text-brand-noir shadow-gold-soft'
-                        : 'border-brand-border bg-brand-surface text-slate-300 hover:border-slate-600'
+                        ? 'border-brand-gold bg-slate-900 text-brand-gold shadow-sm'
+                        : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-gold'
                     }`}
                   >
                     {s}
@@ -290,26 +300,39 @@ export default function ProductDetailsPage() {
           </div>
 
           {/* Primary Action Buttons: 1-Click Order & Add to Cart */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-4">
-            {/* 1-Click Fast Buy Button (Signature Liquid Gold) */}
-            <button
-              type="button"
-              onClick={() => setIsOrderModalOpen(true)}
-              className="btn-gold-primary py-4 px-6 rounded-2xl text-sm font-black tracking-wide flex items-center justify-center gap-2.5"
-            >
-              <Zap className="size-5 fill-brand-noir stroke-brand-noir" />
-              <span>{lang === 'bn' ? 'সরাসরি অর্ডার করুন (১-ক্লিক)' : 'Buy Now (1-Click)'}</span>
-            </button>
+          <div className="space-y-3 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {/* 1-Click Fast Buy Button (Signature Liquid Gold) */}
+              <button
+                type="button"
+                onClick={() => setIsOrderModalOpen(true)}
+                className="btn-gold-primary py-4 px-6 rounded-2xl text-sm font-black tracking-wide flex items-center justify-center gap-2.5 shadow-md"
+              >
+                <Zap className="size-5 fill-brand-noir stroke-brand-noir" />
+                <span>{lang === 'bn' ? 'সরাসরি অর্ডার করুন (১-ক্লিক)' : 'Buy Now (1-Click)'}</span>
+              </button>
 
-            {/* Add to Cart Button (Signature Jet Black with Gold Rim) */}
-            <button
-              type="button"
-              onClick={() => addToCart(product, quantity, activeColor?.name, selectedSize)}
-              className="btn-black-secondary py-4 px-6 rounded-2xl text-sm font-bold tracking-wide flex items-center justify-center gap-2.5"
+              {/* Add to Cart Button (Signature Jet Black with Gold Rim) */}
+              <button
+                type="button"
+                onClick={() => addToCart(product, quantity, activeColor?.name, selectedSize)}
+                className="btn-black-secondary py-4 px-6 rounded-2xl text-sm font-bold tracking-wide flex items-center justify-center gap-2.5 shadow-md"
+              >
+                <ShoppingBag className="size-5 text-brand-gold" />
+                <span>{t('addToCart')}</span>
+              </button>
+            </div>
+
+            {/* Direct WhatsApp Order Button */}
+            <a
+              href={`https://wa.me/8801819305805?text=${encodeURIComponent(`আসসালামু আলাইকুম Karishma Shop BD, আমি এই পণ্যটি সরাসরি অর্ডার করতে চাচ্ছি:\n\nপণ্য: ${product.nameBn || product.name}\nমূল্য: ৳${product.price}\nকালার: ${activeColor?.nameBn || activeColor?.name || 'Standard'}\nসাইজ: ${selectedSize}\nপরিমাণ: ${quantity} টি\n\nঅনুগ্রহ করে কনফার্ম করুন। ধন্যবাদ!`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
             >
-              <ShoppingBag className="size-5 text-brand-gold" />
-              <span>{t('addToCart')}</span>
-            </button>
+              <MessageCircle className="size-4.5 fill-white" />
+              <span>{lang === 'bn' ? 'হোয়াটসঅ্যাপে সরাসরি কথা বলুন ও অর্ডার করুন' : 'Order via WhatsApp directly'}</span>
+            </a>
           </div>
 
           {/* Trust Guarantees (White Card) */}
@@ -378,19 +401,19 @@ export default function ProductDetailsPage() {
 
               {activeTab === 'reviews' && (
                 <div className="space-y-3">
-                  <div className="p-3 rounded-xl bg-brand-card/80 border border-brand-border space-y-1">
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white">নুসরাত পারভীন</span>
-                      <div className="flex text-amber-400"><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /></div>
+                      <span className="font-bold text-slate-900">নুসরাত পারভীন</span>
+                      <div className="flex text-amber-500"><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /></div>
                     </div>
-                    <p className="text-slate-300 text-[11px]">"কাপড়ের মান এবং ফিনিশিং অসাধারণ! ছবিতে যেমন দেখেছি হুবহু সেরকম পেয়েছি। ধন্যবাদ কারিশমা শপকে।"</p>
+                    <p className="text-slate-600 text-[11px]">"কাপড়ের মান এবং ফিনিশিং অসাধারণ! ছবিতে যেমন দেখেছি হুবহু সেরকম পেয়েছি। ধন্যবাদ কারিশমা শপকে।"</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-brand-card/80 border border-brand-border space-y-1">
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white">সাদিয়া রহমান</span>
-                      <div className="flex text-amber-400"><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /><Star className="size-3 fill-amber-400" /></div>
+                      <span className="font-bold text-slate-900">সাদিয়া রহমান</span>
+                      <div className="flex text-amber-500"><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /><Star className="size-3 fill-amber-500" /></div>
                     </div>
-                    <p className="text-slate-300 text-[11px]">"ব্যাগটার লুকস আড়ংয়ের চেয়েও প্রিমিয়াম লেগেছে। চেইন ও ম্যাটেরিয়াল কোয়ালিটি খুব হেভি।"</p>
+                    <p className="text-slate-600 text-[11px]">"ব্যাগটার লুকস আড়ংয়ের চেয়েও প্রিমিয়াম লেগেছে। চেইন ও ম্যাটেরিয়াল কোয়ালিটি খুব হেভি।"</p>
                   </div>
                 </div>
               )}
@@ -401,12 +424,12 @@ export default function ProductDetailsPage() {
 
       {/* Related Products Carousel */}
       {relatedProducts.length > 0 && (
-        <section className="space-y-6 pt-8 border-t border-brand-border">
+        <section className="space-y-6 pt-8 border-t border-slate-200">
           <div className="flex items-center justify-between">
-            <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-900">
               {t('relatedProducts')}
             </h3>
-            <Link to={`/shop?category=${product.category}`} className="text-xs font-bold text-brand-gold hover:underline">
+            <Link to={`/shop?category=${product.category}`} className="text-xs font-bold text-brand-goldDark hover:underline">
               {lang === 'bn' ? 'সব দেখুন →' : 'See all →'}
             </Link>
           </div>

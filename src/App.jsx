@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -12,6 +12,7 @@ import ProductDetailsPage from './pages/ProductDetailsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import CustomerAccountPage from './pages/CustomerAccountPage';
+import WishlistPage from './pages/WishlistPage';
 import AdminDashboard from './pages/AdminDashboard';
 
 // Auto scroll to top on route change
@@ -24,6 +25,20 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+
+  // Agency Secret: Pressing Ctrl+Shift+A opens hidden Admin Panel
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        navigate('/admin');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
   return (
     <div className="flex flex-col min-h-screen bg-brand-canvas text-brand-textDark selection:bg-brand-gold selection:text-brand-noir">
       <ScrollToTop />
@@ -36,6 +51,7 @@ export default function App() {
           <Route path="/product/:id" element={<ProductDetailsPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success/:trackingId" element={<OrderSuccessPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/account" element={<CustomerAccountPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
