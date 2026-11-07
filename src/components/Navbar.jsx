@@ -118,20 +118,20 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* 2. Main Luxury Navbar */}
-      <div className={`transition-all duration-300 border-b ${isScrolled ? 'bg-brand-noir/95 backdrop-blur-md border-brand-gold/25 py-2.5 shadow-xl shadow-black/40' : 'bg-brand-noir border-brand-border py-3.5'}`}>
+      {/* 2. Main Luxury Navbar (Crisp White + Jet Black + Gold) */}
+      <div className={`transition-all duration-300 border-b ${isScrolled ? 'bg-white/95 backdrop-blur-md border-brand-gold/30 py-2.5 shadow-md' : 'bg-white border-slate-200 py-3.5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-6">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(prev => !prev)}
-            className="md:hidden p-2 rounded-xl bg-brand-surface border border-brand-border text-brand-gold hover:text-white transition"
+            className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 hover:text-brand-goldDark transition"
           >
             {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
 
           {/* Brand Logo & Name */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="relative size-10 sm:size-12 rounded-xl bg-brand-surface p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center overflow-hidden">
+            <div className="relative size-10 sm:size-12 rounded-xl bg-brand-noir p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center overflow-hidden">
               <img
                 src="/assets/brand/ks-logo.svg"
                 alt="Karishma Shop BD"
@@ -139,10 +139,10 @@ export default function Navbar() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-serif text-lg sm:text-2xl font-bold tracking-wide text-gold-gradient group-hover:brightness-110 transition leading-tight">
+              <span className="font-serif text-lg sm:text-2xl font-bold tracking-wide text-slate-900 group-hover:text-brand-goldDark transition leading-tight">
                 KARISHMA SHOP
               </span>
-              <span className="text-[10px] font-sans tracking-widest text-slate-400 uppercase font-bold -mt-0.5">
+              <span className="text-[10px] font-sans tracking-widest text-brand-goldDark uppercase font-bold -mt-0.5">
                 BOUTIQUE & ABAYA • BD
               </span>
             </div>
@@ -156,30 +156,30 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('searchPlaceholder')}
-                className="w-full bg-brand-surface/90 border border-brand-border focus:border-brand-gold rounded-full pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-gold transition shadow-inner"
+                className="w-full bg-slate-50 border border-slate-200 focus:border-brand-gold rounded-full pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-brand-gold transition shadow-sm"
               />
-              <Search className="absolute left-3.5 top-2.5 size-4 text-brand-gold/70" />
+              <Search className="absolute left-3.5 top-2.5 size-4 text-brand-goldDark" />
             </div>
 
             {/* Live Search Autocomplete Popup */}
             {searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-brand-card border border-brand-gold/30 rounded-2xl p-2 shadow-2xl z-50 overflow-hidden divide-y divide-brand-border">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-brand-gold/40 rounded-2xl p-2 shadow-2xl z-50 overflow-hidden divide-y divide-slate-100">
                 {searchResults.map(product => (
                   <button
                     key={product.id}
                     onClick={() => handleSelectSearchResult(product.id)}
-                    className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-brand-surface transition text-left group"
+                    className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition text-left group"
                   >
                     <img
                       src={product.images[0]}
                       alt={product.name}
-                      className="size-10 rounded-lg object-cover bg-black"
+                      className="size-10 rounded-lg object-cover bg-slate-100"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-slate-200 group-hover:text-brand-gold truncate">
+                      <p className="text-xs font-bold text-slate-900 group-hover:text-brand-goldDark truncate">
                         {lang === 'bn' ? product.nameBn : product.name}
                       </p>
-                      <span className="text-[11px] text-brand-gold font-bold font-mono">
+                      <span className="text-[11px] text-brand-goldDark font-bold font-mono">
                         ৳{product.price}
                       </span>
                     </div>
@@ -189,25 +189,25 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Action Buttons: Wishlist, User Account, Cart */}
+          {/* Action Buttons: Wishlist, Cart */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Search Trigger for Mobile */}
             <button
               onClick={() => setIsSearchOpen(prev => !prev)}
-              className="md:hidden p-2 rounded-xl bg-brand-surface border border-brand-border text-slate-300 hover:text-brand-gold"
+              className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:text-brand-goldDark"
             >
               <Search className="size-4" />
             </button>
 
-            {/* Wishlist Button (Gold & Noir) */}
+            {/* Wishlist Button */}
             <Link
               to="/shop?filter=wishlist"
-              className="relative p-2 sm:p-2.5 rounded-xl bg-brand-surface border border-brand-border hover:border-brand-gold text-slate-300 hover:text-brand-gold transition shadow-sm"
+              className="relative p-2 sm:p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-brand-gold text-slate-700 hover:text-brand-goldDark transition shadow-sm"
               title={t('wishlist')}
             >
               <Heart className="size-4 sm:size-5" />
               {wishlist.length > 0 && (
-                <span className="absolute -top-1 -right-1 size-4 bg-brand-gold text-brand-noir font-black rounded-full text-[10px] flex items-center justify-center shadow-gold-glow animate-bounce">
+                <span className="absolute -top-1 -right-1 size-4 bg-brand-noir text-brand-gold font-black rounded-full text-[10px] flex items-center justify-center border border-brand-gold/40 shadow animate-bounce">
                   {wishlist.length}
                 </span>
               )}
@@ -269,45 +269,45 @@ export default function Navbar() {
       </div>
 
       {/* 3. Category Bar (Desktop) */}
-      <nav className="hidden md:block bg-brand-surface/95 border-b border-brand-border text-xs">
+      <nav className="hidden md:block bg-slate-50 border-b border-slate-200 text-xs">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <ul className="flex items-center gap-7 py-2.5 font-bold tracking-wide">
             <li>
-              <Link to="/" className="text-slate-300 hover:text-brand-gold transition flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-brand-gold" />
+              <Link to="/" className="text-slate-800 hover:text-brand-goldDark transition flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-brand-goldDark" />
                 <span>{t('home')}</span>
               </Link>
             </li>
             <li>
-              <Link to="/shop?category=three-piece" className="text-slate-300 hover:text-brand-gold transition">
+              <Link to="/shop?category=three-piece" className="text-slate-700 hover:text-brand-goldDark transition">
                 {t('threePiece')}
               </Link>
             </li>
             <li>
-              <Link to="/shop?category=abaya" className="text-slate-300 hover:text-brand-gold transition">
+              <Link to="/shop?category=abaya" className="text-slate-700 hover:text-brand-goldDark transition">
                 {t('abaya')}
               </Link>
             </li>
             <li>
-              <Link to="/shop?category=gowns" className="text-slate-300 hover:text-brand-gold transition">
+              <Link to="/shop?category=gowns" className="text-slate-700 hover:text-brand-goldDark transition">
                 {t('gowns')}
               </Link>
             </li>
             <li>
-              <Link to="/shop?category=handbags" className="text-slate-300 hover:text-brand-gold transition">
+              <Link to="/shop?category=handbags" className="text-slate-700 hover:text-brand-goldDark transition">
                 {t('handbags')}
               </Link>
             </li>
             <li>
-              <Link to="/shop?filter=flash" className="text-brand-gold hover:text-white transition flex items-center gap-1.5 font-bold">
+              <Link to="/shop?filter=flash" className="text-brand-goldDark hover:text-slate-900 transition flex items-center gap-1.5 font-bold">
                 <span className="size-2 rounded-full bg-brand-gold animate-ping" />
                 <span>{lang === 'bn' ? '✦ ফ্ল্যাশ সেল অফার' : '✦ Flash Sale'}</span>
               </Link>
             </li>
           </ul>
 
-          <div className="text-[11px] text-slate-400 flex items-center gap-3">
-            <Link to="/account" className="hover:text-brand-gold transition">
+          <div className="text-[11px] text-slate-500 flex items-center gap-3">
+            <Link to="/account" className="hover:text-brand-goldDark transition">
               {t('trackOrder')}
             </Link>
           </div>
@@ -316,12 +316,12 @@ export default function Navbar() {
 
       {/* 4. Mobile Slide-out Navigation Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-brand-card/98 border-b border-brand-gold/30 px-5 py-4 space-y-3 text-sm shadow-2xl animate-in slide-in-from-top-2">
-          <div className="flex items-center justify-between pb-2 border-b border-brand-border">
+        <div className="md:hidden bg-white border-b border-brand-gold/40 px-5 py-4 space-y-3 text-sm shadow-2xl animate-in slide-in-from-top-2 text-slate-800">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-200">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('allCategories')}</span>
             <button
               onClick={toggleLang}
-              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-surface border border-brand-gold/40 text-[11px] font-bold text-brand-gold"
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 border border-brand-gold/40 text-[11px] font-bold text-brand-goldDark"
             >
               <Globe className="size-3" />
               <span>{lang === 'bn' ? 'English' : 'বাংলা'}</span>
@@ -333,7 +333,7 @@ export default function Navbar() {
               <Link
                 to="/"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg hover:bg-brand-surface text-slate-200 hover:text-brand-gold transition"
+                className="block p-2 rounded-lg hover:bg-slate-50 text-slate-800 hover:text-brand-goldDark transition"
               >
                 {t('home')}
               </Link>

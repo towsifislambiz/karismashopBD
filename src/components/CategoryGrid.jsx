@@ -10,23 +10,23 @@ export default function CategoryGrid() {
   const displayCategories = categories.filter(c => c.id !== 'all');
 
   return (
-    <section className="py-12 sm:py-16 bg-brand-noir px-4 sm:px-6">
+    <section className="py-12 sm:py-16 bg-brand-canvas px-4 sm:px-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-brand-gold text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="inline-flex items-center gap-1.5 text-brand-goldDark text-xs font-bold uppercase tracking-wider mb-1 font-sans">
               <Sparkles className="size-3.5" />
               <span>{lang === 'bn' ? 'এক্সক্লুসিভ কালেকশন' : 'CURATED COLLECTIONS'}</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight">
               {lang === 'bn' ? 'পছন্দের ক্যাটাগরি বেছে নিন' : 'Shop by Category'}
             </h2>
           </div>
 
           <Link
             to="/shop"
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-brand-gold hover:text-brand-goldLight transition group"
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-brand-goldDark hover:text-slate-900 transition group"
           >
             <span>{lang === 'bn' ? 'সব কালেকশন ব্রাউজ করুন' : 'View All Products'}</span>
             <ArrowUpRight className="size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -39,10 +39,10 @@ export default function CategoryGrid() {
             <Link
               key={cat.id}
               to={`/shop?category=${cat.id}`}
-              className="group relative rounded-3xl overflow-hidden bg-brand-surface border border-brand-gold/25 hover:border-brand-gold transition-all duration-500 shadow-luxury hover:shadow-gold-glow flex flex-col aspect-[4/5]"
+              className="group relative rounded-3xl overflow-hidden bg-white border border-brand-gold/30 hover:border-brand-gold transition-all duration-500 shadow-luxury-white hover:shadow-luxury-white-hover flex flex-col aspect-[4/5]"
             >
               {/* Product Background Image */}
-              <div className="size-full overflow-hidden bg-brand-noir relative">
+              <div className="size-full overflow-hidden bg-slate-100 relative">
                 <img
                   src={cat.image}
                   alt={cat.name}

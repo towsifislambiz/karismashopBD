@@ -20,10 +20,10 @@ export default function ProductCard({ product, onOneClickOrder }) {
 
   return (
     <div
-      className="group flex flex-col rounded-3xl bg-brand-surface border border-brand-border hover:border-brand-gold/60 transition-all duration-500 hover:-translate-y-1.5 shadow-luxury hover:shadow-gold-soft overflow-hidden"
+      className="group flex flex-col rounded-3xl bg-white border border-brand-gold/30 hover:border-brand-gold transition-all duration-500 hover:-translate-y-1.5 shadow-luxury-white hover:shadow-luxury-white-hover overflow-hidden"
     >
       {/* 1. Image Container */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-brand-noir flex items-center justify-center">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#F8F9FA] flex items-center justify-center border-b border-slate-100">
         <Link to={`/product/${product.id}`} className="size-full flex items-center justify-center p-2.5 overflow-hidden">
           <img
             src={currentImage}
@@ -34,7 +34,7 @@ export default function ProductCard({ product, onOneClickOrder }) {
         </Link>
 
         {/* Subtle luxury vignette & overlay on hover */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-noir/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         {/* Top Badges: Gold Foil Discount & Boutique Status */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
@@ -44,20 +44,20 @@ export default function ProductCard({ product, onOneClickOrder }) {
             </span>
           )}
           {product.badge && (
-            <span className="bg-brand-surface/95 border border-brand-gold/50 text-brand-goldLight text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow backdrop-blur-md">
+            <span className="bg-white/95 border border-brand-gold/60 text-brand-goldDark text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow-sm backdrop-blur-md">
               {lang === 'bn' ? product.badge : product.badgeEn}
             </span>
           )}
         </div>
 
-        {/* Wishlist Heart Button (Gold Accent) */}
+        {/* Wishlist Heart Button */}
         <button
           type="button"
           onClick={() => toggleWishlist(product)}
-          className={`absolute top-2.5 right-2.5 size-8 rounded-full flex items-center justify-center transition-all shadow-md z-10 ${
+          className={`absolute top-2.5 right-2.5 size-8 rounded-full flex items-center justify-center transition-all shadow-sm z-10 ${
             isFav
               ? 'bg-brand-gold text-brand-noir shadow-gold-glow scale-110'
-              : 'bg-brand-noir/80 border border-brand-gold/30 text-slate-300 hover:text-brand-gold hover:border-brand-gold hover:bg-brand-noir'
+              : 'bg-white/90 border border-slate-200 text-slate-700 hover:text-brand-goldDark hover:border-brand-gold'
           }`}
           aria-label="Wishlist"
         >
@@ -68,7 +68,7 @@ export default function ProductCard({ product, onOneClickOrder }) {
         <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-center justify-center gap-2">
           <Link
             to={`/product/${product.id}`}
-            className="btn-noir-secondary w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg"
+            className="btn-black-secondary w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg"
           >
             <Eye className="size-3.5 text-brand-gold" />
             <span>{t('quickView')}</span>
@@ -76,28 +76,28 @@ export default function ProductCard({ product, onOneClickOrder }) {
         </div>
       </div>
 
-      {/* 2. Product Information */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
+      {/* 2. Product Information (Crisp White Canvas) */}
+      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3 bg-white">
         <div className="space-y-1.5">
           {/* Category Tag */}
-          <span className="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider block">
+          <span className="text-[10px] font-bold text-brand-goldDark uppercase tracking-wider block font-sans">
             {lang === 'bn' ? product.categoryBn : product.category}
           </span>
 
-          {/* Title */}
+          {/* Title (Jet Black) */}
           <Link to={`/product/${product.id}`}>
-            <h3 className="font-serif text-sm sm:text-base font-bold text-slate-100 hover:text-brand-gold transition line-clamp-2 leading-snug">
+            <h3 className="font-serif text-sm sm:text-base font-bold text-slate-900 hover:text-brand-goldDark transition line-clamp-2 leading-snug">
               {lang === 'bn' ? product.nameBn : product.name}
             </h3>
           </Link>
 
-          {/* Price */}
+          {/* Price (Imperial Gold & Strikethrough) */}
           <div className="flex items-baseline gap-2 pt-1">
-            <span className="font-mono text-base sm:text-lg font-black text-brand-gold">
+            <span className="font-mono text-base sm:text-lg font-black text-brand-goldDark">
               ৳{product.price}
             </span>
             {product.originalPrice && (
-              <span className="font-mono text-xs text-slate-500 line-through">
+              <span className="font-mono text-xs text-slate-400 line-through">
                 ৳{product.originalPrice}
               </span>
             )}
@@ -107,7 +107,7 @@ export default function ProductCard({ product, onOneClickOrder }) {
         {/* Color Swatches */}
         {product.colors && product.colors.length > 1 && (
           <div className="flex items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-slate-400 font-semibold mr-1">
+            <span className="text-[10px] text-slate-500 font-semibold mr-1">
               {lang === 'bn' ? 'কালার:' : 'Colors:'}
             </span>
             {product.colors.map((color, idx) => (
@@ -118,8 +118,8 @@ export default function ProductCard({ product, onOneClickOrder }) {
                 style={{ backgroundColor: color.hex }}
                 className={`size-4 rounded-full border transition-all ${
                   activeColorIdx === idx
-                    ? 'border-brand-gold scale-125 ring-2 ring-brand-gold/30'
-                    : 'border-slate-700 hover:scale-110'
+                    ? 'border-brand-gold scale-125 ring-2 ring-brand-gold/40'
+                    : 'border-slate-300 hover:scale-110'
                 }`}
                 title={lang === 'bn' ? color.nameBn : color.name}
               />
@@ -127,8 +127,8 @@ export default function ProductCard({ product, onOneClickOrder }) {
           </div>
         )}
 
-        {/* 3. Action Buttons - Unique Luxury Dual Button Design */}
-        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-brand-border">
+        {/* 3. Action Buttons - White, Black & Gold Mix */}
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
           {/* 1-Click Fast Buy Button (Liquid Gold) */}
           <button
             type="button"
@@ -139,11 +139,11 @@ export default function ProductCard({ product, onOneClickOrder }) {
             <span className="whitespace-nowrap tracking-tight">{t('orderNow')}</span>
           </button>
 
-          {/* Add to Cart Button (Noir Glass with Gold Rim) */}
+          {/* Add to Cart Button (Signature Jet Black with Gold Rim) */}
           <button
             type="button"
             onClick={() => addToCart(product, 1, activeColor?.name)}
-            className="btn-noir-secondary w-full py-2.5 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 active:scale-95"
+            className="btn-black-secondary w-full py-2.5 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 active:scale-95"
           >
             <ShoppingBag className="size-3.5 text-brand-gold shrink-0" />
             <span className="whitespace-nowrap tracking-tight">{t('addToCart')}</span>

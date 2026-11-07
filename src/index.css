@@ -4,8 +4,8 @@
 
 @layer base {
   body {
-    background-color: #08090C;
-    color: #F8FAFC;
+    background-color: #F8F9FA;
+    color: #0F172A;
     font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
   }
 }
@@ -17,13 +17,13 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #08090C;
+  background: #F1F3F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1C202E;
+  background: #CBD5E1;
   border-radius: 9999px;
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -113,6 +113,30 @@
 }
 
 .btn-noir-secondary:active {
+  transform: translateY(0.5px) scale(0.98);
+}
+
+/* Signature Secondary Button: Jet Black with Precision Gold Border & White/Gold text */
+.btn-black-secondary {
+  position: relative;
+  background: #090A0F;
+  color: #FFFFFF;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-black-secondary:hover {
+  background: #181B26;
+  border-color: #D4AF37;
+  color: #F8E7AC;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
+  transform: translateY(-1.5px);
+}
+
+.btn-black-secondary:active {
   transform: translateY(0.5px) scale(0.98);
 }
 

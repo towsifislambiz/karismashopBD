@@ -208,46 +208,46 @@ export default function HeroSlider() {
         </div>
       </div>
 
-      {/* Trust & Guarantee Banner */}
-      <div className="bg-brand-surface/90 border-y border-brand-border/80 py-4 px-4 sm:px-6">
+      {/* Trust & Guarantee Banner (White Canvas with Gold & Noir) */}
+      <div className="bg-white border-y border-slate-200 py-5 px-4 sm:px-6 shadow-sm">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-brand-card/50 border border-brand-border/40">
-            <div className="size-9 rounded-lg bg-brand-gold/15 text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/30">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
+            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
               <Truck className="size-4" />
             </div>
             <div>
-              <p className="font-bold text-white">{t('fastDelivery')}</p>
-              <p className="text-[11px] text-slate-400">{lang === 'bn' ? 'সারা দেশে দ্রুত হোম ডেলিভারি' : 'Nationwide 48-72h Delivery'}</p>
+              <p className="font-bold text-slate-900">{t('fastDelivery')}</p>
+              <p className="text-[11px] text-slate-500">{lang === 'bn' ? 'সারা দেশে দ্রুত হোম ডেলিভারি' : 'Nationwide 48-72h Delivery'}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-brand-card/50 border border-brand-border/40">
-            <div className="size-9 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
+            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
               <ShieldCheck className="size-4" />
             </div>
             <div>
-              <p className="font-bold text-white">{t('originalQuality')}</p>
-              <p className="text-[11px] text-slate-400">{lang === 'bn' ? '১০০% অরিজিনাল ফেব্রিক গ্যারান্টি' : 'Hand-picked Fabrics'}</p>
+              <p className="font-bold text-slate-900">{t('originalQuality')}</p>
+              <p className="text-[11px] text-slate-500">{lang === 'bn' ? '১০০% অরিজিনাল ফেব্রিক গ্যারান্টি' : 'Hand-picked Fabrics'}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-brand-card/50 border border-brand-border/40">
-            <div className="size-9 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
+            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
               <RefreshCw className="size-4" />
             </div>
             <div>
-              <p className="font-bold text-white">{t('easyReturn')}</p>
-              <p className="text-[11px] text-slate-400">{lang === 'bn' ? 'সাইজ সমস্যায় সহজ এক্সচেঞ্জ' : 'Easy Exchange Policy'}</p>
+              <p className="font-bold text-slate-900">{t('easyReturn')}</p>
+              <p className="text-[11px] text-slate-500">{lang === 'bn' ? 'সাইজ সমস্যায় সহজ এক্সচেঞ্জ' : 'Easy Exchange Policy'}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-brand-card/50 border border-brand-border/40">
-            <div className="size-9 rounded-lg bg-cyan-500/15 text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/30">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
+            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
               <Headphones className="size-4" />
             </div>
             <div>
-              <p className="font-bold text-white">{lang === 'bn' ? '২৪/৭ লাইভ সাপোর্ট' : 'Dedicated Support'}</p>
-              <p className="text-[11px] text-slate-400">{lang === 'bn' ? 'হোয়াটসঅ্যাপে তাৎক্ষণিক হেল্প' : 'Instant WhatsApp Help'}</p>
+              <p className="font-bold text-slate-900">{lang === 'bn' ? '২৪/৭ লাইভ সাপোর্ট' : 'Dedicated Support'}</p>
+              <p className="text-[11px] text-slate-500">{lang === 'bn' ? 'হোয়াটসঅ্যাপে তাৎক্ষণিক হেল্প' : 'Instant WhatsApp Help'}</p>
             </div>
           </div>
         </div>

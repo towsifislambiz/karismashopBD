@@ -76,18 +76,18 @@ export default function HomePage() {
 
       {/* 4. Featured Three-Piece Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-brand-border pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-4">
           <div>
-            <span className="text-xs font-bold text-brand-gold uppercase tracking-wider block mb-1">
+            <span className="text-xs font-bold text-brand-goldDark uppercase tracking-wider block mb-1 font-sans">
               👗 {lang === 'bn' ? 'বুটিক কালেকশন' : 'PREMIUM FESTIVE'}
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white">
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
               {lang === 'bn' ? 'আল-চিস্তি এক্সক্লুসিভ থ্রি-পিস' : 'Exclusive Three-Piece Collection'}
             </h2>
           </div>
           <Link
             to="/shop?category=three-piece"
-            className="text-xs sm:text-sm font-bold text-brand-gold hover:text-brand-goldLight transition flex items-center gap-1"
+            className="text-xs sm:text-sm font-bold text-brand-goldDark hover:text-slate-900 transition flex items-center gap-1"
           >
             <span>{lang === 'bn' ? 'সব থ্রি-পিস দেখুন' : 'See All Three-Piece'}</span>
             <ArrowRight className="size-4" />
@@ -129,7 +129,7 @@ export default function HomePage() {
               <div className="pt-2">
                 <Link
                   to="/shop?category=handbags"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-gold to-brand-goldDark text-brand-noir font-black text-xs sm:text-sm shadow-gold-glow hover:brightness-110 transition"
+                  className="btn-gold-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-black tracking-wide"
                 >
                   <ShoppingBag className="size-4" />
                   <span>{lang === 'bn' ? 'ব্যাগ কালেকশন কিনুন' : 'Shop Handbags Now'}</span>
@@ -161,18 +161,18 @@ export default function HomePage() {
 
       {/* 6. Dubai Abaya & Borka Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-brand-border pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-4">
           <div>
-            <span className="text-xs font-bold text-brand-gold uppercase tracking-wider block mb-1">
+            <span className="text-xs font-bold text-brand-goldDark uppercase tracking-wider block mb-1 font-sans">
               🧕 {lang === 'bn' ? 'দুবাই মডেস্ট ফ্যাশন' : 'DUBAI MODEST WEAR'}
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white">
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
               {lang === 'bn' ? 'দুবাই স্টোন ও এমব্রয়ডারি বোরকা' : 'Dubai Abaya & Modest Wear'}
             </h2>
           </div>
           <Link
             to="/shop?category=abaya"
-            className="text-xs sm:text-sm font-bold text-brand-gold hover:text-brand-goldLight transition flex items-center gap-1"
+            className="text-xs sm:text-sm font-bold text-brand-goldDark hover:text-slate-900 transition flex items-center gap-1"
           >
             <span>{lang === 'bn' ? 'সকল আবায়া কালেকশন' : 'See All Abaya'}</span>
             <ArrowRight className="size-4" />

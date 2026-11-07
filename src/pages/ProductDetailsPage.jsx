@@ -76,14 +76,14 @@ export default function ProductDetailsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-slate-400">
-        <Link to="/" className="hover:text-brand-gold">{t('home')}</Link>
+      <nav className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <Link to="/" className="hover:text-brand-goldDark">{t('home')}</Link>
         <ChevronRight className="size-3.5" />
-        <Link to={`/shop?category=${product.category}`} className="hover:text-brand-gold capitalize">
+        <Link to={`/shop?category=${product.category}`} className="hover:text-brand-goldDark capitalize">
           {lang === 'bn' ? product.categoryBn : product.category}
         </Link>
         <ChevronRight className="size-3.5" />
-        <span className="text-slate-200 truncate max-w-xs">{lang === 'bn' ? product.nameBn : product.name}</span>
+        <span className="text-slate-900 font-bold truncate max-w-xs">{lang === 'bn' ? product.nameBn : product.name}</span>
       </nav>
 
       {/* Main Product Showcase Grid */}
@@ -91,7 +91,7 @@ export default function ProductDetailsPage() {
         {/* Left Column: Image Gallery (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
           {/* Main Large Image Container */}
-          <div className="relative aspect-[3/4] w-full rounded-3xl bg-brand-surface border border-brand-gold/30 p-3 sm:p-4 shadow-luxury overflow-hidden flex items-center justify-center">
+          <div className="relative aspect-[3/4] w-full rounded-3xl bg-white border border-brand-gold/30 p-3 sm:p-4 shadow-luxury-white overflow-hidden flex items-center justify-center">
             <img
               src={displayImage}
               alt={product.name}
@@ -151,26 +151,26 @@ export default function ProductDetailsPage() {
         {/* Right Column: Product Info & Buy Controls (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Header */}
-          <div className="space-y-2 border-b border-brand-border pb-5">
-            <span className="text-xs font-bold text-brand-gold uppercase tracking-wider block">
+          <div className="space-y-2 border-b border-slate-200 pb-5">
+            <span className="text-xs font-bold text-brand-goldDark uppercase tracking-wider block font-sans">
               {lang === 'bn' ? product.categoryBn : product.category}
             </span>
-            <h1 className="text-2xl sm:text-4xl font-serif font-bold text-white leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-serif font-bold text-slate-900 leading-tight">
               {lang === 'bn' ? product.nameBn : product.name}
             </h1>
 
             {/* Rating & Reviews */}
             <div className="flex items-center gap-3 text-xs pt-1">
-              <div className="flex items-center gap-1 text-amber-400">
+              <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="size-4 fill-amber-400" />
+                  <Star key={i} className="size-4 fill-amber-500" />
                 ))}
               </div>
-              <span className="font-bold text-slate-200">
+              <span className="font-bold text-slate-800">
                 {product.rating} ({product.reviewsCount} {lang === 'bn' ? 'রিভিউ' : 'reviews'})
               </span>
-              <span className="text-slate-500">•</span>
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <span className="text-slate-300">•</span>
+              <span className="text-emerald-600 font-bold flex items-center gap-1">
                 <Check className="size-3.5" />
                 <span>{lang === 'bn' ? 'ইন স্টক (স্টকে প্রস্তুত)' : 'In Stock'}</span>
               </span>
@@ -178,16 +178,16 @@ export default function ProductDetailsPage() {
 
             {/* Price Showcase */}
             <div className="flex items-baseline gap-3 pt-3">
-              <span className="font-mono text-3xl sm:text-4xl font-black text-brand-gold">
+              <span className="font-mono text-3xl sm:text-4xl font-black text-brand-goldDark">
                 ৳{product.price}
               </span>
               {product.originalPrice && (
-                <span className="font-mono text-base text-slate-500 line-through">
+                <span className="font-mono text-base text-slate-400 line-through">
                   ৳{product.originalPrice}
                 </span>
               )}
               {discountPercent > 0 && (
-                <span className="text-xs font-bold text-brand-gold bg-brand-gold/15 border border-brand-gold/40 px-2.5 py-0.5 rounded-md">
+                <span className="text-xs font-bold text-brand-goldDark bg-brand-gold/15 border border-brand-gold/40 px-2.5 py-0.5 rounded-md">
                   {lang === 'bn' ? `আপনি পাচ্ছেন ৳${product.originalPrice - product.price} ছাড়!` : `Save ৳${product.originalPrice - product.price}!`}
                 </span>
               )}
@@ -267,22 +267,22 @@ export default function ProductDetailsPage() {
 
           {/* Quantity Selector */}
           <div className="space-y-2 pt-2">
-            <span className="text-xs font-bold text-slate-300 block">
+            <span className="text-xs font-bold text-slate-700 block">
               {lang === 'bn' ? 'পরিমাণ:' : 'Quantity:'}
             </span>
-            <div className="flex items-center border border-brand-border rounded-xl bg-brand-surface w-fit text-sm font-mono">
+            <div className="flex items-center border border-slate-200 rounded-xl bg-white w-fit text-sm font-mono shadow-sm">
               <button
                 type="button"
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                className="px-3.5 py-2 text-slate-400 hover:text-brand-gold font-bold text-base"
+                className="px-3.5 py-2 text-slate-500 hover:text-brand-goldDark font-bold text-base"
               >
                 -
               </button>
-              <span className="px-4 font-bold text-white">{quantity}</span>
+              <span className="px-4 font-bold text-slate-900">{quantity}</span>
               <button
                 type="button"
                 onClick={() => setQuantity(q => q + 1)}
-                className="px-3.5 py-2 text-slate-400 hover:text-brand-gold font-bold text-base"
+                className="px-3.5 py-2 text-slate-500 hover:text-brand-goldDark font-bold text-base"
               >
                 +
               </button>
@@ -301,69 +301,69 @@ export default function ProductDetailsPage() {
               <span>{lang === 'bn' ? 'সরাসরি অর্ডার করুন (১-ক্লিক)' : 'Buy Now (1-Click)'}</span>
             </button>
 
-            {/* Add to Cart Button (Velvet Noir Glass & Gold Rim) */}
+            {/* Add to Cart Button (Signature Jet Black with Gold Rim) */}
             <button
               type="button"
               onClick={() => addToCart(product, quantity, activeColor?.name, selectedSize)}
-              className="btn-noir-secondary py-4 px-6 rounded-2xl text-sm font-bold tracking-wide flex items-center justify-center gap-2.5"
+              className="btn-black-secondary py-4 px-6 rounded-2xl text-sm font-bold tracking-wide flex items-center justify-center gap-2.5"
             >
               <ShoppingBag className="size-5 text-brand-gold" />
               <span>{t('addToCart')}</span>
             </button>
           </div>
 
-          {/* Trust Guarantees */}
-          <div className="p-4 rounded-2xl bg-brand-surface border border-brand-border grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="flex items-center gap-2 text-slate-300">
-              <Truck className="size-4 text-brand-gold shrink-0" />
+          {/* Trust Guarantees (White Card) */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs shadow-sm">
+            <div className="flex items-center gap-2 text-slate-700">
+              <Truck className="size-4 text-brand-goldDark shrink-0" />
               <span>{lang === 'bn' ? 'সারা দেশে হোম ডেলিভারি' : 'Nationwide COD'}</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-300">
-              <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-700">
+              <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
               <span>{lang === 'bn' ? '১০০% অরিজিনাল কোয়ালিটি' : 'Original Fabric'}</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-300">
-              <RefreshCw className="size-4 text-amber-400 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-700">
+              <RefreshCw className="size-4 text-amber-500 shrink-0" />
               <span>{lang === 'bn' ? '৭ দিনের সহজ এক্সচেঞ্জ' : '7-Day Exchange'}</span>
             </div>
           </div>
 
-          {/* Details Accordion / Tabs */}
-          <div className="border border-brand-border rounded-2xl bg-brand-surface overflow-hidden">
-            <div className="flex border-b border-brand-border text-xs font-bold divide-x divide-brand-border">
+          {/* Details Accordion / Tabs (White & Gold) */}
+          <div className="border border-slate-200 rounded-2xl bg-white overflow-hidden shadow-sm">
+            <div className="flex border-b border-slate-200 text-xs font-bold divide-x divide-slate-200">
               <button
                 type="button"
                 onClick={() => setActiveTab('fabric')}
-                className={`flex-1 py-3 text-center transition ${activeTab === 'fabric' ? 'bg-brand-gold/15 text-brand-gold border-b-2 border-brand-gold' : 'text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-3 text-center transition ${activeTab === 'fabric' ? 'bg-slate-50 text-brand-goldDark border-b-2 border-brand-gold font-black' : 'text-slate-500 hover:text-slate-900'}`}
               >
                 {t('fabricDetails')}
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('delivery')}
-                className={`flex-1 py-3 text-center transition ${activeTab === 'delivery' ? 'bg-brand-gold/15 text-brand-gold border-b-2 border-brand-gold' : 'text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-3 text-center transition ${activeTab === 'delivery' ? 'bg-slate-50 text-brand-goldDark border-b-2 border-brand-gold font-black' : 'text-slate-500 hover:text-slate-900'}`}
               >
                 {t('deliveryReturn')}
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('reviews')}
-                className={`flex-1 py-3 text-center transition ${activeTab === 'reviews' ? 'bg-brand-gold/15 text-brand-gold border-b-2 border-brand-gold' : 'text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-3 text-center transition ${activeTab === 'reviews' ? 'bg-slate-50 text-brand-goldDark border-b-2 border-brand-gold font-black' : 'text-slate-500 hover:text-slate-900'}`}
               >
                 {t('reviews')} ({product.reviewsCount})
               </button>
             </div>
 
-            <div className="p-4 sm:p-5 text-xs text-slate-300 leading-relaxed space-y-3">
+            <div className="p-4 sm:p-5 text-xs text-slate-700 leading-relaxed space-y-3">
               {activeTab === 'fabric' && (
                 <>
-                  <p className="font-semibold text-white">
+                  <p className="font-semibold text-slate-900">
                     {lang === 'bn' ? product.descriptionBn : product.description}
                   </p>
-                  <div className="pt-2 border-t border-brand-border/60 space-y-1">
-                    <p><strong className="text-brand-gold">ফেব্রিক / উপাদান:</strong> {lang === 'bn' ? product.fabricBn : product.fabric}</p>
-                    <p><strong className="text-brand-gold">ধরণের নাম:</strong> {product.category.toUpperCase()}</p>
-                    <p><strong className="text-brand-gold">উপলব্ধ সাইজ:</strong> {product.sizes ? product.sizes.join(', ') : 'Free Size'}</p>
+                  <div className="pt-2 border-t border-slate-100 space-y-1">
+                    <p><strong className="text-brand-goldDark">ফেব্রিক / উপাদান:</strong> {lang === 'bn' ? product.fabricBn : product.fabric}</p>
+                    <p><strong className="text-brand-goldDark">ধরণের নাম:</strong> {product.category.toUpperCase()}</p>
+                    <p><strong className="text-brand-goldDark">উপলব্ধ সাইজ:</strong> {product.sizes ? product.sizes.join(', ') : 'Free Size'}</p>
                   </div>
                 </>
               )}
