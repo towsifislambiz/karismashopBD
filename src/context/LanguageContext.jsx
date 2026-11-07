@@ -37,8 +37,8 @@ const translations = {
     easyReturn: 'সহজ ৭ দিনের রিটার্ন পলিসি',
 
     // Product & Card
-    orderNow: '১-ক্লিকে অর্ডার',
-    addToCart: 'কার্টে যোগ করুন',
+    orderNow: '১-ক্লিক অর্ডার',
+    addToCart: 'কার্টে যোগ',
     quickView: 'দ্রুত দেখুন',
     inStock: 'স্টকে আছে',
     outOfStock: 'স্টক শেষ',

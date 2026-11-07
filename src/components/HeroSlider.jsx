@@ -120,11 +120,11 @@ export default function HeroSlider() {
               {lang === 'bn' ? slide.subtitleBn : slide.subtitle}
             </p>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Unique Luxury Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
               <Link
                 to={slide.link}
-                className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-brand-gold via-brand-goldLight to-brand-goldDark text-brand-noir font-black text-sm sm:text-base tracking-wide shadow-gold-glow hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2"
+                className="btn-gold-primary w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm sm:text-base font-black tracking-wide flex items-center justify-center gap-2.5"
               >
                 <ShoppingBag className="size-4 stroke-[2.5]" />
                 <span>{lang === 'bn' ? slide.buttonText : slide.buttonTextEn}</span>
@@ -133,7 +133,7 @@ export default function HeroSlider() {
 
               <Link
                 to="/shop"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-surface/80 border border-brand-border hover:border-brand-gold text-slate-200 font-bold text-sm tracking-wide hover:bg-brand-surface transition flex items-center justify-center gap-2"
+                className="btn-noir-secondary w-full sm:w-auto px-7 py-3.5 rounded-2xl font-bold text-sm sm:text-base tracking-wide flex items-center justify-center gap-2"
               >
                 <span>{t('exploreCollection')}</span>
               </Link>
@@ -142,12 +142,12 @@ export default function HeroSlider() {
 
           {/* Right Product Showcase Frame */}
           <div className="lg:col-span-5 relative flex justify-center items-center">
-            {/* Glowing Backdrop Circle */}
-            <div className="absolute size-72 sm:size-96 rounded-full bg-gradient-to-tr from-brand-gold/20 to-brand-roseDeep/20 blur-2xl" />
+            {/* Glowing Backdrop Circle (Gold & Noir) */}
+            <div className="absolute size-72 sm:size-96 rounded-full bg-gradient-to-tr from-brand-gold/25 via-brand-goldDark/15 to-transparent blur-3xl pointer-events-none" />
 
             {/* Image Card Container */}
-            <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-brand-surface/60 border border-brand-gold/30 p-3 sm:p-4 shadow-luxury hover:border-brand-gold/60 transition group">
-              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-brand-noir/80 flex items-center justify-center">
+            <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-brand-surface/90 border border-brand-gold/40 p-3 sm:p-4 shadow-luxury hover:border-brand-gold/70 transition group">
+              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-brand-noir/90 flex items-center justify-center">
                 <img
                   src={slide.image}
                   alt={slide.title}
@@ -166,7 +166,7 @@ export default function HeroSlider() {
                   </div>
                   <Link
                     to={slide.link}
-                    className="px-3 py-1.5 rounded-lg bg-brand-gold text-brand-noir font-black text-xs hover:bg-white transition"
+                    className="btn-gold-primary px-3.5 py-1.5 rounded-lg text-xs font-black"
                   >
                     {t('orderNow')}
                   </Link>

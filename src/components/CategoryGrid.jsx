@@ -39,7 +39,7 @@ export default function CategoryGrid() {
             <Link
               key={cat.id}
               to={`/shop?category=${cat.id}`}
-              className="group relative rounded-3xl overflow-hidden bg-brand-surface border border-brand-border hover:border-brand-gold/60 transition-all duration-500 shadow-luxury hover:shadow-gold-glow flex flex-col aspect-[4/5]"
+              className="group relative rounded-3xl overflow-hidden bg-brand-surface border border-brand-gold/25 hover:border-brand-gold transition-all duration-500 shadow-luxury hover:shadow-gold-glow flex flex-col aspect-[4/5]"
             >
               {/* Product Background Image */}
               <div className="size-full overflow-hidden bg-brand-noir relative">
@@ -55,7 +55,7 @@ export default function CategoryGrid() {
               {/* Card Footer Content */}
               <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 flex items-end justify-between gap-2 z-10">
                 <div>
-                  <span className="text-[10px] sm:text-xs text-amber-300 font-bold uppercase tracking-wider block font-sans">
+                  <span className="text-[10px] sm:text-xs text-brand-gold font-bold uppercase tracking-wider block font-sans">
                     {cat.count} {lang === 'bn' ? 'টি ডিজাইন' : 'Designs'}
                   </span>
                   <h3 className="text-base sm:text-xl font-serif font-bold text-white group-hover:text-brand-gold transition leading-snug">

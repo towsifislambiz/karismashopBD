@@ -160,7 +160,7 @@ export default function CartDrawer() {
 
               <button
                 onClick={handleCheckout}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-gold via-brand-goldLight to-brand-goldDark text-brand-noir font-black text-sm tracking-wide shadow-gold-glow hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2"
+                className="btn-gold-primary w-full py-3.5 rounded-2xl text-sm font-black tracking-wide flex items-center justify-center gap-2"
               >
                 <span>{t('checkout')}</span>
                 <ArrowRight className="size-4" />

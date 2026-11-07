@@ -36,27 +36,27 @@ export default function HomePage() {
       {/* 2. Visual Category Showcase */}
       <CategoryGrid />
 
-      {/* 3. Flash Sale / Hot Deals Section */}
+      {/* 3. Flash Sale / Hot Deals Section (Pure Royal Gold & Noir) */}
       {flashSaleProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-rose-950/60 via-brand-surface to-brand-noir border border-rose-500/30 shadow-2xl space-y-6">
+          <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-brand-surface via-[#121520] to-brand-noir border border-brand-gold/40 shadow-luxury space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold uppercase tracking-wider">
-                  <Flame className="size-4 text-rose-500 animate-pulse" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-gold/15 border border-brand-gold/40 text-brand-gold text-xs font-bold uppercase tracking-wider">
+                  <Sparkles className="size-4 text-brand-gold animate-pulse" />
                   <span>{lang === 'bn' ? 'সীমিত সময়ের স্পেশাল অফার' : 'LIMITED TIME DEALS'}</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white">
-                  {lang === 'bn' ? '🔥 আজকের ধামাকা ফ্ল্যাশ সেল' : '🔥 Today\'s Exclusive Flash Sale'}
+                  ✦ {lang === 'bn' ? 'আজকের ধামাকা ফ্ল্যাশ সেল' : 'Today\'s Exclusive Flash Sale'}
                 </h2>
               </div>
 
               <Link
                 to="/shop?filter=flash"
-                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-rose-300 hover:text-white transition"
+                className="btn-noir-secondary inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-sm"
               >
                 <span>{lang === 'bn' ? 'সকল অফার দেখুন' : 'View All Deals'}</span>
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-4 text-brand-gold" />
               </Link>
             </div>
 

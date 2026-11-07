@@ -199,34 +199,34 @@ export default function Navbar() {
               <Search className="size-4" />
             </button>
 
-            {/* Wishlist Button */}
+            {/* Wishlist Button (Gold & Noir) */}
             <Link
               to="/shop?filter=wishlist"
-              className="relative p-2 sm:p-2.5 rounded-xl bg-brand-surface border border-brand-border hover:border-brand-gold/50 text-slate-300 hover:text-rose-400 transition"
+              className="relative p-2 sm:p-2.5 rounded-xl bg-brand-surface border border-brand-border hover:border-brand-gold text-slate-300 hover:text-brand-gold transition shadow-sm"
               title={t('wishlist')}
             >
               <Heart className="size-4 sm:size-5" />
               {wishlist.length > 0 && (
-                <span className="absolute -top-1 -right-1 size-4 bg-rose-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center animate-bounce">
+                <span className="absolute -top-1 -right-1 size-4 bg-brand-gold text-brand-noir font-black rounded-full text-[10px] flex items-center justify-center shadow-gold-glow animate-bounce">
                   {wishlist.length}
                 </span>
               )}
             </Link>
 
-            {/* Cart Drawer Trigger Button */}
+            {/* Cart Drawer Trigger Button (Signature Liquid Gold) */}
             <button
               onClick={openCart}
-              className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-gold to-brand-goldDark text-brand-noir font-bold text-xs sm:text-sm shadow-gold-glow hover:brightness-110 active:scale-95 transition"
+              className="btn-gold-primary flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black active:scale-95 transition"
             >
               <div className="relative">
                 <ShoppingBag className="size-4 sm:size-5 stroke-[2.5]" />
                 {itemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 size-4 bg-rose-600 text-white rounded-full text-[10px] font-black flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-2 -right-2 size-4 bg-brand-noir text-brand-gold border border-brand-gold/80 rounded-full text-[10px] font-black flex items-center justify-center shadow">
                     {itemsCount}
                   </span>
                 )}
               </div>
-              <span className="hidden sm:inline font-black tracking-wide">
+              <span className="hidden sm:inline tracking-wider uppercase font-black text-xs">
                 {t('cart')}
               </span>
             </button>
@@ -299,9 +299,9 @@ export default function Navbar() {
               </Link>
             </li>
             <li>
-              <Link to="/shop?filter=flash" className="text-rose-400 hover:text-rose-300 transition flex items-center gap-1">
-                <span className="size-2 rounded-full bg-rose-500 animate-ping" />
-                <span>{lang === 'bn' ? '🔥 ফ্ল্যাশ সেল অফার' : '🔥 Flash Sale'}</span>
+              <Link to="/shop?filter=flash" className="text-brand-gold hover:text-white transition flex items-center gap-1.5 font-bold">
+                <span className="size-2 rounded-full bg-brand-gold animate-ping" />
+                <span>{lang === 'bn' ? '✦ ফ্ল্যাশ সেল অফার' : '✦ Flash Sale'}</span>
               </Link>
             </li>
           </ul>
@@ -378,9 +378,9 @@ export default function Navbar() {
               <Link
                 to="/shop?filter=flash"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold"
+                className="block p-2 rounded-lg bg-brand-surface border border-brand-gold/40 text-brand-gold font-bold"
               >
-                🔥 {lang === 'bn' ? 'ফ্ল্যাশ সেল অফার' : 'Flash Sale'}
+                ✦ {lang === 'bn' ? 'ফ্ল্যাশ সেল অফার' : 'Flash Sale'}
               </Link>
             </li>
           </ul>

@@ -98,30 +98,30 @@ export default function ProductDetailsPage() {
               className="size-full object-contain hover:scale-105 transition-transform duration-500"
             />
 
-            {/* Badges */}
-            <div className="absolute top-4 left-4 flex flex-col gap-1.5">
+            {/* Badges (Gold Foil) */}
+            <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
               {discountPercent > 0 && (
-                <span className="bg-rose-600 text-white font-black text-xs px-2.5 py-1 rounded-md shadow-md uppercase">
+                <span className="badge-gold-foil font-black text-xs px-2.5 py-1 rounded-md shadow-md uppercase">
                   -{discountPercent}% {lang === 'bn' ? 'ছাড়' : 'OFF'}
                 </span>
               )}
               {product.badge && (
-                <span className="bg-brand-surface/90 border border-brand-gold/40 text-brand-gold font-bold text-xs px-2.5 py-1 rounded-md shadow-md backdrop-blur-sm">
+                <span className="bg-brand-surface/95 border border-brand-gold/50 text-brand-gold font-bold text-xs px-2.5 py-1 rounded-md shadow-md backdrop-blur-md">
                   {lang === 'bn' ? product.badge : product.badgeEn}
                 </span>
               )}
             </div>
 
-            {/* Wishlist Button */}
+            {/* Wishlist Button (Gold & Noir) */}
             <button
               onClick={() => toggleWishlist(product)}
-              className={`absolute top-4 right-4 size-10 rounded-full flex items-center justify-center transition shadow-lg ${
+              className={`absolute top-4 right-4 size-10 rounded-full flex items-center justify-center transition-all shadow-lg z-10 ${
                 isFav
-                  ? 'bg-rose-500 text-white'
-                  : 'bg-brand-noir/80 text-slate-300 hover:text-rose-400 hover:bg-brand-noir'
+                  ? 'bg-brand-gold text-brand-noir shadow-gold-glow scale-110'
+                  : 'bg-brand-noir/80 border border-brand-gold/30 text-slate-300 hover:text-brand-gold hover:border-brand-gold'
               }`}
             >
-              <Heart className={`size-5 ${isFav ? 'fill-white' : ''}`} />
+              <Heart className={`size-5 ${isFav ? 'fill-brand-noir' : ''}`} />
             </button>
           </div>
 
@@ -187,7 +187,7 @@ export default function ProductDetailsPage() {
                 </span>
               )}
               {discountPercent > 0 && (
-                <span className="text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/30 px-2 py-0.5 rounded-md">
+                <span className="text-xs font-bold text-brand-gold bg-brand-gold/15 border border-brand-gold/40 px-2.5 py-0.5 rounded-md">
                   {lang === 'bn' ? `আপনি পাচ্ছেন ৳${product.originalPrice - product.price} ছাড়!` : `Save ৳${product.originalPrice - product.price}!`}
                 </span>
               )}
@@ -291,23 +291,23 @@ export default function ProductDetailsPage() {
 
           {/* Primary Action Buttons: 1-Click Order & Add to Cart */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-4">
-            {/* 1-Click Fast Buy Button */}
+            {/* 1-Click Fast Buy Button (Signature Liquid Gold) */}
             <button
               type="button"
               onClick={() => setIsOrderModalOpen(true)}
-              className="py-4 px-6 rounded-2xl bg-gradient-to-r from-brand-gold via-brand-goldLight to-brand-goldDark text-brand-noir font-black text-sm tracking-wide shadow-gold-glow hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2"
+              className="btn-gold-primary py-4 px-6 rounded-2xl text-sm font-black tracking-wide flex items-center justify-center gap-2.5"
             >
-              <Zap className="size-5 fill-brand-noir" />
+              <Zap className="size-5 fill-brand-noir stroke-brand-noir" />
               <span>{lang === 'bn' ? 'সরাসরি অর্ডার করুন (১-ক্লিক)' : 'Buy Now (1-Click)'}</span>
             </button>
 
-            {/* Add to Cart Button */}
+            {/* Add to Cart Button (Velvet Noir Glass & Gold Rim) */}
             <button
               type="button"
               onClick={() => addToCart(product, quantity, activeColor?.name, selectedSize)}
-              className="py-4 px-6 rounded-2xl bg-brand-surface border border-brand-gold/60 hover:border-brand-gold text-brand-gold font-bold text-sm tracking-wide hover:bg-brand-card active:scale-95 transition flex items-center justify-center gap-2"
+              className="btn-noir-secondary py-4 px-6 rounded-2xl text-sm font-bold tracking-wide flex items-center justify-center gap-2.5"
             >
-              <ShoppingBag className="size-5" />
+              <ShoppingBag className="size-5 text-brand-gold" />
               <span>{t('addToCart')}</span>
             </button>
           </div>

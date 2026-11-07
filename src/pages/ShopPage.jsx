@@ -94,10 +94,10 @@ export default function ShopPage() {
             <button
               key={cat.id}
               onClick={() => handleCategoryChange(cat.id)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition border ${
+              className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
                 selectedCategory === cat.id
-                  ? 'border-brand-gold bg-brand-gold text-brand-noir shadow-gold-soft'
-                  : 'border-brand-border bg-brand-surface text-slate-300 hover:border-slate-600'
+                  ? 'border-brand-gold bg-brand-gold text-brand-noir font-black shadow-gold-glow scale-105'
+                  : 'border-brand-border bg-brand-surface text-slate-300 hover:border-brand-gold/60 hover:text-white'
               }`}
             >
               {lang === 'bn' ? cat.nameBn : cat.name}
@@ -112,7 +112,7 @@ export default function ShopPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-brand-surface border border-brand-border text-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-brand-gold text-xs"
+            className="bg-brand-surface border border-brand-gold/30 text-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-brand-gold text-xs font-medium"
           >
             <option value="featured">{lang === 'bn' ? 'সেরা পছন্দ' : 'Featured'}</option>
             <option value="price_asc">{lang === 'bn' ? 'দাম: কম থেকে বেশি' : 'Price: Low to High'}</option>
@@ -129,7 +129,7 @@ export default function ShopPage() {
           </p>
           <button
             onClick={() => handleCategoryChange('all')}
-            className="px-5 py-2 rounded-xl bg-brand-gold text-brand-noir text-xs font-bold"
+            className="btn-gold-primary px-6 py-2.5 rounded-xl text-xs font-black"
           >
             {lang === 'bn' ? 'সকল পণ্য দেখুন' : 'Show All Products'}
           </button>

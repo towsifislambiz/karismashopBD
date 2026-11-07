@@ -36,41 +36,41 @@ export default function ProductCard({ product, onOneClickOrder }) {
         {/* Subtle luxury vignette & overlay on hover */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-noir/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        {/* Top Badges: Discount & Status */}
-        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+        {/* Top Badges: Gold Foil Discount & Boutique Status */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
           {discountPercent > 0 && (
-            <span className="bg-rose-600 text-white text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md shadow uppercase tracking-wider">
+            <span className="badge-gold-foil text-[10px] font-black px-2.5 py-0.5 rounded-md shadow-md uppercase">
               -{discountPercent}%
             </span>
           )}
           {product.badge && (
-            <span className="bg-brand-surface/90 border border-brand-gold/40 text-brand-gold text-[10px] font-bold px-2 py-0.5 rounded-md shadow backdrop-blur-sm">
+            <span className="bg-brand-surface/95 border border-brand-gold/50 text-brand-goldLight text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow backdrop-blur-md">
               {lang === 'bn' ? product.badge : product.badgeEn}
             </span>
           )}
         </div>
 
-        {/* Wishlist Heart Button */}
+        {/* Wishlist Heart Button (Gold Accent) */}
         <button
           type="button"
           onClick={() => toggleWishlist(product)}
-          className={`absolute top-2.5 right-2.5 size-8 rounded-full flex items-center justify-center transition shadow-md z-10 ${
+          className={`absolute top-2.5 right-2.5 size-8 rounded-full flex items-center justify-center transition-all shadow-md z-10 ${
             isFav
-              ? 'bg-rose-500 text-white'
-              : 'bg-brand-noir/80 text-slate-300 hover:text-rose-400 hover:bg-brand-noir'
+              ? 'bg-brand-gold text-brand-noir shadow-gold-glow scale-110'
+              : 'bg-brand-noir/80 border border-brand-gold/30 text-slate-300 hover:text-brand-gold hover:border-brand-gold hover:bg-brand-noir'
           }`}
           aria-label="Wishlist"
         >
-          <Heart className={`size-4 ${isFav ? 'fill-white' : ''}`} />
+          <Heart className={`size-4 ${isFav ? 'fill-brand-noir' : ''}`} />
         </button>
 
         {/* Quick View Button on Hover */}
         <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex items-center justify-center gap-2">
           <Link
             to={`/product/${product.id}`}
-            className="w-full py-2 rounded-xl bg-brand-noir/90 backdrop-blur-md border border-brand-gold/40 text-brand-gold text-xs font-bold hover:bg-brand-gold hover:text-brand-noir transition flex items-center justify-center gap-1.5 shadow-lg"
+            className="btn-noir-secondary w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-lg"
           >
-            <Eye className="size-3.5" />
+            <Eye className="size-3.5 text-brand-gold" />
             <span>{t('quickView')}</span>
           </Link>
         </div>
@@ -127,26 +127,26 @@ export default function ProductCard({ product, onOneClickOrder }) {
           </div>
         )}
 
-        {/* 3. Action Buttons */}
-        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-brand-border/60">
-          {/* 1-Click Fast Buy Button */}
+        {/* 3. Action Buttons - Unique Luxury Dual Button Design */}
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-brand-border">
+          {/* 1-Click Fast Buy Button (Liquid Gold) */}
           <button
             type="button"
             onClick={() => onOneClickOrder && onOneClickOrder(product, activeColor?.name)}
-            className="w-full py-2 px-1.5 rounded-xl bg-gradient-to-r from-brand-gold to-brand-goldDark text-brand-noir font-black text-[11px] sm:text-xs shadow-gold-glow hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-1"
+            className="btn-gold-primary w-full py-2.5 px-1.5 rounded-xl text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 active:scale-95"
           >
-            <Zap className="size-3.5 fill-brand-noir" />
-            <span className="truncate">{t('orderNow')}</span>
+            <Zap className="size-3.5 fill-brand-noir stroke-brand-noir shrink-0" />
+            <span className="whitespace-nowrap tracking-tight">{t('orderNow')}</span>
           </button>
 
-          {/* Add to Cart Button */}
+          {/* Add to Cart Button (Noir Glass with Gold Rim) */}
           <button
             type="button"
             onClick={() => addToCart(product, 1, activeColor?.name)}
-            className="w-full py-2 px-1.5 rounded-xl bg-brand-card hover:bg-brand-surface border border-brand-border hover:border-brand-gold/40 text-slate-200 text-[11px] sm:text-xs font-bold transition flex items-center justify-center gap-1 active:scale-95"
+            className="btn-noir-secondary w-full py-2.5 px-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 active:scale-95"
           >
-            <ShoppingBag className="size-3.5" />
-            <span className="truncate">{t('addToCart')}</span>
+            <ShoppingBag className="size-3.5 text-brand-gold shrink-0" />
+            <span className="whitespace-nowrap tracking-tight">{t('addToCart')}</span>
           </button>
         </div>
       </div>

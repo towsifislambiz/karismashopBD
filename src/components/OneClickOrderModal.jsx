@@ -472,11 +472,11 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Button (Signature Liquid Gold) */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-brand-gold via-brand-goldLight to-brand-goldDark text-brand-noir font-black text-sm tracking-wide shadow-gold-glow hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 disabled:opacity-50"
+            className="btn-gold-primary w-full py-3.5 rounded-2xl text-sm font-black tracking-wide flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <span>{t('processingOrder')}</span>
