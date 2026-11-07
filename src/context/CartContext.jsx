@@ -9,7 +9,25 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     try {
       const saved = localStorage.getItem('karishma_cart');
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return [
+        {
+          id: 'ks-tp-02-Lilac Lavender-Free Size',
+          product: {
+            id: 'ks-tp-02',
+            name: 'Al-Chishty Royal Kashmiri Embroidered Lavender Three-Piece',
+            nameBn: 'কাশ্মীরি রয়াল ল্যাভেন্ডার এমব্রয়ডারি বুটিক থ্রি-পিস',
+            price: 2650,
+            image: '/assets/products/threepiece_kashmiri_lavender.png'
+          },
+          quantity: 1,
+          selectedColor: '',
+          selectedSize: 'Free Size'
+        }
+      ];
     } catch {
       return [];
     }
@@ -26,6 +44,15 @@ export const CartProvider = ({ children }) => {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('cart') === 'open') {
+        setIsCartOpen(true);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     try {

@@ -66,9 +66,9 @@ export default function CartDrawer() {
     
     let msgText = `আসসালামু আলাইকুম Karishma Shop BD! আমি ওয়েবসাইট কার্ট থেকে নিচের পণ্যগুলো অর্ডার করতে চাই:\n\n`;
     cartItems.forEach((item, idx) => {
-      msgText += `${idx + 1}. ${item.product?.nameBn || item.product?.name} (কালার: ${item.selectedColor || 'N/A'}, পরিমাণ: ${item.quantity}টি) - ৳${(item.product?.price || 0) * item.quantity}\n`;
+      msgText += `${idx + 1}. ${item.product?.nameBn || item.product?.name} (কালার: ${item.selectedColor || 'Standard'}, সাইজ: ${item.selectedSize || 'Free Size'}, পরিমাণ: ${item.quantity}টি) - ৳${(item.product?.price || 0) * item.quantity}\n`;
     });
-    msgText += `\nমোট সাবটোটাল: ৳${subtotal}\nঅনুগ্রহ করে আমার অর্ডারটি কনফার্ম করুন। ধন্যবাদ!`;
+    msgText += `\nমোট সাবটোটাল: ৳${subtotal}\nঅনুগ্রহ করে অর্ডারটি কনফার্ম করুন। ধন্যবাদ!`;
 
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msgText)}`, '_blank');
   };
@@ -81,28 +81,28 @@ export default function CartDrawer() {
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
       />
 
-      {/* Drawer Panel (Pristine White with Gold & Noir Accents) */}
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
-        <div className="w-screen max-w-md bg-white border-l border-brand-gold/30 shadow-2xl flex flex-col justify-between text-slate-900 animate-in slide-in-from-right duration-300">
+      {/* Drawer Panel */}
+      <div className="absolute inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
+        <div className="w-screen max-w-md sm:max-w-lg bg-white border-l border-slate-200 shadow-2xl flex flex-col justify-between text-slate-900 animate-in slide-in-from-right duration-300">
           
-          {/* 1. Header */}
-          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-[#FDFBF7]">
-            <div className="flex items-center gap-2.5">
-              <div className="size-9 rounded-xl bg-slate-900 text-brand-gold flex items-center justify-center shadow-sm">
-                <ShoppingBag className="size-4 stroke-[2.5]" />
+          {/* 1. Drawer Header */}
+          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-2xl bg-slate-900 text-brand-gold flex items-center justify-center shadow-sm">
+                <ShoppingBag className="size-5 stroke-[2.2]" />
               </div>
               <div>
                 <h3 className="font-serif text-base sm:text-lg font-bold text-slate-900">
                   {lang === 'bn' ? 'শপিং ব্যাগ' : 'Shopping Bag'}
                 </h3>
-                <span className="text-[11px] text-slate-500 font-bold">
-                  {cartItems.length} {lang === 'bn' ? 'টি আইটেম সিলেক্টেড' : 'items selected'}
+                <span className="text-xs text-slate-500 font-semibold">
+                  {cartItems.length} {lang === 'bn' ? 'টি পণ্য যুক্ত আছে' : 'items in cart'}
                 </span>
               </div>
             </div>
             <button
               onClick={closeCart}
-              className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-800 transition"
+              className="size-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition"
               aria-label="Close cart"
             >
               <X className="size-5" />
@@ -110,15 +110,15 @@ export default function CartDrawer() {
           </div>
 
           {/* 2. Free Delivery Milestone Bar */}
-          <div className="p-3.5 bg-gradient-to-r from-amber-50/80 via-white to-amber-50/60 border-b border-amber-100/80 text-xs space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] font-bold">
+          <div className="px-5 py-3.5 bg-gradient-to-r from-amber-50/90 via-[#FDFBF7] to-amber-50/70 border-b border-amber-100 text-xs space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold">
               <span className="flex items-center gap-1.5 text-slate-800">
-                <Sparkles className="size-3.5 text-brand-goldDark" />
+                <Sparkles className="size-4 text-brand-goldDark" />
                 <span>
                   {isFreeDeliveryCart
                     ? (lang === 'bn' ? '🎉 অভিনন্দন! আপনি ফ্রি ডেলিভারি পাচ্ছেন!' : '🎉 Congratulations! You unlocked Free Delivery!')
                     : (lang === 'bn'
-                        ? `আর মাত্র ৳${remainingForFree} টাকার পণ্য যোগ করলে সারা দেশে ফ্রি ডেলিভারি!`
+                        ? `আর মাত্র ৳${remainingForFree} টাকার পণ্য যোগ করলে ফ্রি ডেলিভারি!`
                         : `Add ৳${remainingForFree} more for Free Delivery!`)}
                 </span>
               </span>
@@ -126,14 +126,14 @@ export default function CartDrawer() {
             </div>
             <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
               <div
-                className="bg-gradient-to-r from-brand-gold to-brand-goldDark h-full rounded-full transition-all duration-500 shadow-sm"
+                className="bg-gradient-to-r from-brand-gold to-brand-goldDark h-full rounded-full transition-all duration-500 shadow-xs"
                 style={{ width: `${freePercent}%` }}
               />
             </div>
           </div>
 
-          {/* 3. Items List */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 divide-y divide-slate-100">
+          {/* 3. Cart Items List - Styled EXACTLY like the user's reference screenshot */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
             {cartItems.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-16">
                 <div className="size-20 rounded-full bg-slate-50 border border-brand-gold/30 flex items-center justify-center text-brand-goldDark shadow-luxury-white">
@@ -160,90 +160,112 @@ export default function CartDrawer() {
                 </button>
               </div>
             ) : (
-              cartItems.map((item) => (
-                <div key={item.id} className="pt-3.5 first:pt-0 flex items-start gap-3.5">
-                  <img
-                    src={item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.png'}
-                    alt={item.product?.name}
-                    className="size-18 rounded-2xl object-contain bg-[#F8F9FA] p-1.5 border border-slate-200 shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-1">
+              cartItems.map((item) => {
+                const variantLabel = item.selectedColor
+                  ? (item.selectedSize ? `${item.selectedColor} • ${item.selectedSize}` : item.selectedColor)
+                  : (item.selectedSize || 'Free Size');
+
+                const itemImg = item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.png';
+
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3.5 sm:gap-4 p-3 rounded-2xl bg-white border border-slate-100 hover:border-slate-200 transition shadow-xs"
+                  >
+                    {/* Product Image (Rounded Squircle like reference) */}
+                    <Link
+                      to={`/product/${item.product?.id}`}
+                      onClick={closeCart}
+                      className="size-20 sm:size-24 rounded-2xl sm:rounded-3xl overflow-hidden bg-[#F8F9FA] border border-slate-100 shrink-0 flex items-center justify-center group"
+                    >
+                      <img
+                        src={itemImg}
+                        alt={item.product?.name}
+                        className="size-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    </Link>
+
+                    {/* Middle Info */}
+                    <div className="flex-1 min-w-0 pr-1">
+                      {/* Product Title */}
                       <Link
                         to={`/product/${item.product?.id}`}
                         onClick={closeCart}
-                        className="text-xs sm:text-sm font-bold text-slate-900 hover:text-brand-goldDark line-clamp-1 transition"
+                        className="font-bold text-slate-900 hover:text-brand-goldDark text-sm sm:text-base leading-snug line-clamp-1 block transition"
+                        title={item.product?.nameBn || item.product?.name}
                       >
                         {lang === 'bn' ? item.product?.nameBn : item.product?.name}
                       </Link>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="text-slate-400 hover:text-rose-600 transition p-1"
-                        title={lang === 'bn' ? 'মুছুন' : 'Remove'}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </div>
 
-                    {/* Variant tags */}
-                    <div className="flex flex-wrap items-center gap-1.5 mt-1 text-[11px] text-slate-500">
-                      {item.selectedColor && (
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold border border-slate-200">
-                          {item.selectedColor}
+                      {/* Variant Badge (Soft lavender/indigo pill matching reference) */}
+                      <div className="mt-1">
+                        <span className="inline-block bg-[#F0EEFF] text-[#5538EE] px-3 py-0.5 rounded-full text-xs font-bold">
+                          {variantLabel}
                         </span>
-                      )}
-                      {item.selectedSize && (
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold border border-slate-200">
-                          {item.selectedSize}
-                        </span>
-                      )}
-                    </div>
+                      </div>
 
-                    {/* Price & Quantity Controls */}
-                    <div className="flex items-center justify-between mt-2.5">
-                      <span className="font-mono text-sm font-black text-brand-goldDark">
-                        ৳{(item.product?.price || 0) * item.quantity}
-                      </span>
+                      {/* Price (Large bold deep font like reference) */}
+                      <div className="font-mono text-lg sm:text-xl font-black text-[#1E1B4B] mt-1.5 leading-none">
+                        ৳{item.product?.price}
+                      </div>
 
-                      <div className="flex items-center border border-slate-200 rounded-lg bg-slate-50 text-xs font-mono">
+                      {/* Quantity Stepper (Pill capsule container matching reference) */}
+                      <div className="inline-flex items-center justify-between border border-slate-200 bg-white rounded-full px-2 sm:px-3 py-1 shadow-xs gap-3 sm:gap-4 mt-2.5">
                         <button
+                          type="button"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 px-2 text-slate-600 hover:text-slate-900 font-bold"
-                          aria-label="Decrease"
+                          className="text-slate-500 hover:text-slate-900 font-bold p-0.5 text-base active:scale-90 transition"
+                          aria-label="Decrease quantity"
                         >
-                          <Minus className="size-3" />
+                          <Minus className="size-3.5 sm:size-4 stroke-[2.5]" />
                         </button>
-                        <span className="px-2 font-bold text-slate-900">{item.quantity}</span>
+                        <span className="font-bold font-mono text-slate-900 text-xs sm:text-sm min-w-4 text-center">
+                          {item.quantity}
+                        </span>
                         <button
+                          type="button"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 px-2 text-slate-600 hover:text-slate-900 font-bold"
-                          aria-label="Increase"
+                          className="text-slate-500 hover:text-slate-900 font-bold p-0.5 text-base active:scale-90 transition"
+                          aria-label="Increase quantity"
                         >
-                          <Plus className="size-3" />
+                          <Plus className="size-3.5 sm:size-4 stroke-[2.5]" />
                         </button>
                       </div>
                     </div>
+
+                    {/* Top Right Trash Button (Circular soft button matching reference) */}
+                    <div className="self-start pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.id)}
+                        className="size-9 rounded-full bg-[#F3F4F8] hover:bg-rose-50 text-slate-500 hover:text-rose-600 flex items-center justify-center transition shadow-xs active:scale-95"
+                        title={lang === 'bn' ? 'আইটেম মুছুন' : 'Remove item'}
+                        aria-label="Remove item"
+                      >
+                        <Trash2 className="size-4 stroke-[1.8]" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
-          {/* 4. Footer Checkout & Order Section */}
+          {/* 4. Footer Summary & Action Controls */}
           {cartItems.length > 0 && (
             <div className="p-4 sm:p-5 border-t border-slate-200 bg-[#FDFBF7] space-y-3.5">
-              {/* Coupon Accordion */}
+              {/* Coupon Row */}
               {appliedCoupon ? (
-                <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
                   <span className="font-bold text-emerald-800 flex items-center gap-1.5">
                     <Check className="size-3.5" />
-                    <span>কুপন কোড '{appliedCoupon.code}' যুক্ত হয়েছে (-৳{couponDiscount})</span>
+                    <span>কুপন '{appliedCoupon.code}' প্রয়োগ হয়েছে (-৳{couponDiscount})</span>
                   </span>
                   <button
                     onClick={removeCoupon}
                     className="text-rose-600 font-bold hover:underline text-[11px]"
                   >
-                    বাতিল
+                    মুছুন
                   </button>
                 </div>
               ) : (
@@ -254,13 +276,13 @@ export default function CartDrawer() {
                       type="text"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      placeholder={lang === 'bn' ? 'কুপন কোড দিন (যেমন: EID2026)' : 'Coupon code'}
+                      placeholder={lang === 'bn' ? 'কুপন কোড (যেমন: EID2026)' : 'Coupon code'}
                       className="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-gold font-mono uppercase"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="px-3.5 py-2 rounded-xl bg-slate-900 text-brand-gold text-xs font-bold hover:bg-slate-800 transition"
+                    className="px-4 py-2 rounded-xl bg-slate-900 text-brand-gold text-xs font-bold hover:bg-slate-800 transition"
                   >
                     {lang === 'bn' ? 'প্রয়োগ' : 'Apply'}
                   </button>
@@ -270,7 +292,7 @@ export default function CartDrawer() {
                 <p className="text-[11px] text-rose-600 font-bold">{couponError}</p>
               )}
 
-              {/* Price Calculation */}
+              {/* Pricing Breakdown */}
               <div className="space-y-1.5 text-xs text-slate-600 pt-1">
                 <div className="flex justify-between">
                   <span>{t('subtotal')}:</span>
@@ -278,7 +300,7 @@ export default function CartDrawer() {
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-bold">
-                    <span>{lang === 'bn' ? 'কুপন ছাড়:' : 'Coupon Discount:'}</span>
+                    <span>কুপন ছাড়:</span>
                     <span className="font-mono">-৳{couponDiscount}</span>
                   </div>
                 )}
@@ -286,26 +308,27 @@ export default function CartDrawer() {
                   <span>{t('deliveryFee')}:</span>
                   <span className="font-mono text-slate-700">
                     {isFreeDeliveryCart ? (
-                      <strong className="text-emerald-700">{lang === 'bn' ? 'সম্পূর্ণ ফ্রি!' : 'Free'}</strong>
+                      <strong className="text-emerald-700 font-bold">সম্পূর্ণ ফ্রি!</strong>
                     ) : (
                       lang === 'bn' ? 'চেকআউটে যুক্ত হবে' : 'Calculated at checkout'
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm sm:text-base font-black text-slate-900 pt-2 border-t border-slate-200">
-                  <span>{lang === 'bn' ? 'আনুমানিক মোট:' : 'Estimated Total:'}</span>
-                  <span className="font-mono text-brand-goldDark text-lg">
+                  <span>{lang === 'bn' ? 'সর্বমোট মূল্য:' : 'Grand Total:'}</span>
+                  <span className="font-mono text-brand-goldDark text-xl font-black">
                     ৳{Math.max(0, subtotal - couponDiscount)}
                   </span>
                 </div>
               </div>
 
-              {/* Dual Action Buttons */}
+              {/* Action Buttons */}
               <div className="space-y-2 pt-1">
                 {/* 1. Fast Checkout Button (Liquid Gold) */}
                 <button
+                  type="button"
                   onClick={handleCheckout}
-                  className="btn-gold-primary w-full py-3.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2"
+                  className="btn-gold-primary w-full py-3.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 shadow-md"
                 >
                   <span>{t('checkout')}</span>
                   <ArrowRight className="size-4" />
@@ -313,6 +336,7 @@ export default function CartDrawer() {
 
                 {/* 2. WhatsApp Instant Order Button */}
                 <button
+                  type="button"
                   onClick={handleWhatsAppOrder}
                   className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
                 >
@@ -321,7 +345,7 @@ export default function CartDrawer() {
                 </button>
               </div>
 
-              {/* Trust Tag */}
+              {/* Trust Footer */}
               <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 pt-1">
                 <ShieldCheck className="size-3.5 text-emerald-600" />
                 <span>{lang === 'bn' ? '১০০% ক্যাশ অন ডেলিভারি ও নিরাপদ কেনাকাটা' : '100% Secure COD Available'}</span>
