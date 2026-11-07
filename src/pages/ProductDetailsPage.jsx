@@ -40,32 +40,57 @@ export default function ProductDetailsPage() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('fabric'); // 'fabric' | 'delivery' | 'reviews'
 
+  // Reset image and selections when product ID changes
+  React.useEffect(() => {
+    if (product) {
+      setSelectedImage(0);
+      setSelectedColorIdx(0);
+      setSelectedSize(product.sizes?.[0] || 'Free Size');
+      setQuantity(1);
+    }
+  }, [id, product?.id]);
+
   if (!product) {
     return (
-      <div className="py-24 text-center space-y-4 text-slate-100">
+      <div className="py-24 text-center space-y-4 text-slate-900">
         <h2 className="text-2xl font-serif font-bold">পণ্যটি খুঁজে পাওয়া যায়নি!</h2>
-        <Link to="/shop" className="px-5 py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs inline-block">
+        <Link to="/shop" className="btn-gold-primary px-5 py-2.5 rounded-xl font-bold text-xs inline-block">
           শপে ফিরে যান
         </Link>
       </div>
     );
   }
 
+  const currentImages = product.images || (product.image ? [product.image] : ['/assets/brand/logo.png']);
+  const displayImage = currentImages[selectedImage] || currentImages[0] || '/assets/brand/logo.png';
   const activeColor = product.colors?.[selectedColorIdx] || null;
-  const currentImages = product.images || ['/assets/brand/logo.png'];
-  const displayImage = activeColor?.image || currentImages[selectedImage] || currentImages[0];
   const isFav = isInWishlist(product.id);
 
   const relatedProducts = products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
+  // When clicking a color swatch, update color AND switch main image to that color
   const handleColorSelect = (idx) => {
     setSelectedColorIdx(idx);
-    if (product.colors?.[idx]?.image) {
-      // Find matching index in images or fallback
-      const foundIdx = currentImages.indexOf(product.colors[idx].image);
-      if (foundIdx >= 0) setSelectedImage(foundIdx);
+    const colorImg = product.colors?.[idx]?.image;
+    if (colorImg) {
+      const foundIdx = currentImages.indexOf(colorImg);
+      if (foundIdx >= 0) {
+        setSelectedImage(foundIdx);
+      }
+    }
+  };
+
+  // When clicking a thumbnail, update main image AND match color swatch if applicable
+  const handleThumbnailClick = (idx) => {
+    setSelectedImage(idx);
+    const clickedImg = currentImages[idx];
+    if (clickedImg && product.colors) {
+      const matchIdx = product.colors.findIndex(c => c.image === clickedImg);
+      if (matchIdx >= 0) {
+        setSelectedColorIdx(matchIdx);
+      }
     }
   };
 
@@ -131,14 +156,12 @@ export default function ProductDetailsPage() {
               {currentImages.map((img, idx) => (
                 <button
                   key={idx}
-                  onClick={() => {
-                    setSelectedImage(idx);
-                    // clear color match override if clicked manual thumbnail
-                  }}
-                  className={`size-16 sm:size-20 rounded-2xl p-1 bg-brand-surface border overflow-hidden shrink-0 transition ${
+                  type="button"
+                  onClick={() => handleThumbnailClick(idx)}
+                  className={`size-16 sm:size-20 rounded-2xl p-1 bg-[#F8F9FA] border overflow-hidden shrink-0 transition-all ${
                     selectedImage === idx
-                      ? 'border-brand-gold ring-2 ring-brand-gold/40 scale-105'
-                      : 'border-brand-border opacity-70 hover:opacity-100'
+                      ? 'border-brand-gold ring-2 ring-brand-gold/60 scale-105 shadow-md'
+                      : 'border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400'
                   }`}
                 >
                   <img src={img} alt="" className="size-full object-contain" />
