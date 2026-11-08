@@ -117,7 +117,20 @@ export default function OrderSuccessPage() {
               <p><strong className="text-slate-900">ডেলিভারি ঠিকানা:</strong> {order.address}</p>
             </div>
             <div>
-              <p><strong className="text-slate-900">পেমেন্ট মেথড:</strong> {order.paymentMethod === 'bkash' ? `বিকাশ (${order.bkashSender || 'Sent'})` : 'ক্যাশ অন ডেলিভারি'}</p>
+              <p>
+                <strong className="text-slate-900">পেমেন্ট মেথড:</strong>{' '}
+                {order.paymentMethod === 'bkash' ? (
+                  <span className="text-pink-700 font-bold">
+                    বিকাশ (প্রেরক: {order.senderNumber || order.bkashSender || 'N/A'}{order.transactionId || order.trxId ? ` • TrxID: ${order.transactionId || order.trxId}` : ''})
+                  </span>
+                ) : order.paymentMethod === 'nagad' ? (
+                  <span className="text-orange-700 font-bold">
+                    নগদ (প্রেরক: {order.senderNumber || order.bkashSender || 'N/A'}{order.transactionId || order.trxId ? ` • TrxID: ${order.transactionId || order.trxId}` : ''})
+                  </span>
+                ) : (
+                  <span className="text-emerald-700 font-bold">ক্যাশ অন ডেলিভারি</span>
+                )}
+              </p>
               <p><strong className="text-slate-900">ডেলিভারি চার্জ:</strong> ৳{order.deliveryFee}</p>
               <p className="text-base font-black text-brand-goldDark pt-1">
                 সর্বমোট প্রদেয়: ৳{order.totalAmount}

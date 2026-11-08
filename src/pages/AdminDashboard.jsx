@@ -109,8 +109,11 @@ export default function AdminDashboard() {
   const handleSendPaymentMismatchWA = (order) => {
     const raw = (order.phone || '').replace(/[^0-9]/g, '');
     const cleanPhone = raw.startsWith('880') ? raw : raw.startsWith('0') ? '88' + raw : '880' + raw;
+    const methodText = order.paymentMethod === 'nagad' ? 'নগদ' : order.paymentMethod === 'bkash' ? 'বিকাশ' : 'মোবাইল ব্যাংকিং';
+    const sender = order.senderNumber || order.bkashSender || 'N/A';
+    const trx = order.transactionId || order.trxId ? ` এবং TrxID (${order.transactionId || order.trxId})` : '';
     const msg = encodeURIComponent(
-      `আসসালামু আলাইকুম ${order.customerName}, Karishma Shop BD থেকে বলছি।\n\nআপনার অর্ডার #${order.orderTrackingId || order.id}-এর বিকাশ নম্বর (${order.bkashSender || 'N/A'}) থেকে টাকা পাঠানোর কোনো রেকর্ড আমাদের স্টেটমেন্টে মেলেনি।\n\nঅনুগ্রহ করে যে নম্বর থেকে টাকা পাঠিয়েছেন তার মেসেজের স্ক্রিনশট বা সঠিক বিবরণ পাঠালে আমরা দ্রুত অর্ডারটি ভেরিফাই করে কনফার্ম করে দেব। ধন্যবাদ!`
+      `আসসালামু আলাইকুম ${order.customerName}, Karishma Shop BD থেকে বলছি।\n\nআপনার অর্ডার #${order.orderTrackingId || order.id}-এর ${methodText} নম্বর (${sender})${trx} থেকে টাকা পাঠানোর কোনো রেকর্ড আমাদের স্টেটমেন্টে মেলেনি।\n\nঅনুগ্রহ করে যে নম্বর থেকে টাকা পাঠিয়েছেন তার মেসেজের স্ক্রিনশট বা সঠিক বিবরণ পাঠালে আমরা দ্রুত অর্ডারটি ভেরিফাই করে কনফার্ম করে দেব। ধন্যবাদ!`
     );
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   };
@@ -390,16 +393,38 @@ export default function AdminDashboard() {
                       <div className="p-3 rounded-2xl bg-brand-card border border-brand-border space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-slate-400 text-[10px] uppercase font-bold">পেমেন্ট মেথড:</span>
-                          <span className="font-bold text-white">
-                            {order.paymentMethod === 'bkash' ? 'বিকাশ সম্পন্ন' : 'ক্যাশ অন ডেলিভারি'}
+                          <span className="font-bold">
+                            {order.paymentMethod === 'bkash' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-950/70 border border-[#E2136E]/60 text-pink-300 text-xs font-bold">
+                                <span>bKash বিকাশ</span>
+                              </span>
+                            ) : order.paymentMethod === 'nagad' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-orange-950/70 border border-[#F7941D]/60 text-orange-300 text-xs font-bold">
+                                <span>Nagad নগদ</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-950/70 border border-emerald-600/60 text-emerald-300 text-xs font-bold">
+                                <span>ক্যাশ অন ডেলিভারি</span>
+                              </span>
+                            )}
                           </span>
                         </div>
 
-                        {order.paymentMethod === 'bkash' && (
-                          <div className="space-y-1.5">
-                            <p className="text-[11px] text-slate-300">
-                              প্রেরক নম্বর: <strong className="font-mono text-pink-400">{order.bkashSender || 'N/A'}</strong>
-                            </p>
+                        {(order.paymentMethod === 'bkash' || order.paymentMethod === 'nagad') && (
+                          <div className="space-y-1.5 pt-2 border-t border-brand-border">
+                            <div className="flex items-center justify-between text-[11px] text-slate-300">
+                              <span>প্রেরক নম্বর:</span>
+                              <strong className="font-mono text-amber-300 font-bold">
+                                {order.senderNumber || order.bkashSender || 'N/A'}
+                              </strong>
+                            </div>
+
+                            <div className="flex items-center justify-between text-[11px] text-slate-300">
+                              <span>TrxID:</span>
+                              <strong className="font-mono text-emerald-400 font-bold bg-slate-900/90 px-2 py-0.5 rounded border border-emerald-500/40">
+                                {order.transactionId || order.trxId || 'N/A'}
+                              </strong>
+                            </div>
 
                             <div className="flex items-center gap-1.5 pt-1">
                               <button

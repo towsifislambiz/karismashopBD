@@ -134,7 +134,7 @@ export const OrderProvider = ({ children }) => {
       id: orderId,
       orderTrackingId: orderId,
       status: 'Pending',
-      paymentStatus: orderData.paymentMethod === 'bkash' ? (orderData.paymentStatus || 'pending') : 'cod',
+      paymentStatus: (orderData.paymentMethod === 'bkash' || orderData.paymentMethod === 'nagad') ? (orderData.paymentStatus || 'pending') : 'cod',
       createdAt: new Date().toISOString()
     };
 

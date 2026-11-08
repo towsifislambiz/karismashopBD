@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <!-- Nagad circular flame icon -->
+  <defs>
+    <linearGradient id="nagadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7941D" />
+      <stop offset="100%" stop-color="#ED1C24" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(4, 4)">
+    <circle cx="16" cy="16" r="16" fill="url(#nagadGrad)" />
+    <!-- Stylized Bengali 'ন' flame symbol in white -->
+    <path d="M16 6 C12 11 10 15 10 19 C10 24 13 27 17 27 C21 27 24 24 24 20 C24 15 21 12 19 9 C18 13 16 15 14 17 C13 18 13 19 14 20 C15 21 17 21 18 19 C18.5 18 18.5 17 18 16" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="16" cy="20" r="2" fill="#FFFFFF" />
+  </g>
+  <!-- Nagad Bengali Wordmark -->
+  <text x="44" y="26" font-family="'Hind Siliguri', 'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="20" fill="#ED1C24" letter-spacing="0.5">নগদ</text>
+</svg>

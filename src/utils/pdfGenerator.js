@@ -68,7 +68,12 @@ export function generateCustomerInvoicePDF(order, settings = {}) {
   doc.setFont('helvetica', 'bold');
   doc.text(`Payment Method:`, 130, 63);
   doc.setFont('helvetica', 'normal');
-  doc.text(order.paymentMethod === 'bkash' ? `bKash (${order.bkashSender || 'Verified'})` : 'Cash on Delivery (COD)', 160, 63);
+  const paymentText = order.paymentMethod === 'bkash'
+    ? `bKash (${order.senderNumber || order.bkashSender || 'Verified'}${order.transactionId || order.trxId ? ' - TrxID: ' + (order.transactionId || order.trxId) : ''})`
+    : order.paymentMethod === 'nagad'
+    ? `Nagad (${order.senderNumber || order.bkashSender || 'Verified'}${order.transactionId || order.trxId ? ' - TrxID: ' + (order.transactionId || order.trxId) : ''})`
+    : 'Cash on Delivery (COD)';
+  doc.text(paymentText, 160, 63);
 
   doc.setFont('helvetica', 'bold');
   doc.text(`Order Status:`, 130, 70);
@@ -224,7 +229,7 @@ export function generateMonthlyReportPDF(orders = [], settings = {}, monthName =
     o.orderTrackingId || o.id,
     o.customerName || 'Customer',
     o.phone || 'N/A',
-    o.paymentMethod === 'bkash' ? 'bKash' : 'COD',
+    o.paymentMethod === 'bkash' ? 'bKash' : o.paymentMethod === 'nagad' ? 'Nagad' : 'COD',
     `BDT ${o.totalAmount || 0}`,
     o.status || 'Pending'
   ]);
