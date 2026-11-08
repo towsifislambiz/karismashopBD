@@ -27,6 +27,7 @@ import { useProducts } from '../context/ProductContext';
 import { useStoreSettings } from '../context/StoreSettingsContext';
 import { useLanguage } from '../context/LanguageContext';
 import { generateMonthlyReportPDF } from '../utils/pdfGenerator';
+import { convertToWebP } from '../utils/imageOptimizer';
 
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
@@ -43,6 +44,22 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'products' | 'settings'
   const [orderFilter, setOrderFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Add Product with automatic WebP conversion
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isConvertingImage, setIsConvertingImage] = useState(false);
+  const [conversionStats, setConversionStats] = useState(null);
+  const [newProductForm, setNewProductForm] = useState({
+    nameBn: '',
+    name: '',
+    category: 'threepiece',
+    price: '',
+    originalPrice: '',
+    stockCount: 15,
+    fabricBn: '',
+    descriptionBn: '',
+    image: ''
+  });
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState({
@@ -128,6 +145,79 @@ export default function AdminDashboard() {
     });
     setSettingsSuccess('স্টোর সেটিংস সফলভাবে আপডেট হয়েছে!');
     setTimeout(() => setSettingsSuccess(''), 2500);
+  };
+
+  const handleImageFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsConvertingImage(true);
+      setConversionStats(null);
+      const res = await convertToWebP(file, { maxWidth: 1400, quality: 0.85 });
+      setNewProductForm(prev => ({
+        ...prev,
+        image: res.dataUrl
+      }));
+      setConversionStats({
+        originalKB: Math.round(res.originalSize / 1024),
+        optimizedKB: Math.round(res.optimizedSize / 1024),
+        savedPercent: res.savedPercent,
+        fileName: res.fileName
+      });
+    } catch (err) {
+      alert('ইমেজ কনভার্ট করতে সমস্যা হয়েছে: ' + err.message);
+    } finally {
+      setIsConvertingImage(false);
+    }
+  };
+
+  const handleCreateProduct = (e) => {
+    e.preventDefault();
+    if (!newProductForm.nameBn.trim() || !newProductForm.price) {
+      alert('পণ্যের নাম ও মূল্য প্রদান করুন');
+      return;
+    }
+    const categoryMap = {
+      threepiece: 'থ্রি-পিস',
+      abaya: 'আবায়া ও বোরকা',
+      gowns: 'মডেস্ট গাউন',
+      handbags: 'হ্যান্ডব্যাগ ও পার্স'
+    };
+    const created = addProduct({
+      nameBn: newProductForm.nameBn.trim(),
+      name: newProductForm.name.trim() || newProductForm.nameBn.trim(),
+      category: newProductForm.category,
+      categoryBn: categoryMap[newProductForm.category] || 'বুটিক ফ্যাশন',
+      price: Number(newProductForm.price) || 0,
+      originalPrice: newProductForm.originalPrice ? Number(newProductForm.originalPrice) : null,
+      stockCount: Number(newProductForm.stockCount) || 10,
+      inStock: true,
+      fabricBn: newProductForm.fabricBn.trim() || 'প্রিমিয়াম কোয়ালিটি ম্যাটেরিয়াল',
+      descriptionBn: newProductForm.descriptionBn.trim() || 'কারিশমা শপের নতুন এক্সক্লুসিভ কালেকশন।',
+      image: newProductForm.image || '/assets/brand/logo.webp',
+      images: [newProductForm.image || '/assets/brand/logo.webp'],
+      rating: 5.0,
+      reviewsCount: 1,
+      badge: 'নতুন কালেকশন',
+      badgeEn: 'New Arrival'
+    });
+
+    setCatalogSuccess(`'${created.nameBn}' সফলভাবে ক্যাটালগে যুক্ত হয়েছে! (স্বয়ংক্রিয় WebP কনভার্ট সম্পন্ন)`);
+    setIsAddProductOpen(false);
+    setNewProductForm({
+      nameBn: '',
+      name: '',
+      category: 'threepiece',
+      price: '',
+      originalPrice: '',
+      stockCount: 15,
+      fabricBn: '',
+      descriptionBn: '',
+      image: ''
+    });
+    setConversionStats(null);
+    setTimeout(() => setCatalogSuccess(''), 3500);
   };
 
   if (!isAdminAuthenticated) {
@@ -484,6 +574,14 @@ export default function AdminDashboard() {
 
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setIsAddProductOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-brand-gold text-brand-noir text-xs font-bold flex items-center gap-1.5 shadow-gold-glow hover:brightness-110 transition active:scale-95"
+              >
+                <Plus className="size-4" />
+                <span>নতুন পণ্য যোগ করুন (WebP)</span>
+              </button>
+
+              <button
                 onClick={() => {
                   resetToDefault();
                   setCatalogSuccess('ক্যাটালগ সফলভাবে রিস্টোর হয়েছে!');
@@ -502,10 +600,165 @@ export default function AdminDashboard() {
             <p className="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold text-xs">{catalogSuccess}</p>
           )}
 
+          {/* Add Product Modal with Auto WebP Converter */}
+          {isAddProductOpen && (
+            <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+              <div className="relative w-full max-w-lg bg-brand-surface border border-brand-gold/40 rounded-3xl p-5 sm:p-7 shadow-2xl text-slate-100 my-auto animate-in fade-in zoom-in-95 duration-200">
+                <button
+                  onClick={() => setIsAddProductOpen(false)}
+                  className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10"
+                >
+                  <X className="size-5" />
+                </button>
+
+                <h3 className="font-serif text-lg font-bold text-white mb-1 flex items-center gap-2">
+                  <Plus className="size-5 text-brand-gold" />
+                  <span>নতুন পণ্য ক্যাটালগে যুক্ত করুন</span>
+                </h3>
+                <p className="text-[11px] text-slate-400 mb-4">
+                  যেকোনো ছবির ফরম্যাট (PNG/JPG) আপলোড করলে স্বয়ংক্রিয়ভাবে আল্ট্রা-লাইট WebP-তে কনভার্ট হবে।
+                </p>
+
+                <form onSubmit={handleCreateProduct} className="space-y-3.5 text-xs">
+                  {/* Photo Upload with auto WebP */}
+                  <div className="p-4 rounded-2xl bg-brand-card border border-brand-border space-y-2">
+                    <label className="block font-bold text-slate-200">
+                      পণ্যের ছবি আপলোড করুন * (অটো WebP কনভার্ট হবে)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      className="w-full text-slate-300 text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-gold file:text-brand-noir hover:file:brightness-110 cursor-pointer"
+                    />
+
+                    {isConvertingImage && (
+                      <p className="text-amber-400 text-[11px] animate-pulse font-bold">
+                        ⚡ ছবিটি দ্রুত WebP ফরম্যাটে অপ্টিমাইজ হচ্ছে...
+                      </p>
+                    )}
+
+                    {conversionStats && (
+                      <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] space-y-1">
+                        <div className="flex items-center justify-between font-bold">
+                          <span>✓ WebP অপ্টিমাইজেশন সফল!</span>
+                          <span className="text-brand-gold">-{conversionStats.savedPercent}% সাইজ হ্রাস</span>
+                        </div>
+                        <p className="text-slate-300">
+                          মূল সাইজ: {conversionStats.originalKB} KB ➔ নতুন WebP: <strong>{conversionStats.optimizedKB} KB</strong>
+                        </p>
+                      </div>
+                    )}
+
+                    {newProductForm.image && (
+                      <div className="size-20 rounded-xl overflow-hidden border border-brand-gold/40 mx-auto mt-2 bg-black/40">
+                        <img src={newProductForm.image} alt="Preview" className="size-full object-contain" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold text-slate-300 mb-1">পণ্যের নাম (বাংলা) *</label>
+                      <input
+                        type="text"
+                        value={newProductForm.nameBn}
+                        onChange={(e) => setNewProductForm(p => ({ ...p, nameBn: e.target.value }))}
+                        placeholder="যেমন: দুবাই কাফতান গাউন"
+                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-300 mb-1">ক্যাটাগরি *</label>
+                      <select
+                        value={newProductForm.category}
+                        onChange={(e) => setNewProductForm(p => ({ ...p, category: e.target.value }))}
+                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
+                      >
+                        <option value="threepiece">থ্রি-পিস (Three-Piece)</option>
+                        <option value="abaya">আবায়া ও বোরকা (Abaya & Borka)</option>
+                        <option value="gowns">মডেস্ট গাউন (Modest Gowns)</option>
+                        <option value="handbags">হ্যান্ডব্যাগ ও পার্স (Handbags)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2.5">
+                    <div>
+                      <label className="block font-bold text-slate-300 mb-1">বিক্রয় মূল্য (৳) *</label>
+                      <input
+                        type="number"
+                        value={newProductForm.price}
+                        onChange={(e) => setNewProductForm(p => ({ ...p, price: e.target.value }))}
+                        placeholder="2450"
+                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:border-brand-gold focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-300 mb-1">পূর্বের মূল্য (৳)</label>
+                      <input
+                        type="number"
+                        value={newProductForm.originalPrice}
+                        onChange={(e) => setNewProductForm(p => ({ ...p, originalPrice: e.target.value }))}
+                        placeholder="3200"
+                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:border-brand-gold focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-300 mb-1">স্টক সংখ্যা</label>
+                      <input
+                        type="number"
+                        value={newProductForm.stockCount}
+                        onChange={(e) => setNewProductForm(p => ({ ...p, stockCount: e.target.value }))}
+                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:border-brand-gold focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-300 mb-1">কাপড় / ম্যাটেরিয়াল</label>
+                    <input
+                      type="text"
+                      value={newProductForm.fabricBn}
+                      onChange={(e) => setNewProductForm(p => ({ ...p, fabricBn: e.target.value }))}
+                      placeholder="যেমন: দুবাই চেরি জর্জেট ফেব্রিক"
+                      className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-300 mb-1">সংক্ষিপ্ত বিবরণ</label>
+                    <textarea
+                      value={newProductForm.descriptionBn}
+                      onChange={(e) => setNewProductForm(p => ({ ...p, descriptionBn: e.target.value }))}
+                      placeholder="পণ্যটির বিশেষ বৈশিষ্ট্য লিখুন..."
+                      rows="2"
+                      className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isConvertingImage}
+                    className="w-full py-3 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition flex items-center justify-center gap-2"
+                  >
+                    <Save className="size-4" />
+                    <span>পণ্যটি ক্যাটালগে সেভ করুন</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
           {/* Product Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((p) => {
-              const mainImg = p.image || p.images?.[0] || '/assets/brand/logo.png';
+              const mainImg = p.image || p.images?.[0] || '/assets/brand/logo.webp';
               return (
                 <div key={p.id} className="p-3.5 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-gold/40 transition space-y-2 text-xs flex flex-col justify-between">
                   <div>

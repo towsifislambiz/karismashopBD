@@ -143,7 +143,7 @@ export default function OrderSuccessPage() {
             {order.items?.map((it, idx) => (
               <div key={idx} className="flex items-center gap-3 bg-slate-50 border border-slate-200 p-2.5 rounded-xl">
                 <img
-                  src={it.product?.image || it.product?.images?.[0] || '/assets/brand/logo.png'}
+                  src={it.product?.image || it.product?.images?.[0] || '/assets/brand/logo.webp'}
                   alt=""
                   className="size-11 rounded-lg object-contain bg-white border border-slate-200 p-0.5"
                 />

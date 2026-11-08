@@ -99,7 +99,7 @@ export default function WishlistPage() {
                 <div className="relative aspect-[3/4] w-full bg-[#F8F9FA] p-3 flex items-center justify-center border-b border-slate-100 overflow-hidden">
                   <Link to={`/product/${product.id}`} className="size-full flex items-center justify-center">
                     <img
-                      src={product.image || product.images?.[0] || '/assets/brand/logo.png'}
+                      src={product.image || product.images?.[0] || '/assets/brand/logo.webp'}
                       alt={product.name}
                       className="size-full object-contain group-hover:scale-105 transition duration-500"
                     />

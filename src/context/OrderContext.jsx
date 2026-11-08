@@ -37,7 +37,7 @@ const INITIAL_DEMO_ORDERS = [
           name: 'Al-Chishty Embroidered Monochrome Festive Three-Piece',
           nameBn: 'আল-চিস্তি এক্সক্লুসিভ ব্ল্যাক & হোয়াইট এমব্রয়ডারি থ্রি-পিস',
           price: 2450,
-          image: '/assets/products/threepiece_black_white.png'
+          image: '/assets/products/threepiece_black_white.webp'
         },
         quantity: 1,
         selectedColor: 'Midnight Black',
@@ -67,7 +67,7 @@ const INITIAL_DEMO_ORDERS = [
           name: 'Karishma Sculpted Floral-Charm Luxury Signature Tote Bag',
           nameBn: 'কারিশমা স্কাল্পটেড ফ্লোরাল-চার্ম লাক্সারি সিগনেচার টোট ব্যাগ',
           price: 1850,
-          image: '/assets/products/bag_tote_floral_white.png'
+          image: '/assets/products/bag_tote_floral_white.webp'
         },
         quantity: 1,
         selectedColor: 'Pearl White',

@@ -165,7 +165,7 @@ export default function CartDrawer() {
                   ? (item.selectedSize ? `${item.selectedColor} • ${item.selectedSize}` : item.selectedColor)
                   : (item.selectedSize || 'Free Size');
 
-                const itemImg = item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.png';
+                const itemImg = item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.webp';
 
                 return (
                   <div

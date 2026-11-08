@@ -271,7 +271,7 @@ export default function CustomerAccountPage() {
                     {order.items?.map((item, idx) => (
                       <div key={idx} className="flex items-center gap-3">
                         <img
-                          src={item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.png'}
+                          src={item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.webp'}
                           alt=""
                           className="size-12 rounded-xl object-contain bg-brand-noir p-1 border border-brand-border shrink-0"
                         />

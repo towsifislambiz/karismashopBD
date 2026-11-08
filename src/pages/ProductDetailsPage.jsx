@@ -61,8 +61,8 @@ export default function ProductDetailsPage() {
     );
   }
 
-  const currentImages = product.images || (product.image ? [product.image] : ['/assets/brand/logo.png']);
-  const displayImage = currentImages[selectedImage] || currentImages[0] || '/assets/brand/logo.png';
+  const currentImages = product.images || (product.image ? [product.image] : ['/assets/brand/logo.webp']);
+  const displayImage = currentImages[selectedImage] || currentImages[0] || '/assets/brand/logo.webp';
   const activeColor = product.colors?.[selectedColorIdx] || null;
   const isFav = isInWishlist(product.id);
 
@@ -121,6 +121,8 @@ export default function ProductDetailsPage() {
               src={displayImage}
               alt={product.name}
               className="size-full object-contain hover:scale-105 transition-transform duration-500"
+              decoding="async"
+              fetchPriority="high"
             />
 
             {/* Badges (Gold Foil) */}
@@ -164,7 +166,7 @@ export default function ProductDetailsPage() {
                       : 'border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400'
                   }`}
                 >
-                  <img src={img} alt="" className="size-full object-contain" />
+                  <img src={img} alt="" className="size-full object-contain" loading="lazy" decoding="async" />
                 </button>
               ))}
             </div>

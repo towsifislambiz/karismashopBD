@@ -11,7 +11,7 @@ export default function ProductCard({ product, onOneClickOrder }) {
   const [activeColorIdx, setActiveColorIdx] = useState(0);
 
   const activeColor = product.colors?.[activeColorIdx] || null;
-  const currentImage = activeColor?.image || product.images?.[0] || '/assets/brand/logo.png';
+  const currentImage = activeColor?.image || product.images?.[0] || '/assets/brand/logo.webp';
   const isFav = isInWishlist(product.id);
 
   const discountPercent = product.originalPrice
@@ -30,6 +30,7 @@ export default function ProductCard({ product, onOneClickOrder }) {
             alt={product.name}
             className="size-full object-contain transition-transform duration-700 ease-out group-hover:scale-110 select-none"
             loading="lazy"
+            decoding="async"
           />
         </Link>
 

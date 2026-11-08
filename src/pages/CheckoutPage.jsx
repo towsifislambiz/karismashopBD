@@ -550,7 +550,7 @@ export default function CheckoutPage() {
             {cartItems.map((item) => (
               <div key={item.id} className="pt-3 first:pt-0 flex items-center gap-3">
                 <img
-                  src={item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.png'}
+                  src={item.product?.image || item.product?.images?.[0] || '/assets/brand/logo.webp'}
                   alt=""
                   className="size-14 rounded-xl object-contain bg-[#F8F9FA] p-1 border border-slate-200 shrink-0"
                 />

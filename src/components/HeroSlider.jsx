@@ -22,7 +22,7 @@ const SLIDES = [
     titleBn: 'রাজকীয় আভিজাত্য ও আধুনিক বুটিকের নিখুঁত মেলবন্ধন',
     subtitle: 'Handcrafted threadwork embroidery, premium soft linens, and bespoke silk dupattas tailored for statement occasions.',
     subtitleBn: 'হাতে বোনা নিখুঁত সুতার কাজ, প্রিমিয়াম সফট লিনেন ফেব্রিক ও রেশমি সিল্ক ওড়নায় সাজানো আল-চিস্তি বুটিক কালেকশন।',
-    image: '/assets/products/threepiece_black_white.png',
+    image: '/assets/products/threepiece_black_white.webp',
     link: '/shop?category=three-piece',
     buttonText: 'কালেকশন দেখুন',
     buttonTextEn: 'Explore Three-Piece',
@@ -36,7 +36,7 @@ const SLIDES = [
     titleBn: 'স্কাল্পটেড ফ্লোরাল-চার্ম লাক্সারি ডিজাইনার হ্যান্ডব্যাগ',
     subtitle: 'Artisanal vegan leather with radiant gold hardware and signature blossom tassels. Available in 5 breathtaking pastel & classic hues.',
     subtitleBn: 'প্রিমিয়াম ওয়াটারপ্রুফ ভেগান লেদার ও গোল্ডেন মেটালিক ফিনিশিং। ৫টি আকর্ষণীয় কালারে সাজানো এক্সক্লুসিভ টোট ব্যাগ।',
-    image: '/assets/products/hero_handbag_collection_podium.png',
+    image: '/assets/products/hero_handbag_collection_podium.webp',
     link: '/shop?category=handbags',
     buttonText: 'ব্যাগ কালেকশন দেখুন',
     buttonTextEn: 'Shop Designer Bags',
@@ -50,7 +50,7 @@ const SLIDES = [
     titleBn: 'অরিজিনাল দুবাই নিদা ফেব্রিক ও রাজকীয় স্টোনওয়ার্ক বোরকা',
     subtitle: 'Flawlessly modest silhouette adorned with hand-placed crystal cascading chains. Complete with complimentary matching hijab.',
     subtitleBn: 'শোল্ডার ও ফ্রন্টে চোখ জুড়ানো ক্রিস্টাল স্টোনের কারুকাজ। সাথে রয়েছে প্রিমিয়াম ম্যাচিং হিজাব সম্পূর্ণ ফ্রি।',
-    image: '/assets/products/abaya_dubai_stonework_black.png',
+    image: '/assets/products/abaya_dubai_stonework_black.webp',
     link: '/shop?category=abaya',
     buttonText: 'আবায়া অর্ডার করুন',
     buttonTextEn: 'Order Dubai Abaya',
@@ -155,6 +155,9 @@ export default function HeroSlider() {
                     src={slide.image}
                     alt={slide.title}
                     className="size-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-700 select-none"
+                    loading={currentSlide === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchPriority={currentSlide === 0 ? "high" : "auto"}
                   />
 
                   {/* Floating Price / Tag Badge */}

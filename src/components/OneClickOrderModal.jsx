@@ -63,7 +63,7 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
 
   // Selected color image
   const colorObj = product.colors?.find(c => c.name === selectedColor);
-  const previewImage = colorObj?.image || product.image || product.images?.[0] || '/assets/brand/logo.png';
+  const previewImage = colorObj?.image || product.image || product.images?.[0] || '/assets/brand/logo.webp';
 
   const handleCopyNumber = (num) => {
     navigator.clipboard.writeText(num || '01819305805');

@@ -53,6 +53,8 @@ export default function CategoryGrid() {
                   src={cat.image}
                   alt={cat.name}
                   className="size-full object-cover object-top group-hover:scale-110 transition-transform duration-700 brightness-95 group-hover:brightness-105"
+                  loading="lazy"
+                  decoding="async"
                 />
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-noir via-brand-noir/40 to-transparent" />

@@ -145,9 +145,11 @@ export default function HomePage() {
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative rounded-2xl p-2 bg-[#12141D] border border-brand-gold/40 shadow-2xl group">
                 <img
-                  src="/assets/products/hero_handbag_collection_podium.png"
+                  src="/assets/products/hero_handbag_collection_podium.webp"
                   alt="Handbag Collection"
                   className="w-full max-w-sm rounded-xl object-cover group-hover:scale-105 transition duration-500"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </div>
