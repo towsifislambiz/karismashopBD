@@ -11,23 +11,13 @@ export const CartProvider = ({ children }) => {
       const saved = localStorage.getItem('karishma_cart');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-      return [
-        {
-          id: 'ks-tp-02-Lilac Lavender-Free Size',
-          product: {
-            id: 'ks-tp-02',
-            name: 'Al-Chishty Royal Kashmiri Embroidered Lavender Three-Piece',
-            nameBn: 'কাশ্মীরি রয়াল ল্যাভেন্ডার এমব্রয়ডারি বুটিক থ্রি-পিস',
-            price: 2650,
-            image: '/assets/products/threepiece_kashmiri_lavender.png'
-          },
-          quantity: 1,
-          selectedColor: '',
-          selectedSize: 'Free Size'
+        if (Array.isArray(parsed)) {
+          // Clean out the temporary demo preview item
+          const filtered = parsed.filter(item => item.id !== 'ks-tp-02-Lilac Lavender-Free Size');
+          return filtered;
         }
-      ];
+      }
+      return [];
     } catch {
       return [];
     }
