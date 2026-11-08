@@ -114,25 +114,26 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(prev => !prev)}
-            className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 hover:text-brand-goldDark transition"
+            className="md:hidden p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 hover:text-brand-goldDark transition shrink-0"
+            aria-label="Open mobile menu"
           >
-            {isMobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            {isMobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
           </button>
 
           {/* Brand Logo & Name */}
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="relative size-10 sm:size-12 rounded-xl bg-brand-noir p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center overflow-hidden">
+          <Link to="/" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <div className="relative size-9 sm:size-12 rounded-xl bg-brand-noir p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center shrink-0 overflow-hidden">
               <img
                 src="/assets/brand/ks-logo.svg"
                 alt="Karishma Shop BD"
                 className="size-full object-contain filter drop-shadow group-hover:scale-105 transition duration-300"
               />
             </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-lg sm:text-2xl font-bold tracking-wide text-slate-900 group-hover:text-brand-goldDark transition leading-tight">
+            <div className="flex flex-col min-w-0">
+              <span className="font-serif text-sm sm:text-2xl font-bold tracking-tight text-slate-900 group-hover:text-brand-goldDark transition leading-tight">
                 KARISHMA SHOP
               </span>
-              <span className="text-[10px] font-sans tracking-widest text-brand-goldDark uppercase font-bold -mt-0.5">
+              <span className="hidden xs:block text-[8px] sm:text-[10px] font-sans tracking-widest text-brand-goldDark uppercase font-bold -mt-0.5">
                 BOUTIQUE & ABAYA • BD
               </span>
             </div>
@@ -180,11 +181,12 @@ export default function Navbar() {
           </div>
 
           {/* Action Buttons: Wishlist, Cart */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Search Trigger for Mobile */}
             <button
               onClick={() => setIsSearchOpen(prev => !prev)}
-              className="md:hidden p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:text-brand-goldDark"
+              className="md:hidden p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:text-brand-goldDark"
+              aria-label="Search"
             >
               <Search className="size-4" />
             </button>
@@ -192,7 +194,7 @@ export default function Navbar() {
             {/* Wishlist Button */}
             <Link
               to="/wishlist"
-              className="relative p-2 sm:p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-brand-gold text-slate-700 hover:text-brand-goldDark transition shadow-sm"
+              className="relative p-1.5 sm:p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-brand-gold text-slate-700 hover:text-brand-goldDark transition shadow-sm"
               title={t('wishlist')}
             >
               <Heart className="size-4 sm:size-5" />
@@ -206,7 +208,7 @@ export default function Navbar() {
             {/* Cart Drawer Trigger Button (Signature Liquid Gold) */}
             <button
               onClick={openCart}
-              className="btn-gold-primary flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black active:scale-95 transition"
+              className="btn-gold-primary flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black active:scale-95 transition"
             >
               <div className="relative">
                 <ShoppingBag className="size-4 sm:size-5 stroke-[2.5]" />

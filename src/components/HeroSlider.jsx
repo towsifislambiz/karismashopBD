@@ -80,7 +80,8 @@ export default function HeroSlider() {
   const slide = SLIDES[current];
 
   return (
-    <section className="relative overflow-hidden bg-brand-noir text-slate-100">
+    <>
+      <section className="relative overflow-hidden bg-brand-noir text-slate-100">
       {/* Dynamic Background Glow */}
       <div className={`absolute inset-0 bg-gradient-to-r ${slide.themeColor} opacity-70 transition-all duration-1000`} />
       <div className="absolute top-0 right-1/4 size-96 rounded-full bg-brand-gold/10 blur-3xl pointer-events-none" />
@@ -97,7 +98,7 @@ export default function HeroSlider() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-[1.15]">
+            <h1 className="text-2xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-[1.2]">
               {lang === 'bn' ? (
                 <>
                   {slide.titleBn.split(' ')[0]} {slide.titleBn.split(' ')[1]}{' '}
@@ -207,51 +208,72 @@ export default function HeroSlider() {
           </div>
         </div>
       </div>
+    </section>
 
-      {/* Trust & Guarantee Banner (White Canvas with Gold & Noir) */}
-      <div className="bg-white border-y border-slate-200 py-5 px-4 sm:px-6 shadow-sm">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
-            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
-              <Truck className="size-4" />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900">{t('fastDelivery')}</p>
-              <p className="text-[11px] text-slate-500">{lang === 'bn' ? 'সারা দেশে দ্রুত হোম ডেলিভারি' : 'Nationwide 48-72h Delivery'}</p>
-            </div>
+    {/* 2. Trust & Guarantee Banner (Independent Crisp White & Gold Boutique Strip) */}
+    <section className="bg-white border-y border-slate-200 py-6 sm:py-8 px-4 sm:px-6 relative z-10 shadow-xs">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
+        {/* Card 1: Fast Delivery */}
+        <div className="group flex items-center gap-3 sm:gap-4 p-3.5 sm:p-5 rounded-2xl bg-[#FDFBF7] border border-brand-gold/30 hover:border-brand-gold hover:shadow-md transition-all duration-300">
+          <div className="size-11 sm:size-12 rounded-2xl bg-gradient-to-tr from-brand-noir via-slate-900 to-slate-800 text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm group-hover:scale-105 transition-transform">
+            <Truck className="size-5 text-brand-gold" />
           </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
-            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
-              <ShieldCheck className="size-4" />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900">{t('originalQuality')}</p>
-              <p className="text-[11px] text-slate-500">{lang === 'bn' ? '১০০% অরিজিনাল ফেব্রিক গ্যারান্টি' : 'Hand-picked Fabrics'}</p>
-            </div>
+          <div className="min-w-0">
+            <h4 className="font-serif font-bold text-slate-900 text-xs sm:text-sm leading-tight">
+              {lang === 'bn' ? 'সারা দেশে দ্রুত ডেলিভারি' : 'Nationwide Delivery'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-1 font-sans leading-snug">
+              {lang === 'bn' ? '৪৮ থেকে ৭২ ঘণ্টায় নিশ্চিত হোম ডেলিভারি' : 'Fast 48-72h doorstep delivery'}
+            </p>
           </div>
+        </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
-            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
-              <RefreshCw className="size-4" />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900">{t('easyReturn')}</p>
-              <p className="text-[11px] text-slate-500">{lang === 'bn' ? 'সাইজ সমস্যায় সহজ এক্সচেঞ্জ' : 'Easy Exchange Policy'}</p>
-            </div>
+        {/* Card 2: 100% Original */}
+        <div className="group flex items-center gap-3 sm:gap-4 p-3.5 sm:p-5 rounded-2xl bg-[#FDFBF7] border border-brand-gold/30 hover:border-brand-gold hover:shadow-md transition-all duration-300">
+          <div className="size-11 sm:size-12 rounded-2xl bg-gradient-to-tr from-brand-noir via-slate-900 to-slate-800 text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm group-hover:scale-105 transition-transform">
+            <ShieldCheck className="size-5 text-brand-gold" />
           </div>
+          <div className="min-w-0">
+            <h4 className="font-serif font-bold text-slate-900 text-xs sm:text-sm leading-tight">
+              {lang === 'bn' ? '১০০% অরিজিনাল বুটিক' : '100% Original Quality'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-1 font-sans leading-snug">
+              {lang === 'bn' ? 'উন্নতমানের আসল ফেব্রিক ও কারুকাজ' : 'Finest authentic fabrics & finish'}
+            </p>
+          </div>
+        </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F8F9FA] border border-brand-gold/30 shadow-sm">
-            <div className="size-10 rounded-xl bg-brand-noir text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm">
-              <Headphones className="size-4" />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900">{lang === 'bn' ? '২৪/৭ লাইভ সাপোর্ট' : 'Dedicated Support'}</p>
-              <p className="text-[11px] text-slate-500">{lang === 'bn' ? 'হোয়াটসঅ্যাপে তাৎক্ষণিক হেল্প' : 'Instant WhatsApp Help'}</p>
-            </div>
+        {/* Card 3: Easy Return */}
+        <div className="group flex items-center gap-3 sm:gap-4 p-3.5 sm:p-5 rounded-2xl bg-[#FDFBF7] border border-brand-gold/30 hover:border-brand-gold hover:shadow-md transition-all duration-300">
+          <div className="size-11 sm:size-12 rounded-2xl bg-gradient-to-tr from-brand-noir via-slate-900 to-slate-800 text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm group-hover:scale-105 transition-transform">
+            <RefreshCw className="size-5 text-brand-gold" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="font-serif font-bold text-slate-900 text-xs sm:text-sm leading-tight">
+              {lang === 'bn' ? '৭ দিনের সহজ এক্সচেঞ্জ' : '7-Day Easy Exchange'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-1 font-sans leading-snug">
+              {lang === 'bn' ? 'সাইজ সমস্যায় কোনো ঝামেলা ছাড়া এক্সচেঞ্জ' : 'Hassle-free size replacement'}
+            </p>
+          </div>
+        </div>
+
+        {/* Card 4: WhatsApp Support */}
+        <div className="group flex items-center gap-3 sm:gap-4 p-3.5 sm:p-5 rounded-2xl bg-[#FDFBF7] border border-brand-gold/30 hover:border-brand-gold hover:shadow-md transition-all duration-300">
+          <div className="size-11 sm:size-12 rounded-2xl bg-gradient-to-tr from-brand-noir via-slate-900 to-slate-800 text-brand-gold flex items-center justify-center shrink-0 border border-brand-gold/40 shadow-sm group-hover:scale-105 transition-transform">
+            <Headphones className="size-5 text-brand-gold" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="font-serif font-bold text-slate-900 text-xs sm:text-sm leading-tight">
+              {lang === 'bn' ? '২৪/৭ লাইভ সাপোর্ট' : '24/7 Live Support'}
+            </h4>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-1 font-sans leading-snug">
+              {lang === 'bn' ? 'হোয়াটসঅ্যাপে দ্রুততম সহায়তা ও অর্ডার' : 'Instant WhatsApp assistance'}
+            </p>
           </div>
         </div>
       </div>
     </section>
+  </>
   );
 }

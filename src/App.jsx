@@ -40,7 +40,7 @@ export default function App() {
   }, [navigate]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-brand-canvas text-brand-textDark selection:bg-brand-gold selection:text-brand-noir">
+    <div className="flex flex-col min-h-screen w-full overflow-x-hidden relative bg-brand-canvas text-brand-textDark selection:bg-brand-gold selection:text-brand-noir">
       <ScrollToTop />
       <Navbar />
 

@@ -65,7 +65,7 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-12 space-y-6 sm:space-y-8">
       {/* Page Header */}
       <div className="border-b border-slate-200 pb-6 space-y-2">
         <div className="inline-flex items-center gap-1.5 text-brand-goldDark text-xs font-bold uppercase tracking-wider font-sans">
@@ -135,7 +135,7 @@ export default function ShopPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {filteredProducts.map(product => (
             <ProductCard
               key={product.id}

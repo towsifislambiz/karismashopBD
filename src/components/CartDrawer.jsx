@@ -82,8 +82,8 @@ export default function CartDrawer() {
       />
 
       {/* Drawer Panel */}
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
-        <div className="w-screen max-w-md sm:max-w-lg bg-white border-l border-slate-200 shadow-2xl flex flex-col justify-between text-slate-900 animate-in slide-in-from-right duration-300">
+      <div className="absolute inset-y-0 right-0 w-full sm:max-w-md md:max-w-lg flex">
+        <div className="w-full h-full bg-white border-l border-slate-200 shadow-2xl flex flex-col justify-between text-slate-900">
           
           {/* 1. Drawer Header */}
           <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
