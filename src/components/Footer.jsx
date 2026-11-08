@@ -111,18 +111,24 @@ export default function Footer() {
               <li className="flex items-start gap-2">
                 <Phone className="size-4 text-brand-gold shrink-0 mt-0.5" />
                 <div className="flex flex-col">
-                  <a href={`tel:${settings?.hotline || '01819305805'}`} className="hover:text-white font-mono font-bold text-slate-200">
-                    {settings?.hotline || '01819305805'} (WhatsApp)
-                  </a>
-                  <a href="tel:01965643684" className="hover:text-white font-mono text-[11px] text-slate-400">
-                    01965643684 (হেল্পলাইন)
+                  <a
+                    href="https://wa.me/8801819305805"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-brand-gold font-mono font-bold text-slate-100 flex items-center gap-1.5 transition"
+                  >
+                    <span>01819305805</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-sans font-semibold">WhatsApp</span>
                   </a>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="size-4 text-brand-gold shrink-0 mt-0.5" />
-                <a href={`mailto:${settings?.email || 'karishmashop786@gmail.com'}`} className="hover:text-white">
-                  {settings?.email || 'karishmashop786@gmail.com'}
+                <a
+                  href="mailto:karishmashop786@gmail.com"
+                  className="hover:text-brand-gold text-slate-200 font-mono transition"
+                >
+                  karishmashop786@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-2">
@@ -138,12 +144,12 @@ export default function Footer() {
               <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5">
                 {lang === 'bn' ? 'পেমেন্ট মেথড:' : 'Payment Methods:'}
               </span>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-1 rounded bg-brand-surface border border-brand-border text-[10px] font-bold text-slate-300">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-brand-gold/30 text-[11px] font-bold text-slate-200">
                   🚚 ক্যাশ অন ডেলিভারি
                 </span>
-                <span className="px-2 py-1 rounded bg-pink-950/40 border border-pink-500/40 text-[10px] font-bold text-pink-300">
-                  bKash / Nagad
+                <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-pink-950/60 to-rose-950/60 border border-pink-500/50 text-[11px] font-bold text-pink-300 font-mono">
+                  বিকাশ / নগদ: 01819305805
                 </span>
               </div>
             </div>

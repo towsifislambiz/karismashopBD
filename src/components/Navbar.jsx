@@ -69,17 +69,19 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full transition-all duration-300">
       {/* 1. Top Luxury Announcement Strip */}
-      <div className="bg-gradient-to-r from-brand-noir via-brand-surface to-brand-noir border-b border-brand-gold/20 py-1.5 px-3 sm:px-6 text-xs text-slate-300">
+      <div className="bg-gradient-to-r from-[#090A0F] via-[#12141D] to-[#090A0F] border-b border-brand-gold/20 py-1.5 px-3 sm:px-6 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           {/* Hotline & WhatsApp */}
           <div className="flex items-center gap-4 text-[11px] sm:text-xs">
             <a
-              href={`tel:${settings?.hotline || '01819305805'}`}
+              href="https://wa.me/8801819305805"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-brand-gold hover:text-brand-goldLight transition font-semibold"
             >
               <Phone className="size-3.5" />
-              <span className="hidden sm:inline">{t('hotline')}:</span>
-              <span className="font-mono">{settings?.hotline || '01819305805'}</span>
+              <span className="hidden sm:inline">WhatsApp / কল:</span>
+              <span className="font-mono">01819305805</span>
             </a>
             <span className="hidden md:inline-block text-slate-600">|</span>
             <span className="hidden md:inline-flex items-center gap-1 text-slate-300">

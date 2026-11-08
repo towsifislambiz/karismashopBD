@@ -583,7 +583,7 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-slate-300 mb-1">বিকাশ পার্সোনাল নম্বর (টাকা পাঠানোর জন্য)</label>
+                <label className="block font-bold text-slate-300 mb-1">বিকাশ ও নগদ পার্সোনাল নম্বর (01819305805)</label>
                 <input
                   type="text"
                   value={settingsForm.bkashNumber}

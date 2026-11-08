@@ -310,7 +310,7 @@ export default function CustomerAccountPage() {
                           <div className="pt-2 border-t border-rose-500/30 flex justify-end">
                             <a
                               href={`https://wa.me/${(() => {
-                                const raw = String(settings?.whatsappNumber || '01749765271').replace(/[^0-9]/g, '');
+                                const raw = String(settings?.whatsappNumber || '01819305805').replace(/[^0-9]/g, '');
                                 return raw.startsWith('880') ? raw : raw.startsWith('0') ? '88' + raw : '880' + raw;
                               })()}?text=${encodeURIComponent(
                                 `আসসালামু আলাইকুম Karishma Shop BD, আমার অর্ডার #${trackingId}-এ বিকাশ পেমেন্ট করেছিলাম, কিন্তু স্ট্যাটাসে 'Payment Not Received' দেখাচ্ছে।\n\nঅর্ডার আইডি: #${trackingId}\nপ্রেরক বিকাশ নম্বর: ${order.bkashSender || 'N/A'}\nমোট টাকা: ৳${order.totalAmount || ''}\n\nদয়া করে একটু ভেরিফাই করে কনফার্ম করবেন? ধন্যবাদ!`

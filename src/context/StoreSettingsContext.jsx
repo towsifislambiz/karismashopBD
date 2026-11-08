@@ -10,9 +10,9 @@ const DEFAULT_SETTINGS = {
   taglineBn: 'এক্সক্লুসিভ থ্রি-পিস, দুবাই আবায়া ও লাক্সারি হ্যান্ডব্যাগ',
   hotline: '01819305805',
   whatsappNumber: '01819305805',
-  backupPhone: '01965643684',
   bkashNumber: '01819305805',
   nagadNumber: '01819305805',
+  email: 'karishmashop786@gmail.com',
   deliveryFeeInside: 80,
   deliveryFeeOutside: 150,
   freeDeliveryThreshold: 3500,
@@ -20,7 +20,6 @@ const DEFAULT_SETTINGS = {
   announcementTextEn: '✨ Premium Boutique Collection | Free Nationwide Delivery on Orders Over ৳3,500!',
   address: 'AlHajj Fajal Member Mansion (1st floor), Shikalbaha, Karnafully - 4371, Chittagong',
   addressBn: 'আলহাজ্ব ফজল মেম্বার ম্যানশন (১ম তলা), শিকলবাহা (৩নং ওয়ার্ড), কর্ণফুলী - ৪৩৭১, চট্টগ্রাম',
-  email: 'karishmashop786@gmail.com',
   facebookPage: 'https://facebook.com/karismashop',
   instagramPage: 'https://instagram.com/karismashop',
   ownerName: 'Ln Mohammed Jasim Uddin',
@@ -36,7 +35,16 @@ export const StoreSettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem('karishma_store_settings');
-      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+      const parsed = saved ? JSON.parse(saved) : {};
+      return {
+        ...DEFAULT_SETTINGS,
+        ...parsed,
+        email: 'karishmashop786@gmail.com',
+        whatsappNumber: '01819305805',
+        hotline: '01819305805',
+        bkashNumber: '01819305805',
+        nagadNumber: '01819305805'
+      };
     } catch {
       return DEFAULT_SETTINGS;
     }
