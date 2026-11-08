@@ -26,7 +26,7 @@ const SLIDES = [
     link: '/shop?category=three-piece',
     buttonText: 'কালেকশন দেখুন',
     buttonTextEn: 'Explore Three-Piece',
-    themeColor: 'from-amber-500/20 via-brand-noir to-brand-noir'
+    glowColor: 'from-brand-gold/15 via-transparent to-transparent'
   },
   {
     id: 2,
@@ -40,7 +40,7 @@ const SLIDES = [
     link: '/shop?category=handbags',
     buttonText: 'ব্যাগ কালেকশন দেখুন',
     buttonTextEn: 'Shop Designer Bags',
-    themeColor: 'from-brand-gold/25 via-brand-surface to-brand-noir'
+    glowColor: 'from-brand-gold/15 via-transparent to-transparent'
   },
   {
     id: 3,
@@ -54,7 +54,7 @@ const SLIDES = [
     link: '/shop?category=abaya',
     buttonText: 'আবায়া অর্ডার করুন',
     buttonTextEn: 'Order Dubai Abaya',
-    themeColor: 'from-rose-950/40 via-brand-noir to-brand-noir'
+    glowColor: 'from-brand-gold/15 via-transparent to-transparent'
   }
 ];
 
@@ -81,134 +81,136 @@ export default function HeroSlider() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-brand-noir text-slate-100">
-      {/* Dynamic Background Glow */}
-      <div className={`absolute inset-0 bg-gradient-to-r ${slide.themeColor} opacity-70 transition-all duration-1000`} />
-      <div className="absolute top-0 right-1/4 size-96 rounded-full bg-brand-gold/10 blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden bg-[#0A0B0E] text-slate-100">
+        {/* Royal Subtle Ambient Glows - Velvet Black & Gold Harmony */}
+        <div className="absolute inset-0 bg-[#0A0B0E]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(212,175,55,0.12),rgba(255,255,255,0))]" />
+        <div className={`absolute inset-0 bg-gradient-to-r ${slide.glowColor || 'from-brand-gold/15 via-transparent to-transparent'} opacity-80 transition-all duration-1000 pointer-events-none`} />
+        <div className="absolute top-1/4 right-1/4 size-96 rounded-full bg-brand-gold/10 blur-3xl pointer-events-none" />
 
-      {/* Main Slider Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Text & Call To Action */}
-          <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left z-10">
-            {/* Tag Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-surface/90 border border-brand-gold/40 text-brand-gold text-xs font-bold shadow-gold-soft tracking-wider animate-shimmer">
-              <Sparkles className="size-3.5 text-brand-gold animate-spin" />
-              <span>{lang === 'bn' ? slide.tagBn : slide.tag}</span>
+        {/* Main Slider Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 lg:py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Text & Call To Action */}
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left z-10">
+              {/* Tag Pill */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/40 text-brand-gold text-xs font-bold shadow-gold-soft tracking-wider">
+                <Sparkles className="size-3.5 text-brand-gold" />
+                <span>{lang === 'bn' ? slide.tagBn : slide.tag}</span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="text-2xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-[1.2]">
+                {lang === 'bn' ? (
+                  <>
+                    {slide.titleBn.split(' ')[0]} {slide.titleBn.split(' ')[1]}{' '}
+                    <span className="text-gold-gradient block sm:inline">
+                      {slide.titleBn.split(' ').slice(2).join(' ')}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    {slide.title.split(' ').slice(0, 3).join(' ')}{' '}
+                    <span className="text-gold-gradient block sm:inline">
+                      {slide.title.split(' ').slice(3).join(' ')}
+                    </span>
+                  </>
+                )}
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto lg:mx-0 leading-relaxed font-sans">
+                {lang === 'bn' ? slide.subtitleBn : slide.subtitle}
+              </p>
+
+              {/* Action Buttons - Unique Luxury Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
+                <Link
+                  to={slide.link}
+                  className="btn-gold-primary w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm sm:text-base font-black tracking-wide flex items-center justify-center gap-2.5 shadow-gold-glow hover:scale-105 transition-all"
+                >
+                  <ShoppingBag className="size-4 stroke-[2.5]" />
+                  <span>{lang === 'bn' ? slide.buttonText : slide.buttonTextEn}</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+
+                <Link
+                  to="/shop"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-black/60 border border-brand-gold/40 hover:border-brand-gold text-slate-200 hover:text-white font-bold text-sm sm:text-base tracking-wide flex items-center justify-center gap-2 backdrop-blur-md transition-all active:scale-95"
+                >
+                  <span>{t('exploreCollection')}</span>
+                </Link>
+              </div>
             </div>
 
-            {/* Headline */}
-            <h1 className="text-2xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-[1.2]">
-              {lang === 'bn' ? (
-                <>
-                  {slide.titleBn.split(' ')[0]} {slide.titleBn.split(' ')[1]}{' '}
-                  <span className="text-gold-gradient block sm:inline">
-                    {slide.titleBn.split(' ').slice(2).join(' ')}
-                  </span>
-                </>
-              ) : (
-                <>
-                  {slide.title.split(' ').slice(0, 3).join(' ')}{' '}
-                  <span className="text-gold-gradient block sm:inline">
-                    {slide.title.split(' ').slice(3).join(' ')}
-                  </span>
-                </>
-              )}
-            </h1>
+            {/* Right Product Showcase Frame */}
+            <div className="lg:col-span-5 relative flex justify-center items-center">
+              {/* Glowing Backdrop Circle (Gold & Noir) */}
+              <div className="absolute size-72 sm:size-96 rounded-full bg-brand-gold/15 blur-3xl pointer-events-none" />
 
-            {/* Subtitle */}
-            <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto lg:mx-0 leading-relaxed font-sans">
-              {lang === 'bn' ? slide.subtitleBn : slide.subtitle}
-            </p>
+              {/* Image Card Container (Royal Noir & Fine Gold Rim - No White Bezel) */}
+              <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-gradient-to-b from-[#181A24] to-[#0D0E14] border border-brand-gold/40 p-2.5 sm:p-3.5 shadow-luxury-noir hover:border-brand-gold transition-all duration-500 group">
+                <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#111218] to-[#07080B] flex items-center justify-center border border-brand-gold/20">
+                  <img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="size-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-700 select-none"
+                  />
 
-            {/* Action Buttons - Unique Luxury Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
-              <Link
-                to={slide.link}
-                className="btn-gold-primary w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm sm:text-base font-black tracking-wide flex items-center justify-center gap-2.5"
-              >
-                <ShoppingBag className="size-4 stroke-[2.5]" />
-                <span>{lang === 'bn' ? slide.buttonText : slide.buttonTextEn}</span>
-                <ArrowRight className="size-4" />
-              </Link>
-
-              <Link
-                to="/shop"
-                className="btn-noir-secondary w-full sm:w-auto px-7 py-3.5 rounded-2xl font-bold text-sm sm:text-base tracking-wide flex items-center justify-center gap-2"
-              >
-                <span>{t('exploreCollection')}</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Product Showcase Frame */}
-          <div className="lg:col-span-5 relative flex justify-center items-center">
-            {/* Glowing Backdrop Circle (Gold & Noir) */}
-            <div className="absolute size-72 sm:size-96 rounded-full bg-gradient-to-tr from-brand-gold/25 via-brand-goldDark/15 to-transparent blur-3xl pointer-events-none" />
-
-            {/* Image Card Container */}
-            <div className="relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl bg-brand-surface/90 border border-brand-gold/40 p-3 sm:p-4 shadow-luxury hover:border-brand-gold/70 transition group">
-              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-brand-noir/90 flex items-center justify-center">
-                <img
-                  src={slide.image}
-                  alt={slide.title}
-                  className="size-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-700"
-                />
-
-                {/* Floating Price / Tag Badge */}
-                <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-brand-noir/90 backdrop-blur-md border border-brand-gold/30 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-brand-gold uppercase font-bold tracking-wider block">
-                      {lang === 'bn' ? 'প্রিমিয়াম বুটিক ভ্যারিয়েন্ট' : 'Boutique Exclusive'}
-                    </span>
-                    <span className="text-xs font-bold text-white">
-                      Karishma Shop BD
-                    </span>
+                  {/* Floating Price / Tag Badge */}
+                  <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/85 backdrop-blur-md border border-brand-gold/30 flex items-center justify-between shadow-lg">
+                    <div>
+                      <span className="text-[10px] text-brand-gold uppercase font-bold tracking-wider block">
+                        {lang === 'bn' ? 'প্রিমিয়াম বুটিক ভ্যারিয়েন্ট' : 'Boutique Exclusive'}
+                      </span>
+                      <span className="text-xs font-bold text-white font-serif">
+                        Karishma Shop BD
+                      </span>
+                    </div>
+                    <Link
+                      to={slide.link}
+                      className="btn-gold-primary px-3.5 py-1.5 rounded-lg text-xs font-black shadow-sm"
+                    >
+                      {t('orderNow')}
+                    </Link>
                   </div>
-                  <Link
-                    to={slide.link}
-                    className="btn-gold-primary px-3.5 py-1.5 rounded-lg text-xs font-black"
-                  >
-                    {t('orderNow')}
-                  </Link>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Carousel Slide Controls */}
-        <div className="flex items-center justify-between pt-6 sm:pt-8 border-t border-brand-border/60 mt-6">
-          <div className="flex items-center gap-2">
-            {SLIDES.map((_, idx) => (
+          {/* Carousel Slide Controls */}
+          <div className="flex items-center justify-between pt-6 sm:pt-8 border-t border-brand-gold/20 mt-6">
+            <div className="flex items-center gap-2">
+              {SLIDES.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrent(idx)}
+                  className={`transition-all duration-300 rounded-full h-2 ${current === idx ? 'w-8 bg-brand-gold shadow-gold-soft' : 'w-2 bg-slate-700 hover:bg-slate-500'}`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
               <button
-                key={idx}
-                onClick={() => setCurrent(idx)}
-                className={`transition-all duration-300 rounded-full h-2 ${current === idx ? 'w-8 bg-brand-gold shadow-gold-soft' : 'w-2 bg-slate-700 hover:bg-slate-500'}`}
-                aria-label={`Go to slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={prevSlide}
-              className="p-2 rounded-xl bg-brand-surface border border-brand-border hover:border-brand-gold text-slate-300 hover:text-white transition active:scale-95"
-              aria-label="Previous Slide"
-            >
-              <ChevronLeft className="size-4" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="p-2 rounded-xl bg-brand-surface border border-brand-border hover:border-brand-gold text-slate-300 hover:text-white transition active:scale-95"
-              aria-label="Next Slide"
-            >
-              <ChevronRight className="size-4" />
-            </button>
+                onClick={prevSlide}
+                className="p-2.5 rounded-xl bg-slate-900/90 border border-brand-gold/30 hover:border-brand-gold text-brand-gold hover:text-white transition active:scale-95 shadow-sm"
+                aria-label="Previous Slide"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="p-2.5 rounded-xl bg-slate-900/90 border border-brand-gold/30 hover:border-brand-gold text-brand-gold hover:text-white transition active:scale-95 shadow-sm"
+                aria-label="Next Slide"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
     {/* 2. Trust & Guarantee Banner (Independent Crisp White & Gold Boutique Strip) */}
     <section className="bg-white border-y border-slate-200 py-6 sm:py-8 px-4 sm:px-6 relative z-10 shadow-xs">
