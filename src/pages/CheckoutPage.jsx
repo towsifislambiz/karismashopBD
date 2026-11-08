@@ -316,7 +316,7 @@ export default function CheckoutPage() {
                 <label
                   className={`p-3 rounded-xl border flex items-center gap-2 cursor-pointer transition ${
                     paymentMethod === 'bkash'
-                      ? 'border-pink-500 bg-pink-50 text-pink-900 font-bold ring-1 ring-pink-500/30'
+                      ? 'border-pink-500 bg-gradient-to-r from-pink-50 to-orange-50 text-pink-900 font-bold ring-1 ring-pink-500/30'
                       : 'border-slate-200 bg-slate-50 text-slate-600'
                   }`}
                 >
@@ -327,27 +327,32 @@ export default function CheckoutPage() {
                     onChange={() => setPaymentMethod('bkash')}
                     className="accent-pink-600"
                   />
-                  <span>বিকাশ সেন্ড মানি</span>
+                  <span>বিকাশ / নগদ সেন্ড মানি</span>
                 </label>
               </div>
             </div>
 
-            {/* bKash instructions if selected */}
+            {/* bKash & Nagad instructions if selected */}
             {paymentMethod === 'bkash' && (
-              <div className="p-4 rounded-2xl bg-pink-50 border border-pink-200 space-y-2.5">
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-50 via-rose-50 to-orange-50 border border-pink-200 space-y-2.5">
                 <p className="text-pink-950 leading-relaxed font-medium">
                   {lang === 'bn'
-                    ? 'নিচের বিকাশ পার্সোনাল নম্বরে মোট প্রদেয় টাকা "Send Money" করে প্রেরক নম্বরটি নিচে লিখুন:'
-                    : 'Send money to the bKash personal number below and enter your sender number:'}
+                    ? 'নিচের বিকাশ বা নগদ পার্সোনাল নম্বরে মোট প্রদেয় টাকা "Send Money" করে প্রেরক নম্বরটি নিচে লিখুন:'
+                    : 'Send money to the bKash or Nagad personal number below and enter your sender number:'}
                 </p>
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-pink-200 shadow-sm">
-                  <span className="font-mono font-bold text-pink-700 text-sm">
-                    {settings?.bkashNumber || '01819305805'} (Personal)
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="font-mono font-bold text-pink-700 text-sm">
+                      {settings?.bkashNumber || '01819305805'}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-bold">
+                      বিকাশ / নগদ (Personal)
+                    </span>
+                  </div>
                   <button
                     type="button"
                     onClick={handleCopyBkash}
-                    className="px-3 py-1 rounded-lg bg-pink-600 hover:bg-pink-700 text-white font-bold text-[11px] flex items-center gap-1 transition"
+                    className="px-3 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white font-bold text-[11px] flex items-center gap-1 transition shadow-xs active:scale-95"
                   >
                     <Copy className="size-3" />
                     <span>{copiedBkash ? 'কপি হয়েছে' : 'নম্বর কপি'}</span>
@@ -357,7 +362,7 @@ export default function CheckoutPage() {
                   type="tel"
                   value={bkashSender}
                   onChange={(e) => setBkashSender(e.target.value)}
-                  placeholder={lang === 'bn' ? 'যে বিকাশ নম্বর থেকে টাকা পাঠিয়েছেন (01XXXXXXXXX)' : 'Sender bKash number'}
+                  placeholder={lang === 'bn' ? 'যে বিকাশ বা নগদ নম্বর থেকে টাকা পাঠিয়েছেন (01XXXXXXXXX)' : 'Sender bKash / Nagad number'}
                   className="w-full bg-white border border-pink-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 font-mono focus:outline-none"
                 />
               </div>

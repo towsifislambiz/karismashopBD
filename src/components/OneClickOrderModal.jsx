@@ -339,7 +339,7 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
             <label
               className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition ${
                 paymentMethod === 'bkash'
-                  ? 'border-pink-500 bg-pink-50 text-pink-900 font-bold'
+                  ? 'border-pink-500 bg-gradient-to-r from-pink-50 to-orange-50 text-pink-900 font-bold'
                   : 'border-slate-200 bg-white text-slate-600'
               }`}
             >
@@ -350,21 +350,26 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
                 onChange={() => setPaymentMethod('bkash')}
                 className="accent-pink-600"
               />
-              <span>বিকাশ সেন্ড মানি</span>
+              <span>বিকাশ / নগদ সেন্ড মানি</span>
             </label>
           </div>
 
-          {/* bKash instructions if selected */}
+          {/* bKash & Nagad instructions if selected */}
           {paymentMethod === 'bkash' && (
-            <div className="p-3 rounded-xl bg-pink-50 border border-pink-200 space-y-2 text-[11px]">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-pink-50 via-rose-50 to-orange-50 border border-pink-200 space-y-2 text-[11px]">
               <div className="flex items-center justify-between">
-                <span className="font-mono font-bold text-pink-700">
-                  {settings?.bkashNumber || '01819305805'} (Personal)
-                </span>
+                <div className="flex flex-col">
+                  <span className="font-mono font-bold text-pink-700 text-xs">
+                    {settings?.bkashNumber || '01819305805'}
+                  </span>
+                  <span className="text-[9px] text-slate-500 font-bold">
+                    বিকাশ / নগদ (Personal)
+                  </span>
+                </div>
                 <button
                   type="button"
                   onClick={handleCopyBkash}
-                  className="px-2.5 py-1 rounded bg-pink-600 text-white font-bold text-[10px] flex items-center gap-1"
+                  className="px-2.5 py-1 rounded bg-pink-600 hover:bg-pink-700 text-white font-bold text-[10px] flex items-center gap-1 shadow-xs active:scale-95"
                 >
                   <Copy className="size-3" />
                   <span>{copiedBkash ? 'কপি হয়েছে' : 'নম্বর কপি'}</span>
@@ -374,8 +379,8 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
                 type="tel"
                 value={bkashSender}
                 onChange={(e) => setBkashSender(e.target.value)}
-                placeholder="যে বিকাশ নম্বর থেকে টাকা পাঠিয়েছেন লিখুন"
-                className="w-full bg-white border border-pink-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-mono"
+                placeholder="যে বিকাশ বা নগদ নম্বর থেকে টাকা পাঠিয়েছেন লিখুন"
+                className="w-full bg-white border border-pink-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-mono focus:outline-none"
               />
             </div>
           )}
