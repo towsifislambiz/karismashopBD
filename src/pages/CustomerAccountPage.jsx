@@ -124,7 +124,7 @@ export default function CustomerAccountPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 text-slate-100">
       {/* 1. Account Hero Header */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-brand-surface via-brand-card to-brand-noir border border-brand-gold/40 shadow-luxury flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#141622] via-[#090A0F] to-[#181B26] border border-brand-gold/40 shadow-luxury-noir flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
           <div className="size-16 sm:size-20 rounded-2xl bg-gradient-to-tr from-brand-gold to-brand-goldDark text-brand-noir font-serif font-black text-2xl sm:text-3xl flex items-center justify-center border-2 border-brand-gold/60 shadow-gold-glow">
             {userData?.displayName ? userData.displayName.slice(0, 1).toUpperCase() : <User className="size-8" />}

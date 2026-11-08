@@ -35,9 +35,9 @@ export default function Footer() {
             </p>
 
             <div className="pt-2 flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-brand-surface border border-brand-border flex items-center gap-2">
-                <ShieldCheck className="size-4 text-emerald-400" />
-                <span className="text-[11px] font-bold text-slate-200">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-brand-gold/60 shadow-md">
+                <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
+                <span className="text-xs font-black text-slate-900 tracking-wide font-sans">
                   {lang === 'bn' ? '১০০% অরিজিনাল কোয়ালিটি' : '100% Quality Guaranteed'}
                 </span>
               </div>
