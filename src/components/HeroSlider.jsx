@@ -155,9 +155,9 @@ export default function HeroSlider() {
                     src={slide.image}
                     alt={slide.title}
                     className="size-full object-contain p-2 sm:p-3 group-hover:scale-105 transition-transform duration-700 select-none"
-                    loading={currentSlide === 0 ? "eager" : "lazy"}
+                    loading={current === 0 ? "eager" : "lazy"}
                     decoding="async"
-                    fetchPriority={currentSlide === 0 ? "high" : "auto"}
+                    fetchPriority={current === 0 ? "high" : "auto"}
                   />
 
                   {/* Floating Price / Tag Badge */}
