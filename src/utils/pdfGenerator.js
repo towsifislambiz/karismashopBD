@@ -251,9 +251,23 @@ export function generateMonthlyReportPDF(orders = [], settings = {}, monthName =
 }
 
 // Instant 1-Click Official Visiting Card PDF Generator & Downloader
-export async function downloadVisitingCardPDF() {
+export async function downloadVisitingCardPDF(customCardUrl) {
   try {
-    const imgUrl = '/assets/brand/visiting-card.jpg';
+    const imgUrl = customCardUrl || '/assets/brand/visiting-card.jpg';
+
+    // If it's already a data URL (from newly uploaded custom card), use directly
+    if (imgUrl.startsWith('data:image')) {
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: [89, 54]
+      });
+      const format = imgUrl.includes('png') ? 'PNG' : 'JPEG';
+      doc.addImage(imgUrl, format, 0, 0, 89, 54, undefined, 'FAST');
+      doc.save('KARISHMASHOPBD-Visiting-Card.pdf');
+      return true;
+    }
+
     const response = await fetch(imgUrl);
     if (!response.ok) throw new Error('Failed to load card asset');
     const blob = await response.blob();
@@ -270,7 +284,8 @@ export async function downloadVisitingCardPDF() {
             format: [89, 54]
           });
 
-          doc.addImage(base64Data, 'JPEG', 0, 0, 89, 54, undefined, 'FAST');
+          const format = imgUrl.toLowerCase().endsWith('.png') ? 'PNG' : 'JPEG';
+          doc.addImage(base64Data, format, 0, 0, 89, 54, undefined, 'FAST');
           doc.save('KARISHMASHOPBD-Visiting-Card.pdf');
           resolve(true);
         } catch (err) {
@@ -282,9 +297,9 @@ export async function downloadVisitingCardPDF() {
     });
   } catch (error) {
     console.error('Failed to generate visiting card PDF:', error);
-    // Fallback: direct download PNG
+    // Fallback: direct download image
     const link = document.createElement('a');
-    link.href = '/assets/brand/visiting-card.png';
+    link.href = customCardUrl || '/assets/brand/visiting-card.png';
     link.download = 'KARISHMASHOPBD-Visiting-Card.png';
     document.body.appendChild(link);
     link.click();

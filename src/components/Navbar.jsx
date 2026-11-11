@@ -181,7 +181,7 @@ export default function Navbar() {
           >
             <div className="relative size-11 sm:size-14 rounded-2xl bg-white p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-sm transition flex items-center justify-center shrink-0 overflow-hidden active:scale-95">
               <img
-                src="/assets/brand/ks-logo.webp"
+                src={settings?.siteLogo || "/assets/brand/ks-logo.webp"}
                 alt="KARISHMASHOPBD"
                 className="size-full object-contain filter drop-shadow-sm group-hover:scale-105 transition duration-300"
               />

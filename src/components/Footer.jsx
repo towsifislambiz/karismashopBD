@@ -31,7 +31,7 @@ export default function Footer() {
     try {
       setIsDownloadingCard(true);
       setCardDownloadSuccess('');
-      await downloadVisitingCardPDF();
+      await downloadVisitingCardPDF(settings?.visitingCardImage);
       setCardDownloadSuccess(lang === 'bn' ? '✓ ভিজিটিং কার্ড PDF সফলভাবে ডাউনলোড হয়েছে!' : '✓ Visiting card PDF downloaded successfully!');
       setTimeout(() => setCardDownloadSuccess(''), 4000);
     } catch (err) {
@@ -71,7 +71,7 @@ export default function Footer() {
               title="KARISHMASHOPBD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
             >
               <div className="size-12 rounded-2xl bg-white p-1 border border-brand-gold/40 flex items-center justify-center active:scale-95 transition shadow-sm">
-                <img src="/assets/brand/ks-logo.webp" alt="KARISHMASHOPBD" className="size-full object-contain" />
+                <img src={settings?.siteLogo || "/assets/brand/ks-logo.webp"} alt="KARISHMASHOPBD" className="size-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center tracking-tight leading-none font-sans font-black text-2xl sm:text-3xl">
@@ -257,7 +257,7 @@ export default function Footer() {
                 <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-brand-gold/40 to-teal-500/40 opacity-70 blur-md group-hover:opacity-100 transition duration-500" />
                 <div className="relative rounded-2xl overflow-hidden border border-brand-gold/50 shadow-2xl bg-[#090C12] transition-transform duration-300 group-hover:scale-[1.02]">
                   <img
-                    src="/assets/brand/visiting-card.webp"
+                    src={settings?.visitingCardImage || "/assets/brand/visiting-card.webp"}
                     alt="Karishma Shop BD Official Visiting Card - Ln Md Jasim Uddin"
                     className="w-full h-auto object-cover select-none"
                     loading="lazy"

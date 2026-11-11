@@ -12,6 +12,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useStoreSettings } from '../context/StoreSettingsContext';
 
 const SLIDES = [
   {
@@ -60,24 +61,26 @@ const SLIDES = [
 
 export default function HeroSlider() {
   const { lang, t } = useLanguage();
+  const { settings } = useStoreSettings();
+  const activeSlides = (settings?.heroBanners && settings.heroBanners.length === 3) ? settings.heroBanners : SLIDES;
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent(prev => (prev + 1) % SLIDES.length);
+      setCurrent(prev => (prev + 1) % activeSlides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeSlides.length]);
 
   const prevSlide = () => {
-    setCurrent(prev => (prev === 0 ? SLIDES.length - 1 : prev - 1));
+    setCurrent(prev => (prev === 0 ? activeSlides.length - 1 : prev - 1));
   };
 
   const nextSlide = () => {
-    setCurrent(prev => (prev + 1) % SLIDES.length);
+    setCurrent(prev => (prev + 1) % activeSlides.length);
   };
 
-  const slide = SLIDES[current];
+  const slide = activeSlides[current] || activeSlides[0];
 
   return (
     <>
@@ -185,7 +188,7 @@ export default function HeroSlider() {
           {/* Carousel Slide Controls */}
           <div className="flex items-center justify-between pt-6 sm:pt-8 border-t border-brand-gold/20 mt-6">
             <div className="flex items-center gap-2">
-              {SLIDES.map((_, idx) => (
+              {activeSlides.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrent(idx)}

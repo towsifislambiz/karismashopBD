@@ -4,6 +4,48 @@ import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
 const StoreSettingsContext = createContext();
 
+export const DEFAULT_HERO_BANNERS = [
+  {
+    id: 1,
+    tagBn: 'এক্সক্লুসিভ ফেস্টিভ কালেকশন',
+    tag: 'FESTIVE COLLECTION 2026',
+    titleBn: 'রাজকীয় আভিজাত্য ও আধুনিক বুটিকের নিখুঁত মেলবন্ধন',
+    title: 'Where Royal Heritage Meets Modern Elegance',
+    subtitleBn: 'হাতে বোনা নিখুঁত সুতার কাজ, প্রিমিয়াম সফট লিনেন ফেব্রিক ও রেশমি সিল্ক ওড়নায় সাজানো কারিশমা বুটিক কালেকশন।',
+    subtitle: 'Handcrafted threadwork embroidery, premium soft linens, and bespoke silk dupattas tailored for statement occasions.',
+    image: '/assets/products/threepiece_black_white.webp',
+    link: '/shop?category=three-piece',
+    buttonText: 'কালেকশন দেখুন',
+    buttonTextEn: 'Explore Three-Piece'
+  },
+  {
+    id: 2,
+    tagBn: 'লাক্সারি সিগনেচার হ্যান্ডব্যাগ',
+    tag: 'SIGNATURE HANDBAGS',
+    titleBn: 'স্কাল্পটেড ফ্লোরাল-চার্ম লাক্সারি ডিজাইনার হ্যান্ডব্যাগ',
+    title: 'Sculpted Floral-Charm Boutique Totes & Clutches',
+    subtitleBn: 'প্রিমিয়াম ওয়াটারপ্রুফ ভেগান লেদার ও গোল্ডেন মেটালিক ফিনিশিং। ৫টি আকর্ষণীয় কালারে সাজানো এক্সক্লুসিভ টোট ব্যাগ।',
+    subtitle: 'Artisanal vegan leather with radiant gold hardware and signature blossom tassels. Available in 5 breathtaking pastel & classic hues.',
+    image: '/assets/products/hero_handbag_collection_podium.webp',
+    link: '/shop?category=handbags',
+    buttonText: 'ব্যাগ কালেকশন দেখুন',
+    buttonTextEn: 'Shop Designer Bags'
+  },
+  {
+    id: 3,
+    tagBn: 'দুবাই ইম্পেরিয়াল আবায়া ও বোরকা',
+    tag: 'DUBAI IMPERIAL ABAYA',
+    titleBn: 'অরিজিনাল দুবাই নিদা ফেব্রিক ও রাজকীয় স্টোনওয়ার্ক বোরকা',
+    title: 'Pure Dubai Nida Fabrics with Sparkling Stonework',
+    subtitleBn: 'শোল্ডার ও ফ্রন্টে চোখ জুড়ানো ক্রিস্টাল স্টোনের কারুকাজ। সাথে রয়েছে প্রিমিয়াম ম্যাচিং হিজাব সম্পূর্ণ ফ্রি।',
+    subtitle: 'Flawlessly modest silhouette adorned with hand-placed crystal cascading chains. Complete with complimentary matching hijab.',
+    image: '/assets/products/abaya_dubai_stonework_black.webp',
+    link: '/shop?category=abaya',
+    buttonText: 'আবায়া অর্ডার করুন',
+    buttonTextEn: 'Order Dubai Abaya'
+  }
+];
+
 const DEFAULT_SETTINGS = {
   storeName: 'KARISHMASHOPBD',
   tagline: 'Your Quality Shopping Destination • Customers Satisfaction Is Our First Priority',
@@ -23,6 +65,10 @@ const DEFAULT_SETTINGS = {
   facebookPage: 'https://www.facebook.com/profile.php?id=61576612149506',
   instagramPage: 'https://instagram.com/karismashop',
   ownerName: 'Ln Md Jasim Uddin',
+  siteLogo: '/assets/brand/ks-logo.webp',
+  visitingCardImage: '/assets/brand/visiting-card.webp',
+  hotSaleDiscountPercent: 20,
+  heroBanners: DEFAULT_HERO_BANNERS,
   coinSettings: {
     welcomeCoins: 50,
     cashbackPercentage: 2,
