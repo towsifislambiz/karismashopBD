@@ -46,14 +46,72 @@ export default function AdminDashboard() {
   const { products, addProduct, updateProduct, deleteProduct, resetToDefault, isCloudSynced: isProductsSynced, syncAllToFirestore, isSyncing } = useProducts();
   const { settings, updateSettings } = useStoreSettings();
 
-  // Authentication State
+  // 1-Hour Session Duration (3,600,000 ms)
+  const ONE_HOUR_MS = 60 * 60 * 1000;
+
+  // Authentication State with 1-Hour Auto-Expiry Check
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
-    return localStorage.getItem('karishma_admin_auth') === 'true';
+    const isAuth = localStorage.getItem('karishma_admin_auth') === 'true';
+    const expiresAt = parseInt(localStorage.getItem('karishma_admin_session_expires_at') || '0', 10);
+    const now = Date.now();
+    if (isAuth && expiresAt > now) {
+      return true;
+    }
+    // Expired or invalid session: clear completely
+    localStorage.removeItem('karishma_admin_auth');
+    localStorage.removeItem('karishma_admin_session_expires_at');
+    return false;
   });
+
+  const [sessionExpiresAt, setSessionExpiresAt] = useState(() => {
+    return parseInt(localStorage.getItem('karishma_admin_session_expires_at') || '0', 10);
+  });
+  const [sessionRemainingMinutes, setSessionRemainingMinutes] = useState(60);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
+
+  // 1-Hour Automatic Session Logout & Periodic Verification
+  useEffect(() => {
+    if (!isAdminAuthenticated) return;
+
+    const checkSessionExpiry = () => {
+      const expiresAt = parseInt(localStorage.getItem('karishma_admin_session_expires_at') || '0', 10);
+      const now = Date.now();
+
+      if (!expiresAt || now >= expiresAt) {
+        // 1 hour elapsed: auto-logout from this device
+        localStorage.removeItem('karishma_admin_auth');
+        localStorage.removeItem('karishma_admin_session_expires_at');
+        setIsAdminAuthenticated(false);
+        alert('নিরাপত্তার স্বার্থে ১ ঘণ্টা পর অ্যাডমিন সেশন স্বয়ংক্রিয়ভাবে সমাপ্ত হয়েছে। পুনরায় প্রবেশ করতে লোগোতে ৫ বার ক্লিক করে লগইন করুন।');
+        navigate('/');
+      } else {
+        const remainingMins = Math.max(1, Math.ceil((expiresAt - now) / (60 * 1000)));
+        setSessionRemainingMinutes(remainingMins);
+      }
+    };
+
+    checkSessionExpiry();
+    // Check every 10 seconds
+    const interval = setInterval(checkSessionExpiry, 10000);
+
+    // Cross-tab synchronization: if another tab logs out
+    const handleStorage = (e) => {
+      if (e.key === 'karishma_admin_auth' && e.newValue !== 'true') {
+        setIsAdminAuthenticated(false);
+        navigate('/');
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [isAdminAuthenticated, navigate]);
 
   // 2-Minute Lockout on 5 Consecutive Failed Attempts (Rate Limiting)
   const MAX_FAILED_ATTEMPTS = 5;
@@ -163,8 +221,12 @@ export default function AdminDashboard() {
     const isPassMatch = cleanPass === 'SAZ632935' || cleanPass === '1234' || cleanPass === 'admin';
 
     if (isUserMatch && isPassMatch) {
+      const sessionExpiry = Date.now() + ONE_HOUR_MS;
       setIsAdminAuthenticated(true);
+      setSessionExpiresAt(sessionExpiry);
+      setSessionRemainingMinutes(60);
       localStorage.setItem('karishma_admin_auth', 'true');
+      localStorage.setItem('karishma_admin_session_expires_at', sessionExpiry.toString());
       setFailedAttempts(0);
       setLockoutUntil(0);
       localStorage.removeItem('karishma_admin_failed_attempts');
@@ -192,8 +254,10 @@ export default function AdminDashboard() {
     if (window.confirm('আপনি কি নিশ্চিত যে অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?')) {
       setIsAdminAuthenticated(false);
       localStorage.removeItem('karishma_admin_auth');
+      localStorage.removeItem('karishma_admin_session_expires_at');
       setUsername('');
       setPassword('');
+      navigate('/');
     }
   };
 
@@ -505,6 +569,10 @@ export default function AdminDashboard() {
               <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30 flex items-center gap-1.5">
                 <span className="size-2 rounded-full bg-teal-400 animate-pulse" />
                 <span>Firebase Live Database</span>
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1.5" title="নিরাপত্তার স্বার্থে প্রতি ১ ঘণ্টা পর পর সেশন স্বয়ংক্রিয়ভাবে সমাপ্ত হবে">
+                <Clock className="size-3 text-amber-400" />
+                <span>সেশন মেয়াদ: {sessionRemainingMinutes} মি.</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
