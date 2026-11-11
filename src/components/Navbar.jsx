@@ -94,19 +94,35 @@ export default function Navbar() {
       <div className="bg-gradient-to-r from-[#090A0F] via-[#12141D] to-[#090A0F] border-b border-brand-gold/20 py-1.5 px-3 sm:px-6 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           {/* Hotline & WhatsApp */}
-          <div className="flex items-center gap-4 text-[11px] sm:text-xs">
+          <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs">
+            {/* Hotline Link */}
+            <a
+              href={`tel:${settings?.hotline || '01819305805'}`}
+              className="flex items-center gap-1.5 text-brand-gold hover:text-brand-goldLight transition font-semibold"
+              title="হটলাইনে কল করুন: 01819305805"
+            >
+              <Phone className="size-3.5 text-amber-400" />
+              <span>Hot Line:</span>
+              <span className="font-mono font-bold text-white tracking-wide">{settings?.hotline || '01819305805'}</span>
+            </a>
+
+            <span className="text-slate-600">|</span>
+
+            {/* WhatsApp Link */}
             <a
               href={`https://wa.me/88${(settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-brand-gold hover:text-brand-goldLight transition font-semibold"
+              className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition font-semibold"
+              title="হোয়াটসঅ্যাপে মেসেজ পাঠান: 01965643684"
             >
-              <Phone className="size-3.5" />
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse hidden sm:inline-block" />
               <span className="hidden sm:inline">WhatsApp:</span>
-              <span className="font-mono">{settings?.whatsappNumber || '01965643684'}</span>
+              <span className="font-mono font-bold text-white tracking-wide">{settings?.whatsappNumber || '01965643684'}</span>
             </a>
-            <span className="hidden md:inline-block text-slate-600">|</span>
-            <span className="hidden md:inline-flex items-center gap-1 text-slate-300">
+
+            <span className="hidden xl:inline-block text-slate-600">|</span>
+            <span className="hidden xl:inline-flex items-center gap-1 text-slate-300">
               <ShieldCheck className="size-3.5 text-emerald-400" />
               <span>{lang === 'bn' ? '১০০% অরিজিনাল বুটিক কালেকশন' : '100% Original Boutique Wear'}</span>
             </span>

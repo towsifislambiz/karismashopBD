@@ -183,7 +183,19 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs">
               <li className="flex items-start gap-2">
-                <Phone className="size-4 text-brand-gold shrink-0 mt-0.5" />
+                <Phone className="size-4 text-amber-400 shrink-0 mt-0.5" />
+                <div className="flex flex-col">
+                  <a
+                    href={`tel:${settings?.hotline || '01819305805'}`}
+                    className="hover:text-brand-gold font-mono font-bold text-white flex items-center gap-1.5 transition"
+                  >
+                    <span>{settings?.hotline || '01819305805'}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-sans font-semibold">Hot Line</span>
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="size-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <a
                     href={`https://wa.me/88${(settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '')}`}
