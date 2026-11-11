@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     deliveryFeeOutside: settings?.deliveryFeeOutside || 150,
     freeDeliveryThreshold: settings?.freeDeliveryThreshold || 3500,
     announcementText: settings?.announcementText || '✨ প্রিমিয়াম বুটিক কালেকশন | ৩,৫০০ টাকার অর্ডারে সারা দেশে ডেলিভারি সম্পূর্ণ ফ্রি!',
-    address: settings?.address || 'AlHajj Fajal Member Mansion (1st floor), Shikalbaha, Karnafully - 4371, Chittagong',
+    address: settings?.address || 'Fazal Member Mansion (1st floor), CDA Road, Shikalbaha, Ward No-03, Karnafully, Chittagong - 4371',
     email: settings?.email || 'karishmashop786@gmail.com'
   });
   const [settingsSuccess, setSettingsSuccess] = useState('');

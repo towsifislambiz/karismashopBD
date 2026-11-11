@@ -162,7 +162,9 @@ export default function Footer() {
               <li className="flex items-start gap-2">
                 <MapPin className="size-4 text-brand-gold shrink-0 mt-0.5" />
                 <span className="leading-relaxed">
-                  {settings?.addressBn || 'আলহাজ্ব ফজল মেম্বার ম্যানশন (১ম তলা), শিকলবাহা (৩নং ওয়ার্ড), কর্ণফুলী - ৪৩৭১, চট্টগ্রাম'}
+                  {lang === 'bn'
+                    ? (settings?.addressBn || 'ফজল মেম্বার ম্যানশন (১ম তলা), সিডিএ রোড, শিকলবাহা, ৩নং ওয়ার্ড, কর্ণফুলী, চট্টগ্রাম - ৪৩৭১')
+                    : (settings?.address || 'Fazal Member Mansion (1st floor), CDA Road, Shikalbaha, Ward No-03, Karnafully, Chittagong - 4371')}
                 </span>
               </li>
             </ul>
