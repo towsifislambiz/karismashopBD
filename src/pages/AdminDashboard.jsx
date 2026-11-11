@@ -21,6 +21,7 @@ import {
   Phone,
   RefreshCw,
   Lock,
+  Key,
   User,
   Eye,
   EyeOff,
@@ -260,7 +261,31 @@ export default function AdminDashboard() {
   const [settingsSuccess, setSettingsSuccess] = useState('');
   const [catalogSuccess, setCatalogSuccess] = useState('');
 
-  // Handle Login with Afzal_1393 / SAZ632935
+  // 6th Tab Security & Password Change State
+  const [securityForm, setSecurityForm] = useState({
+    currentPassword: '',
+    newUsername: settings?.adminUsername || 'Afzal_1393',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [securityError, setSecurityError] = useState('');
+  const [securitySuccess, setSecuritySuccess] = useState('');
+  const [isSavingSecurity, setIsSavingSecurity] = useState(false);
+
+  // Keep security username in sync when settings are loaded from Firestore
+  useEffect(() => {
+    if (settings?.adminUsername) {
+      setSecurityForm(prev => ({
+        ...prev,
+        newUsername: settings.adminUsername
+      }));
+    }
+  }, [settings?.adminUsername]);
+
+  // Handle Login with Afzal_1393 / SAZ632935 (or client's customized credentials)
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     if (isLockedOut) return;
@@ -273,8 +298,17 @@ export default function AdminDashboard() {
       return;
     }
 
-    const isUserMatch = cleanUser.toLowerCase() === 'afzal_1393' || cleanUser === 'admin';
-    const isPassMatch = cleanPass === 'SAZ632935' || cleanPass === '1234' || cleanPass === 'admin';
+    const configuredUser = (settings?.adminUsername || 'Afzal_1393').trim();
+    const configuredPass = (settings?.adminPassword || 'SAZ632935').trim();
+
+    const isUserMatch =
+      cleanUser.toLowerCase() === configuredUser.toLowerCase() ||
+      cleanUser.toLowerCase() === 'afzal_1393' ||
+      cleanUser.toLowerCase() === 'admin';
+
+    const isPassMatch =
+      cleanPass === configuredPass ||
+      (configuredPass === 'SAZ632935' && (cleanPass === '1234' || cleanPass === 'admin'));
 
     if (isUserMatch && isPassMatch) {
       const sessionExpiry = Date.now() + ONE_HOUR_MS;
@@ -303,6 +337,109 @@ export default function AdminDashboard() {
         const remainingChances = MAX_FAILED_ATTEMPTS - nextCount;
         setLoginError(`ভুল ইউজারনেম অথবা পাসওয়ার্ড! আর ${remainingChances} বার ভুল তথ্য দিলে ২ মিনিটের জন্য লগইন বন্ধ হয়ে যাবে।`);
       }
+    }
+  };
+
+  // Handle Admin Password & Username Change Submission
+  const handleSecuritySubmit = async (e) => {
+    e.preventDefault();
+    setSecurityError('');
+    setSecuritySuccess('');
+
+    const currentPassInput = securityForm.currentPassword.trim();
+    const newUsernameInput = securityForm.newUsername.trim();
+    const newPassInput = securityForm.newPassword.trim();
+    const confirmPassInput = securityForm.confirmPassword.trim();
+
+    const currentExpectedPass = (settings?.adminPassword || 'SAZ632935').trim();
+
+    // 1. Verify Current Password
+    if (!currentPassInput) {
+      setSecurityError('অনুগ্রহ করে বর্তমান পাসওয়ার্ডটি প্রদান করুন!');
+      return;
+    }
+
+    const isCurrentCorrect =
+      currentPassInput === currentExpectedPass ||
+      (currentExpectedPass === 'SAZ632935' && (currentPassInput === '1234' || currentPassInput === 'admin'));
+
+    if (!isCurrentCorrect) {
+      setSecurityError('বর্তমান পাসওয়ার্ডটি সঠিক নয়! সঠিক পাসওয়ার্ড দিয়ে আবার চেষ্টা করুন।');
+      return;
+    }
+
+    // 2. Validate Username
+    if (!newUsernameInput) {
+      setSecurityError('অ্যাডমিন ইউজারনেম ফাঁকা রাখা যাবে না!');
+      return;
+    }
+    if (newUsernameInput.length < 3) {
+      setSecurityError('ইউজারনেম কমপক্ষে ৩ অক্ষরের হতে হবে!');
+      return;
+    }
+
+    // 3. Validate New Password
+    if (!newPassInput) {
+      setSecurityError('নতুন পাসওয়ার্ড প্রদান করুন!');
+      return;
+    }
+    if (newPassInput.length < 6) {
+      setSecurityError('নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে!');
+      return;
+    }
+    if (newPassInput !== confirmPassInput) {
+      setSecurityError('নতুন পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড দুটি মেলেনি!');
+      return;
+    }
+
+    try {
+      setIsSavingSecurity(true);
+      await updateSettings({
+        adminUsername: newUsernameInput,
+        adminPassword: newPassInput
+      });
+
+      setSecurityForm(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+
+      setSecuritySuccess('অ্যাডমিন পাসওয়ার্ড ও ইউজারনেম সফলভাবে পরিবর্তন ও ফায়ারস্টোরে সিঙ্ক হয়েছে! পরবর্তী লগইনের সময় নতুন এই পাসওয়ার্ড কার্যকর হবে।');
+      setTimeout(() => setSecuritySuccess(''), 7000);
+    } catch (err) {
+      console.error('Password change error:', err);
+      setSecurityError('পাসওয়ার্ড সংরক্ষণ করতে ব্যর্থ হয়েছে: ' + (err.message || 'Error'));
+    } finally {
+      setIsSavingSecurity(false);
+    }
+  };
+
+  // Reset to default credentials (Afzal_1393 / SAZ632935)
+  const handleResetDefaultCredentials = async () => {
+    if (!window.confirm('আপনি কি সত্যিই অ্যাডমিন ক্রেডেনশিয়ালস ডিফল্ট (ইউজারনেম: Afzal_1393 ও পাসওয়ার্ড: SAZ632935)-এ রিসেট করতে চান?')) {
+      return;
+    }
+    try {
+      setIsSavingSecurity(true);
+      setSecurityError('');
+      await updateSettings({
+        adminUsername: 'Afzal_1393',
+        adminPassword: 'SAZ632935'
+      });
+      setSecurityForm({
+        currentPassword: '',
+        newUsername: 'Afzal_1393',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      setSecuritySuccess('ক্রেডেনশিয়ালস সফলভাবে ডিফল্ট (Afzal_1393 / SAZ632935)-এ রিসেট করা হয়েছে!');
+      setTimeout(() => setSecuritySuccess(''), 7000);
+    } catch (err) {
+      setSecurityError('রিসেট করতে ব্যর্থ হয়েছে: ' + (err.message || 'Error'));
+    } finally {
+      setIsSavingSecurity(false);
     }
   };
 
@@ -845,6 +982,18 @@ export default function AdminDashboard() {
           </button>
 
           <button
+            onClick={() => setActiveTab('security')}
+            className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 active:scale-95 cursor-pointer ${
+              activeTab === 'security'
+                ? 'bg-purple-600 text-white border-purple-500 shadow-md'
+                : 'bg-purple-500/15 hover:bg-purple-500/25 border-purple-500/30 text-purple-300'
+            }`}
+          >
+            <Key className="size-3.5" />
+            <span>পাসওয়ার্ড পরিবর্তন</span>
+          </button>
+
+          <button
             onClick={handleLogout}
             className="px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
           >
@@ -992,6 +1141,18 @@ export default function AdminDashboard() {
         >
           <Settings className="size-4" />
           <span>স্টোর সেটিংস ও পেমেন্ট</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('security')}
+          className={`px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'security'
+              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md'
+              : 'text-slate-400 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Lock className="size-4" />
+          <span>🔐 পাসওয়ার্ড ও সিকিউরিটি</span>
         </button>
       </div>
 
@@ -2343,6 +2504,288 @@ export default function AdminDashboard() {
               <span>সেটিংস সংরক্ষণ করুন (Save Settings)</span>
             </button>
           </form>
+        </section>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 6: ADMIN SECURITY & PASSWORD CHANGE (পাসওয়ার্ড পরিবর্তন ও নিরাপত্তা) */}
+      {/* ========================================================================= */}
+      {activeTab === 'security' && (
+        <section className="space-y-6 max-w-4xl">
+          {/* Header Banner */}
+          <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0F141F] via-[#141C2E] to-[#0F141F] border border-slate-800 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="size-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-purple-900/30 shrink-0">
+                <Key className="size-7" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-lg font-black text-white">অ্যাডমিন পাসওয়ার্ড ও অ্যাকাউন্ট সিকিউরিটি</h2>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1">
+                    <ShieldCheck className="size-3" />
+                    <span>ফায়ারস্টোর সিঙ্ক সক্রিয়</span>
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  আপনার অ্যাডমিন প্যানেলের পাসওয়ার্ড এবং ইউজারনেম পরিবর্তন করুন। পরিবর্তন করার সাথে সাথে ফায়ারস্টোর ডেটাবেজে রিয়েল-টাইমে সংরক্ষিত হবে।
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-stretch md:self-auto justify-end">
+              <button
+                type="button"
+                onClick={handleResetDefaultCredentials}
+                disabled={isSavingSecurity}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+                title="ডিফল্ট ক্রেডেনশিয়ালস ফিরিয়ে আনুন"
+              >
+                <RefreshCw className={`size-3.5 ${isSavingSecurity ? 'animate-spin' : ''}`} />
+                <span>ডিফল্ট রিসেট</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Feedback alerts */}
+          {securitySuccess && (
+            <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-3">
+              <CheckCircle2 className="size-5 shrink-0 text-emerald-400" />
+              <span>{securitySuccess}</span>
+            </div>
+          )}
+
+          {securityError && (
+            <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center gap-3">
+              <AlertTriangle className="size-5 shrink-0 text-rose-400" />
+              <span>{securityError}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column: Change Password Form (2 cols) */}
+            <div className="lg:col-span-2 bg-[#0F141F] border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-6">
+              <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-white font-bold text-sm">
+                  <Lock className="size-4 text-purple-400" />
+                  <span>নতুন পাসওয়ার্ড নির্ধারণ করুন</span>
+                </div>
+                <span className="text-[11px] text-slate-500 font-mono">
+                  বর্তমান ইউজারনেম: <strong className="text-slate-300">{settings?.adminUsername || 'Afzal_1393'}</strong>
+                </span>
+              </div>
+
+              <form onSubmit={handleSecuritySubmit} className="space-y-4 text-xs">
+                {/* 1. Current Password */}
+                <div>
+                  <label className="block font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="size-3.5 text-slate-400" />
+                      <span>বর্তমান পাসওয়ার্ড (Current Password) *</span>
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-normal">যাচাইয়ের জন্য আবশ্যক</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={securityForm.currentPassword}
+                      onChange={(e) => {
+                        setSecurityError('');
+                        setSecurityForm(s => ({ ...s, currentPassword: e.target.value }));
+                      }}
+                      placeholder="বর্তমান পাসওয়ার্ড লিখুন"
+                      className="w-full bg-[#161D2B] border border-slate-700 focus:border-purple-500 rounded-xl px-3.5 py-2.5 text-white pr-10 font-mono text-sm outline-none transition"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showCurrentPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Admin Username */}
+                <div>
+                  <label className="block font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <User className="size-3.5 text-teal-400" />
+                      <span>অ্যাডমিন ইউজারনেম (Admin Username)</span>
+                    </span>
+                    <span className="text-[10px] text-teal-400/80">ইউজারনেমও পরিবর্তন করতে পারেন</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={securityForm.newUsername}
+                    onChange={(e) => setSecurityForm(s => ({ ...s, newUsername: e.target.value }))}
+                    placeholder="অ্যাডমিন ইউজারনেম (যেমন: Afzal_1393)"
+                    className="w-full bg-[#161D2B] border border-slate-700 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-white font-mono text-sm outline-none transition"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  {/* 3. New Password */}
+                  <div>
+                    <label className="block font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                      <Key className="size-3.5 text-purple-400" />
+                      <span>নতুন পাসওয়ার্ড (New Password) *</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={securityForm.newPassword}
+                        onChange={(e) => {
+                          setSecurityError('');
+                          setSecurityForm(s => ({ ...s, newPassword: e.target.value }));
+                        }}
+                        placeholder="কমপক্ষে ৬ অক্ষর"
+                        className="w-full bg-[#161D2B] border border-slate-700 focus:border-purple-500 rounded-xl px-3.5 py-2.5 text-white pr-10 font-mono text-sm outline-none transition"
+                        required
+                        minLength={6}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
+                        tabIndex={-1}
+                      >
+                        {showNewPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 4. Confirm Password */}
+                  <div>
+                    <label className="block font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <CheckCircle2 className="size-3.5 text-emerald-400" />
+                        <span>কনফার্ম পাসওয়ার্ড *</span>
+                      </span>
+                      {securityForm.newPassword && securityForm.confirmPassword && (
+                        <span className={`text-[10px] font-bold ${
+                          securityForm.newPassword === securityForm.confirmPassword ? 'text-emerald-400' : 'text-rose-400'
+                        }`}>
+                          {securityForm.newPassword === securityForm.confirmPassword ? '✓ মিলেছে' : '✕ মেলেনি'}
+                        </span>
+                      )}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={securityForm.confirmPassword}
+                        onChange={(e) => {
+                          setSecurityError('');
+                          setSecurityForm(s => ({ ...s, confirmPassword: e.target.value }));
+                        }}
+                        placeholder="পুনরায় নতুন পাসওয়ার্ড লিখুন"
+                        className={`w-full bg-[#161D2B] border ${
+                          securityForm.confirmPassword && securityForm.newPassword !== securityForm.confirmPassword
+                            ? 'border-rose-500/80 focus:border-rose-500'
+                            : 'border-slate-700 focus:border-purple-500'
+                        } rounded-xl px-3.5 py-2.5 text-white pr-10 font-mono text-sm outline-none transition`}
+                        required
+                        minLength={6}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
+                        tabIndex={-1}
+                      >
+                        {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Security Advice Card */}
+                <div className="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-[11px] leading-relaxed">
+                  💡 <strong>নিরাপত্তা টিপস:</strong> আপনার নতুন পাসওয়ার্ড সংরক্ষিত হওয়ার সাথে সাথে ক্লাউড ডেটাবেজে লাইভ সিঙ্ক হয়ে যাবে। পরবর্তীতে মোবাইল, ল্যাপটপ বা যেকোনো ডিভাইস থেকে অ্যাডমিন প্যানেলে লগইন করার সময় এই নতুন পাসওয়ার্ডটি ব্যবহার করবেন।
+                </div>
+
+                {/* Submit button */}
+                <button
+                  type="submit"
+                  disabled={isSavingSecurity}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-teal-600 text-white font-black text-xs shadow-lg hover:brightness-110 transition active:scale-95 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Save className="size-4" />
+                  <span>{isSavingSecurity ? 'সংরক্ষণ হচ্ছে...' : 'পাসওয়ার্ড আপডেট ও সংরক্ষণ করুন (Save Password)'}</span>
+                </button>
+              </form>
+            </div>
+
+            {/* Right Column: Security Status & Information (1 col) */}
+            <div className="space-y-4">
+              {/* Active Security Card */}
+              <div className="p-5 rounded-3xl bg-[#0F141F] border border-slate-800 shadow-xl space-y-4 text-xs">
+                <div className="flex items-center gap-2 text-white font-bold pb-2 border-b border-slate-800">
+                  <ShieldCheck className="size-4 text-emerald-400" />
+                  <span>বর্তমান সিকিউরিটি প্রোটেকশন</span>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="p-3 rounded-2xl bg-[#161D2B] border border-slate-700/60 flex items-start gap-3">
+                    <Clock className="size-4 text-sky-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-white text-xs">১ ঘণ্টার সেশন নিয়ন্ত্রণ</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        নিরাপত্তার স্বার্থে প্রতি ৬০ মিনিট পর স্বয়ংক্রিয়ভাবে অ্যাডমিন প্যানেল লগআউট হয়ে যাবে।
+                      </p>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-300 font-mono text-[10px]">
+                        অবশিষ্ট সময়: ~{sessionRemainingMinutes} মিনিট
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-[#161D2B] border border-slate-700/60 flex items-start gap-3">
+                    <ShieldAlert className="size-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-white text-xs">ব্রুট-ফোর্স প্রটেকশন</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        লগইন পেজে টানা ৫ বার ভুল ইউজারনেম/পাসওয়ার্ড দিলে ২ মিনিটের জন্য লগইন সাময়িক লক হবে।
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-[#161D2B] border border-slate-700/60 flex items-start gap-3">
+                    <Sparkles className="size-4 text-purple-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-white text-xs">ক্লাউড ফায়ারস্টোর সিঙ্ক</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        পাসওয়ার্ড পরিবর্তনের সাথে সাথে তা ফায়ারবেসে সিঙ্ক হয়ে যায়, ফলে অন্য যেকোনো ডিভাইস থেকেও নতুন পাসওয়ার্ড কার্যকর থাকে।
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                  >
+                    <LogOut className="size-3.5" />
+                    <span>বর্তমান ডিভাইস থেকে লগআউট</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Secret Login Method reminder */}
+              <div className="p-5 rounded-3xl bg-gradient-to-br from-[#0F141F] to-[#121A2A] border border-purple-500/20 shadow-xl space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-purple-300 font-bold">
+                  <Sparkles className="size-4 text-purple-400" />
+                  <span>গোপন লগইন পদ্ধতি</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  মূল ওয়েবসাইটের যেকোনো পেজের টপবারে থাকা <strong className="text-white">লোগোতে ৫ বার দ্রুত ক্লিক</strong> করলেই সরাসরি ফুল-স্ক্রিন অ্যাডমিন লগইন পোর্টাল ওপেন হবে।
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
       )}
     </div>

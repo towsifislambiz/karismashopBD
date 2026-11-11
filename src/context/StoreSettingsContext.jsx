@@ -69,6 +69,8 @@ const DEFAULT_SETTINGS = {
   visitingCardImage: '/assets/brand/visiting-card.webp',
   hotSaleDiscountPercent: 20,
   heroBanners: DEFAULT_HERO_BANNERS,
+  adminUsername: 'Afzal_1393',
+  adminPassword: 'SAZ632935',
   coinSettings: {
     welcomeCoins: 50,
     cashbackPercentage: 2,
@@ -85,12 +87,8 @@ export const StoreSettingsProvider = ({ children }) => {
       return {
         ...DEFAULT_SETTINGS,
         ...parsed,
-        email: 'karishmashop786@gmail.com',
-        whatsappNumber: '01965643684',
-        facebookPage: 'https://www.facebook.com/profile.php?id=61576612149506',
-        hotline: '01819305805',
-        bkashNumber: '01819305805',
-        nagadNumber: '01819305805'
+        adminUsername: parsed.adminUsername || 'Afzal_1393',
+        adminPassword: parsed.adminPassword || 'SAZ632935'
       };
     } catch {
       return DEFAULT_SETTINGS;
