@@ -20,9 +20,9 @@ const DEFAULT_SETTINGS = {
   announcementTextEn: '✨ Premium Boutique Collection | Free Nationwide Delivery on Orders Over ৳3,500!',
   address: 'Fazal Member Mansion (1st floor), CDA Road, Shikalbaha, Ward No-03, Karnafully, Chittagong - 4371',
   addressBn: 'ফজল মেম্বার ম্যানশন (১ম তলা), সিডিএ রোড, শিকলবাহা, ৩নং ওয়ার্ড, কর্ণফুলী, চট্টগ্রাম - ৪৩৭১',
-  facebookPage: 'https://facebook.com/karismashop',
+  facebookPage: 'https://www.facebook.com/profile.php?id=61576612149506',
   instagramPage: 'https://instagram.com/karismashop',
-  ownerName: 'Ln Mohammed Jasim Uddin',
+  ownerName: 'Ln Md Jasim Uddin',
   coinSettings: {
     welcomeCoins: 50,
     cashbackPercentage: 2,
@@ -41,6 +41,7 @@ export const StoreSettingsProvider = ({ children }) => {
         ...parsed,
         email: 'karishmashop786@gmail.com',
         whatsappNumber: '01965643684',
+        facebookPage: 'https://www.facebook.com/profile.php?id=61576612149506',
         hotline: '01819305805',
         bkashNumber: '01819305805',
         nagadNumber: '01819305805'

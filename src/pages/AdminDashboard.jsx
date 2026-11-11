@@ -198,7 +198,8 @@ export default function AdminDashboard() {
     freeDeliveryThreshold: settings?.freeDeliveryThreshold || 3500,
     announcementText: settings?.announcementText || '✨ প্রিমিয়াম বুটিক কালেকশন | ৩,৫০০ টাকার অর্ডারে সারা দেশে ডেলিভারি সম্পূর্ণ ফ্রি!',
     address: settings?.address || 'Fazal Member Mansion (1st floor), CDA Road, Shikalbaha, Ward No-03, Karnafully, Chittagong - 4371',
-    email: settings?.email || 'karishmashop786@gmail.com'
+    email: settings?.email || 'karishmashop786@gmail.com',
+    facebookPage: settings?.facebookPage || 'https://www.facebook.com/profile.php?id=61576612149506'
   });
   const [settingsSuccess, setSettingsSuccess] = useState('');
   const [catalogSuccess, setCatalogSuccess] = useState('');
@@ -1315,6 +1316,17 @@ export default function AdminDashboard() {
                   className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block font-bold text-slate-300 mb-1">অফিসিয়াল ফেসবুক পেজ লিঙ্ক</label>
+              <input
+                type="url"
+                value={settingsForm.facebookPage}
+                onChange={(e) => setSettingsForm(s => ({ ...s, facebookPage: e.target.value }))}
+                placeholder="https://www.facebook.com/profile.php?id=61576612149506"
+                className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-xs"
+              />
             </div>
 
             <div>

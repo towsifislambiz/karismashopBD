@@ -249,3 +249,45 @@ export function generateMonthlyReportPDF(orders = [], settings = {}, monthName =
 
   doc.save(`KarishmaShop_Report_${currentMonthStr.replace(/\s+/g, '_')}.pdf`);
 }
+
+// Instant 1-Click Official Visiting Card PDF Generator & Downloader
+export async function downloadVisitingCardPDF() {
+  try {
+    const imgUrl = '/assets/brand/visiting-card.jpg';
+    const response = await fetch(imgUrl);
+    if (!response.ok) throw new Error('Failed to load card asset');
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          const base64Data = reader.result;
+          // Standard Luxury Business Card Dimensions: 89mm x 54mm (Landscape)
+          const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: [89, 54]
+          });
+
+          doc.addImage(base64Data, 'JPEG', 0, 0, 89, 54, undefined, 'FAST');
+          doc.save('KARISHMASHOPBD-Visiting-Card.pdf');
+          resolve(true);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Failed to generate visiting card PDF:', error);
+    // Fallback: direct download PNG
+    const link = document.createElement('a');
+    link.href = '/assets/brand/visiting-card.png';
+    link.download = 'KARISHMASHOPBD-Visiting-Card.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}

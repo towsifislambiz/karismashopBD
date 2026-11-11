@@ -15,6 +15,7 @@ import {
   Layers,
   Crown
 } from 'lucide-react';
+import FacebookIcon from './icons/FacebookIcon';
 import { useLanguage } from '../context/LanguageContext';
 import { useCart } from '../context/CartContext';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
@@ -116,8 +117,20 @@ export default function Navbar() {
             {lang === 'bn' ? settings?.announcementText : settings?.announcementTextEn}
           </div>
 
-          {/* Language Switcher & Admin Shortcut */}
-          <div className="flex items-center gap-2.5">
+          {/* Language Switcher & Facebook */}
+          <div className="flex items-center gap-2">
+            {/* Facebook Link */}
+            <a
+              href={settings?.facebookPage || "https://www.facebook.com/profile.php?id=61576612149506"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#1877F2]/15 border border-[#1877F2]/40 text-[11px] font-bold text-sky-400 hover:bg-[#1877F2] hover:text-white transition shadow-sm active:scale-95"
+              title="আমাদের অফিসিয়াল ফেসবুক পেজে যুক্ত হন"
+            >
+              <FacebookIcon className="size-3.5 fill-current" />
+              <span className="hidden sm:inline">Facebook</span>
+            </a>
+
             {/* Language Switcher Pill */}
             <button
               onClick={toggleLang}
@@ -425,6 +438,17 @@ export default function Navbar() {
               >
                 ✦ {lang === 'bn' ? 'ফ্ল্যাশ সেল অফার' : 'Flash Sale'}
               </Link>
+            </li>
+            <li className="pt-2 border-t border-slate-100">
+              <a
+                href={settings?.facebookPage || "https://www.facebook.com/profile.php?id=61576612149506"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/30 font-bold text-xs hover:bg-[#1877F2] hover:text-white transition"
+              >
+                <FacebookIcon className="size-4 fill-current" />
+                <span>অফিসিয়াল ফেসবুক পেজ</span>
+              </a>
             </li>
           </ul>
         </div>
