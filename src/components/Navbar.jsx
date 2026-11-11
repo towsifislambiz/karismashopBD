@@ -35,6 +35,27 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Secret Easter Egg: Click logo 5 times to open Admin Panel
+  const logoClicksRef = React.useRef(0);
+  const logoTimerRef = React.useRef(null);
+
+  const handleLogoClick = (e) => {
+    logoClicksRef.current += 1;
+    clearTimeout(logoTimerRef.current);
+
+    if (logoClicksRef.current >= 5) {
+      e.preventDefault();
+      e.stopPropagation();
+      logoClicksRef.current = 0;
+      navigate('/admin');
+      return;
+    }
+
+    logoTimerRef.current = setTimeout(() => {
+      logoClicksRef.current = 0;
+    }, 2500);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
@@ -122,9 +143,14 @@ export default function Navbar() {
             {isMobileMenuOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
           </button>
 
-          {/* Brand Logo & Name */}
-          <Link to="/" className="flex items-center gap-2 group shrink-0 min-w-0">
-            <div className="relative size-9 sm:size-12 rounded-xl bg-brand-noir p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center shrink-0 overflow-hidden">
+          {/* Brand Logo & Name (Click 5 times for Admin Panel) */}
+          <Link
+            to="/"
+            onClick={handleLogoClick}
+            className="flex items-center gap-2 group shrink-0 min-w-0 cursor-pointer select-none"
+            title="Karishma Shop BD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
+          >
+            <div className="relative size-9 sm:size-12 rounded-xl bg-brand-noir p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center shrink-0 overflow-hidden active:scale-95">
               <img
                 src="/assets/brand/ks-logo.svg"
                 alt="Karishma Shop BD"

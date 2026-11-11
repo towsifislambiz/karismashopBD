@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { auth } from '../services/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import {
   Crown,
   ShoppingBag,
@@ -20,7 +22,10 @@ import {
   Save,
   ShieldCheck,
   Phone,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  Mail,
+  Key
 } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useProducts } from '../context/ProductContext';
@@ -40,6 +45,11 @@ export default function AdminDashboard() {
   });
   const [adminPin, setAdminPin] = useState('');
   const [pinError, setPinError] = useState('');
+  const [authMode, setAuthMode] = useState('pin'); // 'pin' | 'email'
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'products' | 'settings'
   const [orderFilter, setOrderFilter] = useState('all');
@@ -85,6 +95,38 @@ export default function AdminDashboard() {
       setPinError('');
     } else {
       setPinError('ভুল পিন কোড! সঠিক পিন: 1234');
+    }
+  };
+
+  // Firebase Email Sign In / Sign Up Auth
+  const handleEmailAuthSubmit = async (e) => {
+    e.preventDefault();
+    if (!adminEmail.trim() || !adminPassword.trim()) {
+      setPinError('ইমেইল ও পাসওয়ার্ড উভয়ই প্রদান করুন!');
+      return;
+    }
+    setAuthLoading(true);
+    setPinError('');
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(auth, adminEmail.trim(), adminPassword);
+      } else {
+        await signInWithEmailAndPassword(auth, adminEmail.trim(), adminPassword);
+      }
+      setIsAdminAuthenticated(true);
+      localStorage.setItem('karishma_admin_auth', 'true');
+    } catch (err) {
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setPinError('ভুল ইমেইল বা পাসওয়ার্ড!');
+      } else if (err.code === 'auth/email-already-in-use') {
+        setPinError('এই ইমেইলে অলরেডি অ্যাকাউন্ট আছে! অনুগ্রহ করে সাইন ইন করুন।');
+      } else if (err.code === 'auth/weak-password') {
+        setPinError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে!');
+      } else {
+        setPinError(err.message || 'অথেন্টিকেশন ফেইল করেছে!');
+      }
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -223,35 +265,103 @@ export default function AdminDashboard() {
   if (!isAdminAuthenticated) {
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-3xl bg-brand-surface border border-brand-gold/40 p-6 sm:p-8 text-center space-y-4 shadow-2xl">
+        <div className="w-full max-w-md rounded-3xl bg-brand-surface border border-brand-gold/40 p-6 sm:p-8 text-center space-y-5 shadow-2xl">
           <div className="size-14 rounded-2xl bg-brand-card text-brand-gold flex items-center justify-center mx-auto border border-brand-gold/40 shadow-gold-soft">
             <Crown className="size-7" />
           </div>
           <div>
-            <h2 className="font-serif text-xl font-bold text-white">এডমিন প্যানেল প্রবেশ</h2>
-            <p className="text-xs text-slate-400 mt-1">সুরক্ষিত পিন কোড দিন (ডিফল্ট: 1234)</p>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">এডমিন প্যানেল প্রবেশ</h2>
+            <p className="text-xs text-slate-400 mt-1">
+              {authMode === 'pin' ? 'সুরক্ষিত পিন কোড দিন (ডিফল্ট: 1234)' : isSignUp ? 'নতুন এডমিন অ্যাকাউন্ট তৈরি করুন' : 'আপনার এডমিন ইমেইল ও পাসওয়ার্ড দিন'}
+            </p>
+          </div>
+
+          {/* Mode Switch Tabs */}
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-brand-card rounded-xl border border-brand-border text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => { setAuthMode('pin'); setPinError(''); }}
+              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${authMode === 'pin' ? 'bg-brand-gold text-brand-noir shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+              <Key className="size-3.5" />
+              <span>কুইক পিন (1234)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAuthMode('email'); setPinError(''); }}
+              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${authMode === 'email' ? 'bg-brand-gold text-brand-noir shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+              <Mail className="size-3.5" />
+              <span>ইমেইল অথেন্টিকেশন</span>
+            </button>
           </div>
 
           {pinError && (
-            <p className="text-xs text-rose-400 font-bold bg-rose-500/10 p-2 rounded-lg">{pinError}</p>
+            <p className="text-xs text-rose-400 font-bold bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl">{pinError}</p>
           )}
 
-          <form onSubmit={handlePinSubmit} className="space-y-3">
-            <input
-              type="password"
-              value={adminPin}
-              onChange={(e) => setAdminPin(e.target.value)}
-              placeholder="পিন কোড লিখুন"
-              className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-4 py-2.5 text-center text-sm text-white tracking-widest font-mono focus:outline-none"
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="w-full py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition"
-            >
-              প্রবেশ করুন
-            </button>
-          </form>
+          {authMode === 'pin' ? (
+            <form onSubmit={handlePinSubmit} className="space-y-3">
+              <input
+                type="password"
+                value={adminPin}
+                onChange={(e) => setAdminPin(e.target.value)}
+                placeholder="চার ডিজিটের পিন (1234)"
+                className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-4 py-2.5 text-center text-sm text-white tracking-widest font-mono focus:outline-none"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="w-full py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition"
+              >
+                প্রবেশ করুন
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleEmailAuthSubmit} className="space-y-3 text-left">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-300 mb-1">এডমিন ইমেইল</label>
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="admin@karishmashop.com"
+                  className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-300 mb-1">পাসওয়ার্ড</label>
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="কমপক্ষে ৬ ডিজিটের পাসওয়ার্ড"
+                  className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition disabled:opacity-50"
+              >
+                {authLoading ? 'যাচাই করা হচ্ছে...' : isSignUp ? 'নতুন এডমিন অ্যাকাউন্ট তৈরি করুন' : 'এডমিন সাইন ইন'}
+              </button>
+
+              <div className="text-center pt-1">
+                <button
+                  type="button"
+                  onClick={() => { setIsSignUp(!isSignUp); setPinError(''); }}
+                  className="text-xs text-brand-gold hover:underline font-medium"
+                >
+                  {isSignUp ? 'অলরেডি অ্যাকাউন্ট আছে? সাইন ইন করুন' : 'নতুন এডমিন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন'}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     );

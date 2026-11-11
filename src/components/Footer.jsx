@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Phone, Mail, MapPin, ShieldCheck, Heart, Sparkles, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useStoreSettings } from '../context/StoreSettingsContext';
@@ -7,6 +7,26 @@ import { useStoreSettings } from '../context/StoreSettingsContext';
 export default function Footer() {
   const { lang, t } = useLanguage();
   const { settings } = useStoreSettings();
+  const navigate = useNavigate();
+
+  const footerClicksRef = React.useRef(0);
+  const footerTimerRef = React.useRef(null);
+
+  const handleFooterLogoClick = (e) => {
+    footerClicksRef.current += 1;
+    clearTimeout(footerTimerRef.current);
+
+    if (footerClicksRef.current >= 5) {
+      e.preventDefault();
+      footerClicksRef.current = 0;
+      navigate('/admin');
+      return;
+    }
+
+    footerTimerRef.current = setTimeout(() => {
+      footerClicksRef.current = 0;
+    }, 2500);
+  };
 
   return (
     <footer className="bg-brand-noir border-t border-brand-gold/20 text-slate-400 text-xs pt-12 sm:pt-16 pb-8">
@@ -14,8 +34,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10 pb-12 border-b border-brand-border">
           {/* 1. Brand Description (2 cols) */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="size-11 rounded-xl bg-brand-surface p-1 border border-brand-gold/40 flex items-center justify-center">
+            <Link
+              to="/"
+              onClick={handleFooterLogoClick}
+              className="flex items-center gap-2.5 cursor-pointer select-none"
+              title="Karishma Shop BD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
+            >
+              <div className="size-11 rounded-xl bg-brand-surface p-1 border border-brand-gold/40 flex items-center justify-center active:scale-95 transition">
                 <img src="/assets/brand/ks-logo.svg" alt="Karishma Shop" className="size-full object-contain" />
               </div>
               <div>
