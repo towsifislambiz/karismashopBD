@@ -147,22 +147,31 @@ export default function Navbar() {
           <Link
             to="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-2.5 group shrink-0 min-w-0 cursor-pointer select-none"
+            className="flex items-center gap-2 sm:gap-3 group shrink-0 min-w-0 cursor-pointer select-none"
             title="KARISHMASHOPBD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
           >
-            <div className="relative size-10 sm:size-12 rounded-2xl bg-white p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-sm transition flex items-center justify-center shrink-0 overflow-hidden active:scale-95">
+            <div className="relative size-11 sm:size-14 rounded-2xl bg-white p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-sm transition flex items-center justify-center shrink-0 overflow-hidden active:scale-95">
               <img
                 src="/assets/brand/ks-logo.webp"
                 alt="KARISHMASHOPBD"
                 className="size-full object-contain filter drop-shadow-sm group-hover:scale-105 transition duration-300"
               />
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="font-serif text-base sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-brand-goldDark transition leading-tight">
-                KARISHMASHOPBD
-              </span>
-              <span className="hidden xs:block text-[8px] sm:text-[10px] font-sans tracking-wide text-brand-goldDark font-bold -mt-0.5 truncate">
+            <div className="flex flex-col min-w-0 justify-center">
+              {/* Bold Colorful Brand Title matching uploaded image */}
+              <div className="flex items-center tracking-tight leading-none font-sans font-black text-lg sm:text-2xl">
+                <span className="text-[#0B4F5B] group-hover:text-[#083A43] transition">
+                  KARISHMA
+                </span>
+                <span className="text-[#1A3F48] group-hover:text-[#0B4F5B] transition">
+                  SHOPBD
+                </span>
+              </div>
+              <span className="text-[8px] sm:text-[10px] font-sans font-semibold text-[#5B6353] tracking-tight leading-tight mt-0.5 truncate">
                 Your Quality Shopping Destination
+              </span>
+              <span className="hidden sm:block text-[7.5px] font-sans font-semibold text-[#115E6D] tracking-tight leading-tight">
+                Customers Satisfaction Is Our First Priority
               </span>
             </div>
           </Link>

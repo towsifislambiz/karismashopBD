@@ -44,13 +44,18 @@ export default function Footer() {
                 <img src="/assets/brand/ks-logo.webp" alt="KARISHMASHOPBD" className="size-full object-contain" />
               </div>
               <div>
-                <span className="font-serif text-xl sm:text-2xl font-black tracking-wide text-gold-gradient block">
-                  KARISHMASHOPBD
-                </span>
-                <span className="text-[10px] tracking-wide text-amber-200/90 font-bold block">
+                <div className="flex items-center tracking-tight leading-none font-sans font-black text-2xl sm:text-3xl">
+                  <span className="text-[#38BDF8] drop-shadow-sm">
+                    KARISHMA
+                  </span>
+                  <span className="text-white drop-shadow-sm">
+                    SHOPBD
+                  </span>
+                </div>
+                <span className="text-xs font-sans font-bold text-amber-300/90 tracking-wide block mt-1">
                   Your Quality Shopping Destination
                 </span>
-                <span className="text-[9px] tracking-wide text-slate-400 font-medium block">
+                <span className="text-[11px] font-sans font-medium text-teal-300/90 tracking-wide block">
                   Customers Satisfaction Is Our First Priority
                 </span>
               </div>
