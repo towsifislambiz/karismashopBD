@@ -224,7 +224,6 @@ export default function AdminDashboard() {
   const monthOrderCount = currentMonthOrders.length > 0 ? currentMonthOrders.length : orders.length;
   const hasOrdersInMonth = monthOrderCount >= 1;
 
-  const [showMonthEndNoticePreview, setShowMonthEndNoticePreview] = useState(true);
   const [isMonthEndAlertDismissed, setIsMonthEndAlertDismissed] = useState(false);
   const [isDownloadingMonthlyPDF, setIsDownloadingMonthlyPDF] = useState(false);
 
@@ -1073,9 +1072,9 @@ export default function AdminDashboard() {
 
       {/* ========================================================================= */}
       {/* 5-DAY MONTH-END EMERGENCY ORDER DATA BACKUP ALERT BANNER */}
-      {/* (Triggered automatically 5 days before month-end, ONLY if at least 1 order exists) */}
+      {/* (Triggered strictly ONLY 5 days before month-end, and ONLY if at least 1 order exists) */}
       {/* ========================================================================= */}
-      {(hasOrdersInMonth && !isMonthEndAlertDismissed && (monthEndInfo.isFiveDaysBeforeEnd || showMonthEndNoticePreview)) && (
+      {(hasOrdersInMonth && !isMonthEndAlertDismissed && monthEndInfo.isFiveDaysBeforeEnd) && (
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-950/90 via-[#18111D] to-amber-950/80 border-2 border-rose-500/60 p-4 sm:p-5 shadow-2xl shadow-rose-950/50 animate-fadeIn">
           {/* Glowing background aura */}
           <div className="absolute -top-12 -left-12 size-40 bg-rose-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -1299,8 +1298,8 @@ export default function AdminDashboard() {
       {/* ========================================================================= */}
       {activeTab === 'orders' && (
         <section className="space-y-4">
-          {/* Monthly Order Backup & Security Policy Card (Active only if at least 1 order exists) */}
-          {hasOrdersInMonth ? (
+          {/* Monthly Order Backup Alert Card (Appears STRICTLY ONLY 5 days before month-end, and when orders >= 1) */}
+          {(monthEndInfo.isFiveDaysBeforeEnd && hasOrdersInMonth) && (
             <div className="p-5 rounded-3xl bg-gradient-to-r from-[#0F141F] via-[#141A29] to-[#0F141F] border border-amber-500/30 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
               <div className="flex items-start sm:items-center gap-3.5">
                 <div className="size-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
@@ -1325,23 +1324,6 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2.5 self-stretch md:self-auto justify-end shrink-0 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowMonthEndNoticePreview(!showMonthEndNoticePreview);
-                    setIsMonthEndAlertDismissed(false);
-                  }}
-                  className={`px-3 py-2 rounded-xl text-[11px] font-bold border transition active:scale-95 cursor-pointer flex items-center gap-1.5 ${
-                    showMonthEndNoticePreview && !isMonthEndAlertDismissed
-                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
-                  }`}
-                  title="টপ অ্যালার্ট ব্যানারের দৃশ্যমানতা টগল করুন"
-                >
-                  <AlertTriangle className="size-3.5" />
-                  <span>{showMonthEndNoticePreview && !isMonthEndAlertDismissed ? 'ব্যানার দেখানো হচ্ছে' : 'ব্যানার দেখুন'}</span>
-                </button>
-
-                <button
-                  type="button"
                   onClick={handleDownloadMonthlyDataPDF}
                   disabled={isDownloadingMonthlyPDF}
                   className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-xs transition active:scale-95 cursor-pointer flex items-center gap-2 shadow-md"
@@ -1350,23 +1332,6 @@ export default function AdminDashboard() {
                   <span>{isDownloadingMonthlyPDF ? 'ডাউনলোড হচ্ছে...' : 'চলতি মাসের PDF ডাউনলোড'}</span>
                 </button>
               </div>
-            </div>
-          ) : (
-            <div className="p-4 rounded-3xl bg-[#0F141F] border border-slate-800 text-xs flex items-center justify-between gap-3 text-slate-400">
-              <div className="flex items-center gap-3">
-                <div className="size-9 rounded-xl bg-slate-800/80 text-slate-500 flex items-center justify-center shrink-0">
-                  <FileText className="size-4" />
-                </div>
-                <div>
-                  <p className="font-bold text-slate-300 text-xs">চলতি মাসে কোনো অর্ডারের ডাটা নেই</p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    মাসে কমপক্ষে ১টি অর্ডার আসলে তবেই ৩০ তারিখের ৫ দিন আগের স্বয়ংক্রিয় ব্যাকআপ অ্যালার্ট চালু হবে। বর্তমানে কোনো অর্ডার না থাকায় সতর্কবার্তা বন্ধ রয়েছে।
-                  </p>
-                </div>
-              </div>
-              <span className="px-2.5 py-1 rounded-full bg-slate-800 text-slate-500 text-[10px] font-mono shrink-0">
-                অর্ডার: ০ টি
-              </span>
             </div>
           )}
           <div className="p-4 rounded-3xl bg-[#0F141F] border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
