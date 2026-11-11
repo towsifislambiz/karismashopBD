@@ -469,7 +469,7 @@ export default function AdminDashboard() {
                 disabled={isLockedOut}
                 value={username}
                 onChange={(e) => { setUsername(e.target.value); setLoginError(''); }}
-                placeholder={isLockedOut ? "লগইন সাময়িক স্থগিত রয়েছে..." : "Afzal_1393"}
+                placeholder={isLockedOut ? "লগইন সাময়িক স্থগিত রয়েছে..." : "ইউজারনেম লিখুন"}
                 className={`w-full border rounded-2xl px-4 py-3 text-sm text-white focus:outline-none transition shadow-inner font-mono ${
                   isLockedOut
                     ? 'bg-slate-900/60 border-slate-800 text-slate-500 cursor-not-allowed opacity-60'
@@ -491,7 +491,7 @@ export default function AdminDashboard() {
                   disabled={isLockedOut}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setLoginError(''); }}
-                  placeholder="••••••••••"
+                  placeholder="পাসওয়ার্ড লিখুন"
                   className={`w-full border rounded-2xl pl-4 pr-11 py-3 text-sm text-white focus:outline-none transition shadow-inner font-mono ${
                     isLockedOut
                       ? 'bg-slate-900/60 border-slate-800 text-slate-500 cursor-not-allowed opacity-60'
@@ -503,7 +503,7 @@ export default function AdminDashboard() {
                   type="button"
                   disabled={isLockedOut}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition disabled:opacity-30"
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition disabled:opacity-30 cursor-pointer"
                   title={showPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -535,14 +535,14 @@ export default function AdminDashboard() {
             </button>
           </form>
 
-          {/* Back 2 Website Gradient Button (As requested) */}
-          <div className="pt-2 text-center border-t border-white/5">
+          {/* Return to Website Button */}
+          <div className="pt-3 text-center border-t border-slate-800/80">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-teal-500 via-emerald-500 to-amber-500 hover:brightness-110 shadow-lg shadow-teal-500/20 transition active:scale-95 group"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-teal-500/40 transition active:scale-95 group"
             >
-              <ArrowLeft className="size-3.5 group-hover:-translate-x-0.5 transition-transform" />
-              <span>Back 2 The Website (ওয়েবসাইটে ফিরে যান)</span>
+              <ArrowLeft className="size-3.5 text-slate-400 group-hover:text-amber-400 group-hover:-translate-x-0.5 transition" />
+              <span>মূল ওয়েবসাইটে ফিরে যান</span>
             </Link>
           </div>
         </div>
