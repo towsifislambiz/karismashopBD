@@ -61,7 +61,7 @@ export default function CartDrawer() {
 
   // WhatsApp 1-Click Cart Order
   const handleWhatsAppOrder = () => {
-    const rawWa = (settings?.whatsappNumber || '01819305805').replace(/[^0-9]/g, '');
+    const rawWa = (settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '');
     const waNumber = rawWa.startsWith('880') ? rawWa : rawWa.startsWith('0') ? '88' + rawWa : '880' + rawWa;
     
     let msgText = `আসসালামু আলাইকুম Karishma Shop BD! আমি ওয়েবসাইট কার্ট থেকে নিচের পণ্যগুলো অর্ডার করতে চাই:\n\n`;

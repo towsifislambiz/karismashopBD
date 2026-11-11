@@ -26,7 +26,7 @@ export function generateCustomerInvoicePDF(order, settings = {}) {
 
   doc.setTextColor(180, 185, 200);
   doc.setFontSize(8.5);
-  doc.text(`Hotline: ${settings.hotline || '01819305805'} | WhatsApp: ${settings.whatsappNumber || '01819305805'}`, 14, 32);
+  doc.text(`Hotline: ${settings.hotline || '01819305805'} | WhatsApp: ${settings.whatsappNumber || '01965643684'}`, 14, 32);
   doc.text(`Web: karishmashopbd.com | Location: ${settings.address || 'Dhaka, Bangladesh'}`, 14, 37);
 
   // Document Title Box (Right Top)
@@ -155,7 +155,7 @@ export function generateCustomerInvoicePDF(order, settings = {}) {
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(8);
   doc.setTextColor(140, 150, 165);
-  doc.text('Thank you for shopping with Karishma Shop BD! For customer support, WhatsApp us at ' + (settings.whatsappNumber || '01819305805'), 14, 280);
+  doc.text('Thank you for shopping with KARISHMASHOPBD! For customer support, WhatsApp us at ' + (settings.whatsappNumber || '01965643684'), 14, 280);
 
   doc.save(`Invoice_${order.orderTrackingId || order.id}.pdf`);
 }

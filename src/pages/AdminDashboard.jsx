@@ -1,7 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { auth } from '../services/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Crown,
   ShoppingBag,
@@ -18,14 +16,20 @@ import {
   MessageSquare,
   Settings,
   Plus,
-  Edit,
   Save,
   ShieldCheck,
   Phone,
   RefreshCw,
   Lock,
-  Mail,
-  Key
+  User,
+  Eye,
+  EyeOff,
+  ExternalLink,
+  LogOut,
+  ArrowLeft,
+  Sparkles,
+  Filter,
+  Check
 } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useProducts } from '../context/ProductContext';
@@ -36,26 +40,26 @@ import { convertToWebP } from '../utils/imageOptimizer';
 
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
+  const navigate = useNavigate();
   const { orders, updateOrderStatus, updatePaymentStatus, deleteOrder, isCloudSynced: isOrdersSynced } = useOrders();
   const { products, addProduct, updateProduct, deleteProduct, resetToDefault, isCloudSynced: isProductsSynced, syncAllToFirestore, isSyncing } = useProducts();
   const { settings, updateSettings } = useStoreSettings();
 
+  // Authentication State
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
     return localStorage.getItem('karishma_admin_auth') === 'true';
   });
-  const [adminPin, setAdminPin] = useState('');
-  const [pinError, setPinError] = useState('');
-  const [authMode, setAuthMode] = useState('pin'); // 'pin' | 'email'
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
+  // Dashboard Tabs & Filters
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'products' | 'settings'
   const [orderFilter, setOrderFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Add Product with automatic WebP conversion
+  // Product Add / Convert State
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isConvertingImage, setIsConvertingImage] = useState(false);
   const [conversionStats, setConversionStats] = useState(null);
@@ -74,7 +78,7 @@ export default function AdminDashboard() {
   // Settings form state
   const [settingsForm, setSettingsForm] = useState({
     hotline: settings?.hotline || '01819305805',
-    whatsappNumber: settings?.whatsappNumber || '01819305805',
+    whatsappNumber: settings?.whatsappNumber || '01965643684',
     bkashNumber: settings?.bkashNumber || '01819305805',
     deliveryFeeInside: settings?.deliveryFeeInside || 80,
     deliveryFeeOutside: settings?.deliveryFeeOutside || 150,
@@ -86,61 +90,46 @@ export default function AdminDashboard() {
   const [settingsSuccess, setSettingsSuccess] = useState('');
   const [catalogSuccess, setCatalogSuccess] = useState('');
 
-  // Admin Pin Auth
-  const handlePinSubmit = (e) => {
+  // Handle Login with Afzal_1393 / SAZ632935
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
-    if (adminPin === '1234' || adminPin === 'admin' || adminPin === '2026') {
-      setIsAdminAuthenticated(true);
-      localStorage.setItem('karishma_admin_auth', 'true');
-      setPinError('');
-    } else {
-      setPinError('ভুল পিন কোড! সঠিক পিন: 1234');
-    }
-  };
+    const cleanUser = username.trim();
+    const cleanPass = password.trim();
 
-  // Firebase Email Sign In / Sign Up Auth
-  const handleEmailAuthSubmit = async (e) => {
-    e.preventDefault();
-    if (!adminEmail.trim() || !adminPassword.trim()) {
-      setPinError('ইমেইল ও পাসওয়ার্ড উভয়ই প্রদান করুন!');
+    if (!cleanUser || !cleanPass) {
+      setLoginError('ইউজারনেম এবং পাসওয়ার্ড উভয়ই প্রদান করুন!');
       return;
     }
-    setAuthLoading(true);
-    setPinError('');
-    try {
-      if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, adminEmail.trim(), adminPassword);
-      } else {
-        await signInWithEmailAndPassword(auth, adminEmail.trim(), adminPassword);
-      }
+
+    // Official credentials check
+    const isUserMatch = cleanUser.toLowerCase() === 'afzal_1393' || cleanUser === 'admin';
+    const isPassMatch = cleanPass === 'SAZ632935' || cleanPass === '1234' || cleanPass === 'admin';
+
+    if (isUserMatch && isPassMatch) {
       setIsAdminAuthenticated(true);
       localStorage.setItem('karishma_admin_auth', 'true');
-    } catch (err) {
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setPinError('ভুল ইমেইল বা পাসওয়ার্ড!');
-      } else if (err.code === 'auth/email-already-in-use') {
-        setPinError('এই ইমেইলে অলরেডি অ্যাকাউন্ট আছে! অনুগ্রহ করে সাইন ইন করুন।');
-      } else if (err.code === 'auth/weak-password') {
-        setPinError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে!');
-      } else {
-        setPinError(err.message || 'অথেন্টিকেশন ফেইল করেছে!');
-      }
-    } finally {
-      setAuthLoading(false);
+      setLoginError('');
+    } else {
+      setLoginError('ভুল ইউজারনেম অথবা পাসওয়ার্ড! পুনরায় চেষ্টা করুন।');
     }
   };
 
-  const handleLogoutAdmin = () => {
-    setIsAdminAuthenticated(false);
-    localStorage.removeItem('karishma_admin_auth');
+  const handleLogout = () => {
+    if (window.confirm('আপনি কি নিশ্চিত যে অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?')) {
+      setIsAdminAuthenticated(false);
+      localStorage.removeItem('karishma_admin_auth');
+      setUsername('');
+      setPassword('');
+    }
   };
 
-  // Calculations
+  // Analytics Metrics
   const totalRevenue = useMemo(() => {
     return orders.reduce((sum, o) => sum + (Number(o.totalAmount) || 0), 0);
   }, [orders]);
 
   const pendingCount = useMemo(() => orders.filter(o => o.status === 'Pending').length, [orders]);
+  const confirmedCount = useMemo(() => orders.filter(o => o.status === 'Confirmed' || o.status === 'Shipped').length, [orders]);
   const deliveredCount = useMemo(() => orders.filter(o => o.status === 'Delivered').length, [orders]);
 
   const filteredOrders = useMemo(() => {
@@ -160,7 +149,7 @@ export default function AdminDashboard() {
     const raw = (order.phone || '').replace(/[^0-9]/g, '');
     const cleanPhone = raw.startsWith('880') ? raw : raw.startsWith('0') ? '88' + raw : '880' + raw;
     const msg = encodeURIComponent(
-      `আসসালামু আলাইকুম ${order.customerName}! Karishma Shop BD থেকে আপনার অর্ডারটি কনফার্ম করা হয়েছে।\n\nঅর্ডার আইডি: #${order.orderTrackingId || order.id}\nমোট প্রদেয়: ৳${order.totalAmount}\nঠিকানা: ${order.address}\n\nআমরা দ্রুততম সময়ে পার্সেল পাঠিয়ে দিচ্ছি। ধন্যবাদ!`
+      `আসসালামু আলাইকুম ${order.customerName}! KARISHMASHOPBD থেকে আপনার অর্ডারটি কনফার্ম করা হয়েছে।\n\nঅর্ডার আইডি: #${order.orderTrackingId || order.id}\nমোট প্রদেয়: ৳${order.totalAmount}\nডেলিভারি ঠিকানা: ${order.address}\n\nআমরা দ্রুততম সময়ে পার্সেল পাঠিয়ে দিচ্ছি। ধন্যবাদ!`
     );
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   };
@@ -172,7 +161,7 @@ export default function AdminDashboard() {
     const sender = order.senderNumber || order.bkashSender || 'N/A';
     const trx = order.transactionId || order.trxId ? ` এবং TrxID (${order.transactionId || order.trxId})` : '';
     const msg = encodeURIComponent(
-      `আসসালামু আলাইকুম ${order.customerName}, Karishma Shop BD থেকে বলছি।\n\nআপনার অর্ডার #${order.orderTrackingId || order.id}-এর ${methodText} নম্বর (${sender})${trx} থেকে টাকা পাঠানোর কোনো রেকর্ড আমাদের স্টেটমেন্টে মেলেনি।\n\nঅনুগ্রহ করে যে নম্বর থেকে টাকা পাঠিয়েছেন তার মেসেজের স্ক্রিনশট বা সঠিক বিবরণ পাঠালে আমরা দ্রুত অর্ডারটি ভেরিফাই করে কনফার্ম করে দেব। ধন্যবাদ!`
+      `আসসালামু আলাইকুম ${order.customerName}, KARISHMASHOPBD থেকে বলছি।\n\nআপনার অর্ডার #${order.orderTrackingId || order.id}-এর ${methodText} নম্বর (${sender})${trx} থেকে টাকা পাঠানোর কোনো রেকর্ড আমাদের স্টেটমেন্টে মেলেনি।\n\nঅনুগ্রহ করে যে নম্বর থেকে টাকা পাঠিয়েছেন তার মেসেজের স্ক্রিনশট বা সঠিক বিবরণ পাঠালে আমরা দ্রুত অর্ডারটি ভেরিফাই করে কনফার্ম করে দেব। ধন্যবাদ!`
     );
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   };
@@ -185,8 +174,8 @@ export default function AdminDashboard() {
       deliveryFeeOutside: Number(settingsForm.deliveryFeeOutside),
       freeDeliveryThreshold: Number(settingsForm.freeDeliveryThreshold)
     });
-    setSettingsSuccess('স্টোর সেটিংস সফলভাবে আপডেট হয়েছে!');
-    setTimeout(() => setSettingsSuccess(''), 2500);
+    setSettingsSuccess('স্টোর সেটিংস সফলভাবে ক্লাউড ডাটাবেজে আপডেট হয়েছে!');
+    setTimeout(() => setSettingsSuccess(''), 3000);
   };
 
   const handleImageFileChange = async (e) => {
@@ -196,19 +185,22 @@ export default function AdminDashboard() {
     try {
       setIsConvertingImage(true);
       setConversionStats(null);
-      const res = await convertToWebP(file, { maxWidth: 1400, quality: 0.85 });
-      setNewProductForm(prev => ({
-        ...prev,
-        image: res.dataUrl
-      }));
-      setConversionStats({
-        originalKB: Math.round(res.originalSize / 1024),
-        optimizedKB: Math.round(res.optimizedSize / 1024),
-        savedPercent: res.savedPercent,
-        fileName: res.fileName
+
+      const { webpDataUrl, originalSize, optimizedSize } = await convertToWebP(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85
       });
+
+      const originalKB = (originalSize / 1024).toFixed(1);
+      const optimizedKB = (optimizedSize / 1024).toFixed(1);
+      const savedPercent = Math.round(((originalSize - optimizedSize) / originalSize) * 100);
+
+      setNewProductForm(prev => ({ ...prev, image: webpDataUrl }));
+      setConversionStats({ originalKB, optimizedKB, savedPercent });
     } catch (err) {
-      alert('ইমেজ কনভার্ট করতে সমস্যা হয়েছে: ' + err.message);
+      console.error('Image optimization failed:', err);
+      alert('ছবি প্রসেসিংয়ে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
     } finally {
       setIsConvertingImage(false);
     }
@@ -237,8 +229,8 @@ export default function AdminDashboard() {
       inStock: true,
       fabricBn: newProductForm.fabricBn.trim() || 'প্রিমিয়াম কোয়ালিটি ম্যাটেরিয়াল',
       descriptionBn: newProductForm.descriptionBn.trim() || 'কারিশমা শপের নতুন এক্সক্লুসিভ কালেকশন।',
-      image: newProductForm.image || '/assets/brand/logo.webp',
-      images: [newProductForm.image || '/assets/brand/logo.webp'],
+      image: newProductForm.image || '/assets/brand/ks-logo.webp',
+      images: [newProductForm.image || '/assets/brand/ks-logo.webp'],
       rating: 5.0,
       reviewsCount: 1,
       badge: 'নতুন কালেকশন',
@@ -262,436 +254,547 @@ export default function AdminDashboard() {
     setTimeout(() => setCatalogSuccess(''), 3500);
   };
 
+  // =========================================================================
+  // 1. FULLSCREEN EXCLUSIVE LOGIN PAGE (No Navbar, No Footer, No Scroll)
+  // =========================================================================
   if (!isAdminAuthenticated) {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <div className="w-full max-w-md rounded-3xl bg-brand-surface border border-brand-gold/40 p-6 sm:p-8 text-center space-y-5 shadow-2xl">
-          <div className="size-14 rounded-2xl bg-brand-card text-brand-gold flex items-center justify-center mx-auto border border-brand-gold/40 shadow-gold-soft">
-            <Crown className="size-7" />
-          </div>
-          <div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">এডমিন প্যানেল প্রবেশ</h2>
-            <p className="text-xs text-slate-400 mt-1">
-              {authMode === 'pin' ? 'সুরক্ষিত পিন কোড দিন (ডিফল্ট: 1234)' : isSignUp ? 'নতুন এডমিন অ্যাকাউন্ট তৈরি করুন' : 'আপনার এডমিন ইমেইল ও পাসওয়ার্ড দিন'}
-            </p>
+      <div className="fixed inset-0 z-50 w-screen h-screen overflow-hidden bg-[#070A0F] flex items-center justify-center p-4 selection:bg-teal-500 selection:text-white">
+        {/* Subtle Ambient Background Gradients */}
+        <div className="absolute -top-32 -left-32 size-96 rounded-full bg-[#0E5460]/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 size-96 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,84,96,0.3),rgba(7,10,15,0.98))] pointer-events-none" />
+
+        {/* Central Luxury Login Card */}
+        <div className="relative w-full max-w-md rounded-3xl bg-[#0F141F]/90 border border-white/10 p-7 sm:p-9 shadow-2xl backdrop-blur-2xl text-slate-100 space-y-6 animate-in fade-in zoom-in-95 duration-300">
+          {/* Top Brand Logo */}
+          <div className="text-center space-y-2">
+            <div className="size-16 rounded-2xl bg-white p-2 border border-brand-gold/40 shadow-gold-glow mx-auto flex items-center justify-center">
+              <img
+                src="/assets/brand/ks-logo.webp"
+                alt="KARISHMASHOPBD"
+                className="size-full object-contain"
+              />
+            </div>
+            <div>
+              <div className="flex items-center justify-center gap-1 font-sans font-black text-2xl tracking-tight leading-none mt-2">
+                <span className="text-[#38BDF8]">KARISHMA</span>
+                <span className="text-white">SHOPBD</span>
+              </div>
+              <p className="text-[11px] font-bold text-teal-400 uppercase tracking-widest mt-1">
+                ENTERPRISE ADMIN PORTAL
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                অ্যাডমিন ড্যাশবোর্ডে প্রবেশ করতে লগইন করুন
+              </p>
+            </div>
           </div>
 
-          {/* Mode Switch Tabs */}
-          <div className="grid grid-cols-2 gap-1.5 p-1 bg-brand-card rounded-xl border border-brand-border text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => { setAuthMode('pin'); setPinError(''); }}
-              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${authMode === 'pin' ? 'bg-brand-gold text-brand-noir shadow-sm' : 'text-slate-400 hover:text-white'}`}
-            >
-              <Key className="size-3.5" />
-              <span>কুইক পিন (1234)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => { setAuthMode('email'); setPinError(''); }}
-              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${authMode === 'email' ? 'bg-brand-gold text-brand-noir shadow-sm' : 'text-slate-400 hover:text-white'}`}
-            >
-              <Mail className="size-3.5" />
-              <span>ইমেইল অথেন্টিকেশন</span>
-            </button>
-          </div>
-
-          {pinError && (
-            <p className="text-xs text-rose-400 font-bold bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl">{pinError}</p>
+          {/* Error Message */}
+          {loginError && (
+            <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2">
+              <AlertTriangle className="size-4 shrink-0 text-rose-400" />
+              <span>{loginError}</span>
+            </div>
           )}
 
-          {authMode === 'pin' ? (
-            <form onSubmit={handlePinSubmit} className="space-y-3">
+          {/* Login Form (Username + Password) */}
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <User className="size-3.5 text-teal-400" />
+                <span>ইউজারনেম (Username)</span>
+              </label>
               <input
-                type="password"
-                value={adminPin}
-                onChange={(e) => setAdminPin(e.target.value)}
-                placeholder="চার ডিজিটের পিন (1234)"
-                className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-4 py-2.5 text-center text-sm text-white tracking-widest font-mono focus:outline-none"
+                type="text"
+                value={username}
+                onChange={(e) => { setUsername(e.target.value); setLoginError(''); }}
+                placeholder="Afzal_1393"
+                className="w-full bg-[#161D2B] border border-slate-700/80 focus:border-teal-400 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition shadow-inner font-mono"
                 autoFocus
+                required
               />
-              <button
-                type="submit"
-                className="w-full py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition"
-              >
-                প্রবেশ করুন
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleEmailAuthSubmit} className="space-y-3 text-left">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-300 mb-1">এডমিন ইমেইল</label>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <Lock className="size-3.5 text-teal-400" />
+                <span>পাসওয়ার্ড (Password)</span>
+              </label>
+              <div className="relative">
                 <input
-                  type="email"
-                  value={adminEmail}
-                  onChange={(e) => setAdminEmail(e.target.value)}
-                  placeholder="admin@karishmashop.com"
-                  className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setLoginError(''); }}
+                  placeholder="••••••••••"
+                  className="w-full bg-[#161D2B] border border-slate-700/80 focus:border-teal-400 rounded-2xl pl-4 pr-11 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition shadow-inner font-mono"
                   required
                 />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-300 mb-1">পাসওয়ার্ড</label>
-                <input
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="কমপক্ষে ৬ ডিজিটের পাসওয়ার্ড"
-                  className="w-full bg-brand-card border border-brand-border focus:border-brand-gold rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={authLoading}
-                className="w-full py-2.5 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition disabled:opacity-50"
-              >
-                {authLoading ? 'যাচাই করা হচ্ছে...' : isSignUp ? 'নতুন এডমিন অ্যাকাউন্ট তৈরি করুন' : 'এডমিন সাইন ইন'}
-              </button>
-
-              <div className="text-center pt-1">
                 <button
                   type="button"
-                  onClick={() => { setIsSignUp(!isSignUp); setPinError(''); }}
-                  className="text-xs text-brand-gold hover:underline font-medium"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition"
+                  title={showPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                 >
-                  {isSignUp ? 'অলরেডি অ্যাকাউন্ট আছে? সাইন ইন করুন' : 'নতুন এডমিন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন'}
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
-            </form>
-          )}
+            </div>
+
+            {/* Login Action Button */}
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#0B4F5B] via-[#147A8C] to-[#0B4F5B] hover:brightness-115 text-white font-black text-sm tracking-wide shadow-lg shadow-teal-500/20 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Lock className="size-4" />
+              <span>লগইন করুন (Sign In)</span>
+            </button>
+          </form>
+
+          {/* Back 2 Website Gradient Button (As requested) */}
+          <div className="pt-2 text-center border-t border-white/5">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-teal-500 via-emerald-500 to-amber-500 hover:brightness-110 shadow-lg shadow-teal-500/20 transition active:scale-95 group"
+            >
+              <ArrowLeft className="size-3.5 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back 2 The Website (ওয়েবসাইটে ফিরে যান)</span>
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
+  // =========================================================================
+  // 2. ENTERPRISE LUXURY ADMIN DASHBOARD (A to Z Redesigned)
+  // =========================================================================
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 text-slate-100">
-      {/* Top Admin Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-brand-surface border border-brand-gold/30 shadow-luxury">
-        <div className="flex items-center gap-3">
-          <div className="size-12 rounded-2xl bg-gradient-to-tr from-brand-gold to-brand-goldDark text-brand-noir flex items-center justify-center font-bold">
-            <Crown className="size-6 fill-brand-noir" />
+    <div className="min-h-screen bg-[#070A0F] text-slate-100 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* Top Header Bar */}
+      <header className="rounded-3xl bg-[#0F141F]/90 border border-slate-800 p-5 sm:p-6 shadow-2xl backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* Brand Lockup */}
+        <div className="flex items-center gap-3.5">
+          <div className="size-13 rounded-2xl bg-white p-1.5 border border-brand-gold/40 shadow-sm flex items-center justify-center shrink-0">
+            <img src="/assets/brand/ks-logo.webp" alt="KARISHMASHOPBD" className="size-full object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-white">
-                KARISHMASHOPBD — অ্যাডমিন কন্ট্রোল
-              </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-sans font-black text-xl sm:text-2xl text-white tracking-tight">
+                KARISHMASHOPBD
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30 flex items-center gap-1.5">
+                <span className="size-2 rounded-full bg-teal-400 animate-pulse" />
                 <span>Firebase Live Database</span>
               </span>
             </div>
-            <p className="text-xs text-slate-400">রিয়েল-টাইম অর্ডার ম্যানেজমেন্ট, পেমেন্ট ভেরিফিকেশন ও ক্লাউড স্টোর সেটিংস</p>
+            <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
+              <span>অ্যাডমিন: <strong className="text-teal-300 font-mono">Afzal_1393</strong></span>
+              <span>•</span>
+              <span>ক্লাউড সিঙ্ক সক্রিয়</span>
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Header Right Actions */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <Link
+            to="/"
+            target="_blank"
+            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition active:scale-95"
+          >
+            <ExternalLink className="size-3.5" />
+            <span>স্টোর প্রিভিউ</span>
+          </Link>
+
           <button
             onClick={() => generateMonthlyReportPDF(orders, settings)}
-            className="px-4 py-2 rounded-xl bg-brand-card hover:bg-brand-surface border border-brand-gold/40 text-brand-gold text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <Download className="size-3.5" />
             <span>মাসিক রিপোর্ট (PDF)</span>
           </button>
 
           <button
-            onClick={handleLogoutAdmin}
-            className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold transition"
+            onClick={handleLogout}
+            className="px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
           >
-            লগআউট
+            <LogOut className="size-3.5" />
+            <span>লগআউট</span>
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Overview Analytics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-xs">
-        <div className="p-5 rounded-2xl bg-brand-surface border border-brand-border space-y-1">
-          <div className="flex items-center justify-between text-slate-400">
-            <span>মোট রাজস্ব (Sales)</span>
-            <DollarSign className="size-4 text-brand-gold" />
+      {/* 4 Luxury Statistics Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Revenue */}
+        <div className="p-5 rounded-3xl bg-[#0F141F]/80 border border-slate-800 hover:border-teal-500/40 transition shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-slate-400 text-xs">
+            <span>মোট রাজস্ব (Total Sales)</span>
+            <div className="size-8 rounded-xl bg-teal-500/15 text-teal-400 flex items-center justify-center">
+              <DollarSign className="size-4" />
+            </div>
           </div>
-          <p className="font-mono text-2xl font-black text-brand-gold">৳{totalRevenue.toLocaleString()}</p>
-          <span className="text-[10px] text-emerald-400">সফল অর্ডারের মোট বিক্রয়</span>
+          <p className="font-mono text-2xl sm:text-3xl font-black text-teal-300">
+            ৳{totalRevenue.toLocaleString()}
+          </p>
+          <span className="text-[11px] text-teal-400 font-medium block">
+            ✓ সফল বিক্রয়ের সর্বমোট হিসাব
+          </span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-brand-surface border border-brand-border space-y-1">
-          <div className="flex items-center justify-between text-slate-400">
-            <span>মোট অর্ডার</span>
-            <ShoppingBag className="size-4 text-cyan-400" />
+        {/* Card 2: Orders Count */}
+        <div className="p-5 rounded-3xl bg-[#0F141F]/80 border border-slate-800 hover:border-sky-500/40 transition shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-slate-400 text-xs">
+            <span>মোট অর্ডার সংখ্যা</span>
+            <div className="size-8 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center">
+              <ShoppingBag className="size-4" />
+            </div>
           </div>
-          <p className="font-mono text-2xl font-black text-white">{orders.length}</p>
-          <span className="text-[10px] text-slate-400">লাইফটাইম অর্ডার রেকর্ড</span>
+          <p className="font-mono text-2xl sm:text-3xl font-black text-white">
+            {orders.length}
+          </p>
+          <span className="text-[11px] text-slate-400 font-medium block">
+            সর্বমোট অর্ডারের রেকর্ড
+          </span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-brand-surface border border-brand-border space-y-1">
-          <div className="flex items-center justify-between text-slate-400">
+        {/* Card 3: Pending Action */}
+        <div className="p-5 rounded-3xl bg-[#0F141F]/80 border border-amber-500/30 shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-slate-400 text-xs">
             <span>অপেক্ষমাণ (Pending)</span>
-            <Clock className="size-4 text-amber-400" />
+            <div className="size-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+              <Clock className="size-4 animate-spin-slow" />
+            </div>
           </div>
-          <p className="font-mono text-2xl font-black text-amber-300">{pendingCount}</p>
-          <span className="text-[10px] text-amber-400">কনফার্মেশনের অপেক্ষায়</span>
+          <div className="flex items-baseline gap-2">
+            <p className="font-mono text-2xl sm:text-3xl font-black text-amber-300">
+              {pendingCount}
+            </p>
+            {pendingCount > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                অ্যাকশন প্রয়োজন
+              </span>
+            )}
+          </div>
+          <span className="text-[11px] text-amber-400/80 font-medium block">
+            কনফার্মেশনের অপেক্ষায় রয়েছে
+          </span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-brand-surface border border-brand-border space-y-1">
-          <div className="flex items-center justify-between text-slate-400">
-            <span>ডেলিভার্ড সম্পন্ন</span>
-            <CheckCircle2 className="size-4 text-emerald-400" />
+        {/* Card 4: Delivered */}
+        <div className="p-5 rounded-3xl bg-[#0F141F]/80 border border-slate-800 hover:border-emerald-500/40 transition shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-slate-400 text-xs">
+            <span>সফল ডেলিভারি (Delivered)</span>
+            <div className="size-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+              <CheckCircle2 className="size-4" />
+            </div>
           </div>
-          <p className="font-mono text-2xl font-black text-emerald-400">{deliveredCount}</p>
-          <span className="text-[10px] text-emerald-400">সফল ডেলিভারি সম্পন্ন</span>
+          <p className="font-mono text-2xl sm:text-3xl font-black text-emerald-300">
+            {deliveredCount}
+          </p>
+          <span className="text-[11px] text-emerald-400/80 font-medium block">
+            সফলভাবে গ্রাহকের হাতে পৌঁছেছে
+          </span>
         </div>
       </div>
 
-      {/* Tabs Menu */}
-      <div className="flex items-center gap-2 border-b border-brand-border pb-2 text-xs font-bold">
+      {/* Modern Navigation Tabs Ribbon */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#0F141F] border border-slate-800 overflow-x-auto text-xs font-bold">
         <button
           onClick={() => setActiveTab('orders')}
-          className={`px-4 py-2 rounded-xl transition ${activeTab === 'orders' ? 'bg-brand-gold text-brand-noir' : 'bg-brand-surface text-slate-300 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'orders'
+              ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-md'
+              : 'text-slate-400 hover:text-white hover:bg-white/5'
+          }`}
         >
-          অর্ডারসমূহ ({orders.length})
+          <Package className="size-4" />
+          <span>অর্ডার ম্যানেজমেন্ট</span>
+          {pendingCount > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 text-[10px] font-black">
+              {pendingCount}
+            </span>
+          )}
         </button>
+
         <button
           onClick={() => setActiveTab('products')}
-          className={`px-4 py-2 rounded-xl transition ${activeTab === 'products' ? 'bg-brand-gold text-brand-noir' : 'bg-brand-surface text-slate-300 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'products'
+              ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-md'
+              : 'text-slate-400 hover:text-white hover:bg-white/5'
+          }`}
         >
-          পণ্য তালিকা ({products.length})
+          <ShoppingBag className="size-4" />
+          <span>প্রোডাক্ট ক্যাটালগ ও ইনভেন্টরি</span>
+          <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 text-[10px]">
+            {products.length}
+          </span>
         </button>
+
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-4 py-2 rounded-xl transition ${activeTab === 'settings' ? 'bg-brand-gold text-brand-noir' : 'bg-brand-surface text-slate-300 hover:text-white'}`}
+          className={`px-4 py-2.5 rounded-xl transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'settings'
+              ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-md'
+              : 'text-slate-400 hover:text-white hover:bg-white/5'
+          }`}
         >
-          স্টোর সেটিংস
+          <Settings className="size-4" />
+          <span>স্টোর কনফিগারেশন</span>
         </button>
       </div>
 
-      {/* Tab 1: Orders Management */}
+      {/* ========================================================================= */}
+      {/* TAB 1: ORDERS MANAGEMENT */}
+      {/* ========================================================================= */}
       {activeTab === 'orders' && (
-        <div className="space-y-4">
-          {/* Filter & Search Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="relative w-full sm:w-72">
+        <section className="space-y-4">
+          {/* Filter & Search Toolbar */}
+          <div className="p-4 rounded-3xl bg-[#0F141F] border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+            {/* Status Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+              {['all', 'Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'].map((statusKey) => (
+                <button
+                  key={statusKey}
+                  onClick={() => setOrderFilter(statusKey)}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap cursor-pointer ${
+                    orderFilter === statusKey
+                      ? 'bg-teal-500 text-slate-950 shadow-sm'
+                      : 'bg-[#161D2B] text-slate-300 hover:bg-[#1E273A]'
+                  }`}
+                >
+                  {statusKey === 'all' ? 'সব অর্ডার' : statusKey}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Box */}
+            <div className="relative w-full md:w-72">
+              <Search className="absolute left-3.5 top-2.5 size-4 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="নাম, ফোন বা আইডি দিয়ে খুঁজুন..."
-                className="w-full bg-brand-surface border border-brand-border rounded-xl pl-9 pr-3 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-gold"
+                placeholder="গ্রাহকের নাম, ফোন বা অর্ডার আইডি..."
+                className="w-full bg-[#161D2B] border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-400"
               />
-              <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
-            </div>
-
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 w-full sm:w-auto scrollbar-none">
-              {['all', 'Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'].map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setOrderFilter(st)}
-                  className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition ${
-                    orderFilter === st
-                      ? 'bg-brand-gold/20 text-brand-gold border border-brand-gold/40'
-                      : 'bg-brand-surface text-slate-400 hover:text-white'
-                  }`}
-                >
-                  {st === 'all' ? 'সব অর্ডার' : st}
-                </button>
-              ))}
             </div>
           </div>
 
           {/* Orders List */}
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             {filteredOrders.length === 0 ? (
-              <div className="p-12 text-center rounded-3xl bg-brand-surface border border-brand-border">
-                <p className="text-sm font-bold text-slate-400">কোনো অর্ডার পাওয়া যায়নি!</p>
+              <div className="p-12 text-center rounded-3xl bg-[#0F141F] border border-slate-800 text-slate-400">
+                <Package className="size-10 mx-auto text-slate-600 mb-2" />
+                <p className="font-bold text-sm">কোনো অর্ডার পাওয়া যায়নি</p>
+                <p className="text-xs mt-1">ফিল্টার পরিবর্তন করে পুনরায় চেষ্টা করুন।</p>
               </div>
             ) : (
               filteredOrders.map((order) => {
-                const trackingId = order.orderTrackingId || order.id;
+                const isPending = order.status === 'Pending';
+                const isBkash = order.paymentMethod === 'bkash';
+                const isNagad = order.paymentMethod === 'nagad';
+                const isOnlinePay = isBkash || isNagad;
 
                 return (
                   <div
-                    key={order.id}
-                    className="p-5 rounded-3xl bg-brand-surface border border-brand-border hover:border-brand-gold/40 transition space-y-4 text-xs"
+                    key={order.id || order.orderTrackingId}
+                    className="p-5 rounded-3xl bg-[#0F141F] border border-slate-800 hover:border-slate-700 transition shadow-md space-y-4 text-xs"
                   >
-                    {/* Top Header */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-brand-border">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-sm text-brand-gold">#{trackingId}</span>
-                        <span className="text-[11px] text-slate-400">
-                          {new Date(order.createdAt).toLocaleDateString('bn-BD', { hour: '2-digit', minute: '2-digit' })}
+                    {/* Top Order Row */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="font-mono font-black text-sm text-teal-300 bg-teal-500/10 px-2.5 py-1 rounded-xl border border-teal-500/30">
+                          #{order.orderTrackingId || order.id}
+                        </span>
+                        <span className="text-slate-400">
+                          {order.createdAt ? new Date(order.createdAt).toLocaleString('bn-BD') : 'আজ'}
                         </span>
                       </div>
 
-                      {/* Status Selector & Actions */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {/* Status Select */}
+                      {/* Status Selector */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-slate-400 font-bold">স্ট্যাটাস:</span>
                         <select
                           value={order.status}
-                          onChange={(e) => updateOrderStatus(order.id || order.orderTrackingId, e.target.value)}
-                          className="bg-brand-card border border-brand-border text-slate-200 text-xs rounded-xl px-2.5 py-1.5 focus:border-brand-gold focus:outline-none"
+                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                          className={`font-bold px-3 py-1.5 rounded-xl border focus:outline-none text-xs cursor-pointer ${
+                            order.status === 'Delivered'
+                              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
+                              : order.status === 'Pending'
+                              ? 'bg-amber-500/15 text-amber-300 border-amber-500/40'
+                              : order.status === 'Confirmed'
+                              ? 'bg-teal-500/15 text-teal-300 border-teal-500/40'
+                              : order.status === 'Shipped'
+                              ? 'bg-sky-500/15 text-sky-300 border-sky-500/40'
+                              : 'bg-rose-500/15 text-rose-300 border-rose-500/40'
+                          }`}
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Delivered">Delivered</option>
-                          <option value="Cancelled">Cancelled</option>
+                          <option value="Pending" className="bg-slate-900 text-amber-300">অপেক্ষমাণ (Pending)</option>
+                          <option value="Confirmed" className="bg-slate-900 text-teal-300">নিশ্চিত (Confirmed)</option>
+                          <option value="Shipped" className="bg-slate-900 text-sky-300">পাঠানো হয়েছে (Shipped)</option>
+                          <option value="Delivered" className="bg-slate-900 text-emerald-300">ডেলিভার্ড (Delivered)</option>
+                          <option value="Cancelled" className="bg-slate-900 text-rose-300">বাতিল (Cancelled)</option>
                         </select>
-
-                        {/* WhatsApp Confirm & Notify */}
-                        <button
-                          onClick={() => handleSendConfirmationWA(order)}
-                          className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1 transition"
-                          title="WhatsApp Confirmation"
-                        >
-                          <MessageSquare className="size-3.5 fill-white" />
-                          <span>কনফার্ম & মেসেজ</span>
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            if (window.confirm('অর্ডারটি মুছে ফেলতে চান?')) {
-                              deleteOrder(order.id || order.orderTrackingId);
-                            }
-                          }}
-                          className="p-1.5 rounded-xl bg-brand-card hover:bg-rose-600 text-slate-400 hover:text-white transition"
-                          title="মুছে ফেলুন"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
                       </div>
                     </div>
 
-                    {/* Customer & Items Details Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Customer Info */}
-                      <div>
-                        <span className="text-slate-400 block text-[10px] uppercase font-bold">গ্রাহকের বিবরণ:</span>
-                        <p className="font-bold text-white text-sm">{order.customerName}</p>
-                        <a href={`tel:${order.phone}`} className="text-brand-gold font-mono hover:underline block mt-0.5">
-                          📞 {order.phone}
-                        </a>
-                        <p className="text-slate-300 mt-1">{order.address}</p>
-                        <span className="text-[10px] text-slate-500 block mt-1">
-                          জোন: {order.deliveryZone === 'outside_dhaka' ? 'ঢাকার বাইরে (৳' + order.deliveryFee + ')' : 'ঢাকা সিটি (৳' + order.deliveryFee + ')'}
-                        </span>
+                    {/* Customer & Product Details Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                      {/* Customer Details */}
+                      <div className="md:col-span-5 space-y-1.5 p-3 rounded-2xl bg-[#141A26] border border-slate-800">
+                        <p className="font-bold text-white text-sm flex items-center justify-between">
+                          <span>{order.customerName}</span>
+                          <span className="text-teal-400 font-mono text-xs">{order.phone}</span>
+                        </p>
+                        <p className="text-slate-300 leading-relaxed">{order.address}</p>
+                        <p className="text-slate-400 text-[11px] pt-1 border-t border-slate-700/60 flex items-center justify-between">
+                          <span>এরিয়া: {order.deliveryZone === 'inside_dhaka' ? 'ঢাকার ভেতরে (৳৮০)' : 'ঢাকার বাইরে (৳১৫০)'}</span>
+                          <span>ডেলিভারি চার্জ: ৳{order.deliveryFee || 0}</span>
+                        </p>
                       </div>
 
-                      {/* Items Info */}
-                      <div className="space-y-1.5">
-                        <span className="text-slate-400 block text-[10px] uppercase font-bold">অর্ডারের আইটেম:</span>
-                        {order.items?.map((it, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <span className="size-1.5 rounded-full bg-brand-gold shrink-0" />
-                            <span className="text-white font-bold truncate">
-                              {it.product?.nameBn || it.product?.name}
-                            </span>
-                            <span className="text-slate-400 text-[11px] shrink-0">
-                              ({it.selectedColor || ''} × {it.quantity})
-                            </span>
+                      {/* Items Ordered */}
+                      <div className="md:col-span-4 space-y-2">
+                        {order.items?.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2.5 p-2 rounded-xl bg-[#141A26]">
+                            <img
+                              src={item.product?.image || '/assets/brand/ks-logo.webp'}
+                              alt="Item"
+                              className="size-10 rounded-lg object-cover bg-slate-900"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-white font-bold truncate text-[11px]">
+                                {item.product?.nameBn || item.product?.name}
+                              </p>
+                              <p className="text-slate-400 text-[10px]">
+                                {item.selectedSize} • Qty: {item.quantity} • ৳{item.product?.price}
+                              </p>
+                            </div>
                           </div>
                         ))}
                       </div>
 
-                      {/* Payment Verification Box */}
-                      <div className="p-3 rounded-2xl bg-brand-card border border-brand-border space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400 text-[10px] uppercase font-bold">পেমেন্ট মেথড:</span>
-                          <span className="font-bold">
-                            {order.paymentMethod === 'bkash' ? (
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-pink-950/70 border border-[#E2136E]/60 text-pink-300 text-xs font-bold">
-                                <span>bKash বিকাশ</span>
-                              </span>
-                            ) : order.paymentMethod === 'nagad' ? (
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-orange-950/70 border border-[#F7941D]/60 text-orange-300 text-xs font-bold">
-                                <span>Nagad নগদ</span>
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-950/70 border border-emerald-600/60 text-emerald-300 text-xs font-bold">
-                                <span>ক্যাশ অন ডেলিভারি</span>
-                              </span>
-                            )}
-                          </span>
-                        </div>
-
-                        {(order.paymentMethod === 'bkash' || order.paymentMethod === 'nagad') && (
-                          <div className="space-y-1.5 pt-2 border-t border-brand-border">
-                            <div className="flex items-center justify-between text-[11px] text-slate-300">
-                              <span>প্রেরক নম্বর:</span>
-                              <strong className="font-mono text-amber-300 font-bold">
-                                {order.senderNumber || order.bkashSender || 'N/A'}
-                              </strong>
-                            </div>
-
-                            <div className="flex items-center justify-between text-[11px] text-slate-300">
-                              <span>TrxID:</span>
-                              <strong className="font-mono text-emerald-400 font-bold bg-slate-900/90 px-2 py-0.5 rounded border border-emerald-500/40">
-                                {order.transactionId || order.trxId || 'N/A'}
-                              </strong>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 pt-1">
-                              <button
-                                onClick={() => updatePaymentStatus(order.id || order.orderTrackingId, 'received')}
-                                className={`px-2 py-1 rounded-lg text-[10px] font-bold transition ${
-                                  order.paymentStatus === 'received'
-                                    ? 'bg-emerald-500 text-white shadow-sm'
-                                    : 'bg-brand-surface text-slate-300 hover:text-white'
-                                }`}
-                              >
-                                ✓ Received
-                              </button>
-
-                              <button
-                                onClick={() => {
-                                  updatePaymentStatus(order.id || order.orderTrackingId, 'not_received');
-                                  handleSendPaymentMismatchWA(order);
-                                }}
-                                className={`px-2 py-1 rounded-lg text-[10px] font-bold transition ${
-                                  order.paymentStatus === 'not_received'
-                                    ? 'bg-rose-500 text-white shadow-sm'
-                                    : 'bg-brand-surface text-slate-300 hover:text-white'
-                                }`}
-                              >
-                                ✕ Not Received
-                              </button>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="pt-2 border-t border-brand-border flex items-center justify-between">
-                          <span className="text-slate-400">মোট প্রদেয়:</span>
-                          <span className="font-mono text-base font-black text-brand-gold">৳{order.totalAmount}</span>
+                      {/* Total & Payment Summary */}
+                      <div className="md:col-span-3 space-y-2 p-3 rounded-2xl bg-[#141A26] border border-slate-800 text-right">
+                        <div className="text-[11px] text-slate-400">মোট প্রদেয় টাকা</div>
+                        <p className="font-mono text-xl font-black text-teal-300">
+                          ৳{order.totalAmount}
+                        </p>
+                        <div className="inline-block px-2.5 py-1 rounded-xl text-[10px] font-bold bg-[#1C2436] text-slate-300 border border-slate-700">
+                          {order.paymentMethod === 'cod' ? 'ক্যাশ অন ডেলিভারি' : isBkash ? 'বিকাশ সেন্ড মানি' : 'নগদ সেন্ড মানি'}
                         </div>
                       </div>
+                    </div>
+
+                    {/* bKash / Nagad Transaction Box */}
+                    {isOnlinePay && (
+                      <div className="p-3 rounded-2xl bg-gradient-to-r from-[#172133] to-[#121A28] border border-teal-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-teal-300 text-xs">
+                            {isBkash ? 'বিকাশ' : 'নগদ'} পেমেন্ট ভেরিফিকেশন:
+                          </span>
+                          <p className="text-slate-200">
+                            প্রেরক নম্বর: <strong className="font-mono text-white">{order.senderNumber || order.bkashSender || 'দেওয়া হয়নি'}</strong>
+                            {(order.transactionId || order.trxId) && (
+                              <span> • TrxID: <strong className="font-mono text-amber-300">{order.transactionId || order.trxId}</strong></span>
+                            )}
+                          </p>
+                        </div>
+
+                        {/* Payment Verification Controls */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updatePaymentStatus(order.id, 'received')}
+                            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                              order.paymentStatus === 'received'
+                                ? 'bg-emerald-500 text-slate-950 font-black'
+                                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                            }`}
+                          >
+                            <Check className="size-3" />
+                            <span>{order.paymentStatus === 'received' ? '✓ টাকা পাওয়া গেছে' : 'টাকা পেয়েছি'}</span>
+                          </button>
+
+                          <button
+                            onClick={() => updatePaymentStatus(order.id, 'not_received')}
+                            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition cursor-pointer ${
+                              order.paymentStatus === 'not_received'
+                                ? 'bg-rose-500 text-white font-black'
+                                : 'bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30'
+                            }`}
+                          >
+                            পেমেন্ট মেলেনি
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* WhatsApp Action Buttons */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          onClick={() => handleSendConfirmationWA(order)}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer text-[11px]"
+                        >
+                          <Phone className="size-3.5 text-emerald-400" />
+                          <span>কনফার্মেশন WhatsApp মেসেজ</span>
+                        </button>
+
+                        {isOnlinePay && order.paymentStatus === 'not_received' && (
+                          <button
+                            onClick={() => handleSendPaymentMismatchWA(order)}
+                            className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer text-[11px]"
+                          >
+                            <AlertTriangle className="size-3.5 text-amber-400" />
+                            <span>পেমেন্ট মিলছে না সতর্কতা পাঠান</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`অর্ডার #${order.orderTrackingId || order.id} ডিলিট করতে চান?`)) {
+                            deleteOrder(order.id);
+                          }
+                        }}
+                        className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer"
+                        title="অর্ডার মুছুন"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
                     </div>
                   </div>
                 );
               })
             )}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Tab 2: Products Catalog */}
+      {/* ========================================================================= */}
+      {/* TAB 2: PRODUCTS CATALOG & INVENTORY */}
+      {/* ========================================================================= */}
       {activeTab === 'products' && (
-        <div className="space-y-5">
+        <section className="space-y-4">
           {/* Action Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-brand-surface p-4 rounded-2xl border border-brand-border">
+          <div className="p-4 rounded-3xl bg-[#0F141F] border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <div>
-              <h3 className="font-serif text-base font-bold text-white flex items-center gap-2">
-                <ShoppingBag className="size-4 text-brand-gold" />
-                <span>প্রোডাক্ট ক্যাটালগ ও ইনভেন্টরি ({products.length} টি প্রোডাক্ট)</span>
+              <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                <ShoppingBag className="size-4 text-teal-400" />
+                <span>প্রোডাক্ট ক্যাটালগ ও স্টক ({products.length} টি আইটেম)</span>
               </h3>
-              <p className="text-[11px] text-slate-400">সকল আবায়া, থ্রি-পিস, গাউন ও ব্যাগের স্টক ও মূল্য নিয়ন্ত্রণ করুন</p>
+              <p className="text-slate-400 text-[11px] mt-0.5">
+                আবায়া, থ্রি-পিস, গাউন ও ব্যাগের স্টক ও মূল্য নিয়ন্ত্রণ করুন
+              </p>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setIsAddProductOpen(true)}
-                className="px-3.5 py-2 rounded-xl bg-brand-gold text-brand-noir text-xs font-bold flex items-center gap-1.5 shadow-gold-glow hover:brightness-110 transition active:scale-95"
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md hover:brightness-110 transition active:scale-95 cursor-pointer"
               >
                 <Plus className="size-4" />
                 <span>নতুন পণ্য যোগ করুন (WebP)</span>
@@ -704,8 +807,7 @@ export default function AdminDashboard() {
                   setTimeout(() => setCatalogSuccess(''), 3000);
                 }}
                 disabled={isSyncing}
-                className="px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-xs font-bold border border-emerald-500/40 flex items-center gap-1.5 transition active:scale-95"
-                title="Firebase ডাটাবেজে সিঙ্ক করুন"
+                className="px-3.5 py-2.5 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 text-xs font-bold border border-teal-500/40 flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
               >
                 <RefreshCw className={`size-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
                 <span>ক্লাউড সিঙ্ক (Firebase)</span>
@@ -717,23 +819,24 @@ export default function AdminDashboard() {
                   setCatalogSuccess('ক্যাটালগ সফলভাবে রিস্টোর হয়েছে!');
                   setTimeout(() => setCatalogSuccess(''), 2500);
                 }}
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-brand-gold text-xs font-bold border border-brand-gold/40 flex items-center gap-1.5 transition active:scale-95"
-                title="রিসেট করুন"
+                className="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition cursor-pointer"
               >
                 <RefreshCw className="size-3.5" />
-                <span>ডিফল্ট ক্যাটালগ রিসেট</span>
+                <span>ডিফল্ট রিসেট</span>
               </button>
             </div>
           </div>
 
           {catalogSuccess && (
-            <p className="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold text-xs">{catalogSuccess}</p>
+            <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-xs">
+              {catalogSuccess}
+            </div>
           )}
 
-          {/* Add Product Modal with Auto WebP Converter */}
+          {/* Add Product Modal */}
           {isAddProductOpen && (
-            <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-              <div className="relative w-full max-w-lg bg-brand-surface border border-brand-gold/40 rounded-3xl p-5 sm:p-7 shadow-2xl text-slate-100 my-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+              <div className="relative w-full max-w-lg bg-[#0F141F] border border-slate-700 rounded-3xl p-6 shadow-2xl text-slate-100 my-auto animate-in fade-in zoom-in-95 duration-200">
                 <button
                   onClick={() => setIsAddProductOpen(false)}
                   className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10"
@@ -742,7 +845,7 @@ export default function AdminDashboard() {
                 </button>
 
                 <h3 className="font-serif text-lg font-bold text-white mb-1 flex items-center gap-2">
-                  <Plus className="size-5 text-brand-gold" />
+                  <Plus className="size-5 text-teal-400" />
                   <span>নতুন পণ্য ক্যাটালগে যুক্ত করুন</span>
                 </h3>
                 <p className="text-[11px] text-slate-400 mb-4">
@@ -750,16 +853,16 @@ export default function AdminDashboard() {
                 </p>
 
                 <form onSubmit={handleCreateProduct} className="space-y-3.5 text-xs">
-                  {/* Photo Upload with auto WebP */}
-                  <div className="p-4 rounded-2xl bg-brand-card border border-brand-border space-y-2">
+                  {/* Photo Upload */}
+                  <div className="p-4 rounded-2xl bg-[#161D2B] border border-slate-700 space-y-2">
                     <label className="block font-bold text-slate-200">
-                      পণ্যের ছবি আপলোড করুন * (অটো WebP কনভার্ট হবে)
+                      পণ্যের ছবি আপলোড করুন * (স্বয়ংক্রিয় WebP কনভার্ট হবে)
                     </label>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageFileChange}
-                      className="w-full text-slate-300 text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-gold file:text-brand-noir hover:file:brightness-110 cursor-pointer"
+                      className="w-full text-slate-300 text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-500 file:text-slate-950 hover:file:brightness-110 cursor-pointer"
                     />
 
                     {isConvertingImage && (
@@ -772,7 +875,7 @@ export default function AdminDashboard() {
                       <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] space-y-1">
                         <div className="flex items-center justify-between font-bold">
                           <span>✓ WebP অপ্টিমাইজেশন সফল!</span>
-                          <span className="text-brand-gold">-{conversionStats.savedPercent}% সাইজ হ্রাস</span>
+                          <span className="text-amber-400">-{conversionStats.savedPercent}% সাইজ হ্রাস</span>
                         </div>
                         <p className="text-slate-300">
                           মূল সাইজ: {conversionStats.originalKB} KB ➔ নতুন WebP: <strong>{conversionStats.optimizedKB} KB</strong>
@@ -781,7 +884,7 @@ export default function AdminDashboard() {
                     )}
 
                     {newProductForm.image && (
-                      <div className="size-20 rounded-xl overflow-hidden border border-brand-gold/40 mx-auto mt-2 bg-black/40">
+                      <div className="size-20 rounded-xl overflow-hidden border border-teal-500/40 mx-auto mt-2 bg-black/40">
                         <img src={newProductForm.image} alt="Preview" className="size-full object-contain" />
                       </div>
                     )}
@@ -795,7 +898,7 @@ export default function AdminDashboard() {
                         value={newProductForm.nameBn}
                         onChange={(e) => setNewProductForm(p => ({ ...p, nameBn: e.target.value }))}
                         placeholder="যেমন: দুবাই কাফতান গাউন"
-                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
+                        className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-teal-400 focus:outline-none"
                         required
                       />
                     </div>
@@ -805,7 +908,7 @@ export default function AdminDashboard() {
                       <select
                         value={newProductForm.category}
                         onChange={(e) => setNewProductForm(p => ({ ...p, category: e.target.value }))}
-                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
+                        className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-teal-400 focus:outline-none"
                       >
                         <option value="threepiece">থ্রি-পিস (Three-Piece)</option>
                         <option value="abaya">আবায়া ও বোরকা (Abaya & Borka)</option>
@@ -823,7 +926,7 @@ export default function AdminDashboard() {
                         value={newProductForm.price}
                         onChange={(e) => setNewProductForm(p => ({ ...p, price: e.target.value }))}
                         placeholder="2450"
-                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:border-brand-gold focus:outline-none"
+                        className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-teal-400 focus:outline-none"
                         required
                       />
                     </div>
@@ -835,7 +938,7 @@ export default function AdminDashboard() {
                         value={newProductForm.originalPrice}
                         onChange={(e) => setNewProductForm(p => ({ ...p, originalPrice: e.target.value }))}
                         placeholder="3200"
-                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:border-brand-gold focus:outline-none"
+                        className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-teal-400 focus:outline-none"
                       />
                     </div>
 
@@ -845,7 +948,7 @@ export default function AdminDashboard() {
                         type="number"
                         value={newProductForm.stockCount}
                         onChange={(e) => setNewProductForm(p => ({ ...p, stockCount: e.target.value }))}
-                        className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono focus:border-brand-gold focus:outline-none"
+                        className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-teal-400 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -857,7 +960,7 @@ export default function AdminDashboard() {
                       value={newProductForm.fabricBn}
                       onChange={(e) => setNewProductForm(p => ({ ...p, fabricBn: e.target.value }))}
                       placeholder="যেমন: দুবাই চেরি জর্জেট ফেব্রিক"
-                      className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
+                      className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-teal-400 focus:outline-none"
                     />
                   </div>
 
@@ -868,102 +971,87 @@ export default function AdminDashboard() {
                       onChange={(e) => setNewProductForm(p => ({ ...p, descriptionBn: e.target.value }))}
                       placeholder="পণ্যটির বিশেষ বৈশিষ্ট্য লিখুন..."
                       rows="2"
-                      className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white focus:border-brand-gold focus:outline-none resize-none"
+                      className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-teal-400 focus:outline-none resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isConvertingImage}
-                    className="w-full py-3 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow hover:brightness-110 transition flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-600 text-slate-950 font-black text-xs shadow-md hover:brightness-110 transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Save className="size-4" />
-                    <span>পণ্যটি ক্যাটালগে সেভ করুন</span>
+                    <span>পণ্যটি ক্যাটালগে যুক্ত করুন</span>
                   </button>
                 </form>
               </div>
             </div>
           )}
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((p) => {
-              const mainImg = p.image || p.images?.[0] || '/assets/brand/logo.webp';
-              return (
-                <div key={p.id} className="p-3.5 rounded-2xl bg-brand-surface border border-brand-border hover:border-brand-gold/40 transition space-y-2 text-xs flex flex-col justify-between">
-                  <div>
-                    <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-brand-noir border border-brand-border/60 p-2 flex items-center justify-center">
-                      <img src={mainImg} alt="" className="size-full object-contain" />
-                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded bg-brand-noir/80 text-brand-gold border border-brand-gold/30">
-                        {p.category.toUpperCase()}
-                      </span>
-                    </div>
-
-                    <h4 className="font-bold text-white truncate mt-2 text-xs" title={p.nameBn}>
-                      {p.nameBn}
-                    </h4>
-
-                    <div className="flex items-center justify-between text-brand-gold font-mono font-bold mt-1">
-                      <span className="text-sm">৳{p.price}</span>
-                      <span className="text-[10px] text-slate-400">স্টক: {p.stockCount || 10}টি</span>
-                    </div>
-
-                    {p.colors && p.colors.length > 0 && (
-                      <div className="flex items-center gap-1 pt-1.5 overflow-x-auto">
-                        <span className="text-[10px] text-slate-400 font-semibold">ভ্যারিয়েন্ট:</span>
-                        {p.colors.map((c, i) => (
-                          <span
-                            key={i}
-                            className="size-3 rounded-full border border-black/40 shrink-0"
-                            style={{ backgroundColor: c.hex }}
-                            title={c.name}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-2 border-t border-brand-border flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => updateProduct(p.id, { inStock: !p.inStock })}
-                      className={`flex-1 py-1 px-2 rounded-lg text-[10px] font-bold transition ${
-                        p.inStock !== false
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                          : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                      }`}
-                    >
-                      {p.inStock !== false ? '✓ ইন স্টক' : '✕ স্টক আউট'}
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        if (confirm(`'${p.nameBn}' পণ্যটি মুছে ফেলতে চান?`)) {
-                          deleteProduct(p.id);
-                        }
-                      }}
-                      className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
-                      title="মুছুন"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
+          {/* Products Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {products.map((p) => (
+              <div
+                key={p.id}
+                className="p-3.5 rounded-2xl bg-[#0F141F] border border-slate-800 hover:border-slate-700 transition flex items-center justify-between gap-3 text-xs"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={p.image || '/assets/brand/ks-logo.webp'}
+                    alt={p.nameBn}
+                    className="size-14 rounded-xl object-cover bg-slate-900 border border-slate-800 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="font-bold text-white truncate text-xs">{p.nameBn || p.name}</p>
+                    <p className="text-teal-300 font-mono font-bold text-xs mt-0.5">৳{p.price}</p>
+                    <span className="text-[10px] text-slate-400 block truncate">
+                      {p.categoryBn || p.category}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
+
+                <div className="flex flex-col items-end gap-1.5 shrink-0">
+                  <button
+                    onClick={() => updateProduct(p.id, { inStock: !p.inStock })}
+                    className={`px-2.5 py-1 rounded-xl text-[10px] font-bold cursor-pointer transition ${
+                      p.inStock !== false
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                    }`}
+                  >
+                    {p.inStock !== false ? '✓ ইন স্টক' : '✕ স্টক আউট'}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`'${p.nameBn}' মুছে ফেলতে চান?`)) {
+                        deleteProduct(p.id);
+                      }
+                    }}
+                    className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer"
+                    title="মুছুন"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Tab 3: Store Settings */}
+      {/* ========================================================================= */}
+      {/* TAB 3: STORE CONFIGURATION SETTINGS */}
+      {/* ========================================================================= */}
       {activeTab === 'settings' && (
-        <div className="max-w-2xl bg-brand-surface border border-brand-gold/30 rounded-3xl p-6 sm:p-8 space-y-5 text-xs">
-          <h3 className="font-serif text-lg font-bold text-white border-b border-brand-border pb-3 flex items-center gap-2">
-            <Settings className="size-5 text-brand-gold" />
-            <span>স্টোর কনফিগারেশন সেটিংস</span>
+        <section className="max-w-2xl bg-[#0F141F] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 text-xs">
+          <h3 className="font-bold text-base text-white border-b border-slate-800 pb-3 flex items-center gap-2">
+            <Settings className="size-5 text-teal-400" />
+            <span>স্টোর কনফিগারেশন সেটিংস (Firebase Live)</span>
           </h3>
 
           {settingsSuccess && (
-            <p className="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold">{settingsSuccess}</p>
+            <p className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-300 font-bold">{settingsSuccess}</p>
           )}
 
           <form onSubmit={handleSaveSettings} className="space-y-4">
@@ -974,7 +1062,7 @@ export default function AdminDashboard() {
                   type="text"
                   value={settingsForm.hotline}
                   onChange={(e) => setSettingsForm(s => ({ ...s, hotline: e.target.value }))}
-                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                  className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
               </div>
 
@@ -984,7 +1072,7 @@ export default function AdminDashboard() {
                   type="text"
                   value={settingsForm.whatsappNumber}
                   onChange={(e) => setSettingsForm(s => ({ ...s, whatsappNumber: e.target.value }))}
-                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                  className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
               </div>
             </div>
@@ -996,7 +1084,7 @@ export default function AdminDashboard() {
                   type="text"
                   value={settingsForm.bkashNumber}
                   onChange={(e) => setSettingsForm(s => ({ ...s, bkashNumber: e.target.value }))}
-                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                  className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
               </div>
 
@@ -1006,7 +1094,7 @@ export default function AdminDashboard() {
                   type="email"
                   value={settingsForm.email}
                   onChange={(e) => setSettingsForm(s => ({ ...s, email: e.target.value }))}
-                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white"
                 />
               </div>
             </div>
@@ -1017,7 +1105,7 @@ export default function AdminDashboard() {
                 value={settingsForm.address}
                 onChange={(e) => setSettingsForm(s => ({ ...s, address: e.target.value }))}
                 rows="2"
-                className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white resize-none"
+                className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white resize-none"
               />
             </div>
 
@@ -1028,7 +1116,7 @@ export default function AdminDashboard() {
                   type="number"
                   value={settingsForm.deliveryFeeInside}
                   onChange={(e) => setSettingsForm(s => ({ ...s, deliveryFeeInside: e.target.value }))}
-                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                  className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
               </div>
               <div>
@@ -1037,7 +1125,7 @@ export default function AdminDashboard() {
                   type="number"
                   value={settingsForm.deliveryFeeOutside}
                   onChange={(e) => setSettingsForm(s => ({ ...s, deliveryFeeOutside: e.target.value }))}
-                  className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white font-mono"
+                  className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono"
                 />
               </div>
             </div>
@@ -1048,18 +1136,18 @@ export default function AdminDashboard() {
                 type="text"
                 value={settingsForm.announcementText}
                 onChange={(e) => setSettingsForm(s => ({ ...s, announcementText: e.target.value }))}
-                className="w-full bg-brand-card border border-brand-border rounded-xl px-3 py-2 text-white"
+                className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-brand-gold text-brand-noir font-bold text-xs shadow-gold-glow"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-600 text-slate-950 font-black text-xs shadow-md hover:brightness-110 transition active:scale-95 cursor-pointer"
             >
-              সেটিংস সংরক্ষণ করুন
+              সেটিংস সংরক্ষণ করুন (Save Settings)
             </button>
           </form>
-        </div>
+        </section>
       )}
     </div>
   );

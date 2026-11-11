@@ -350,7 +350,7 @@ export default function ProductDetailsPage() {
 
             {/* Direct WhatsApp Order Button */}
             <a
-              href={`https://wa.me/8801819305805?text=${encodeURIComponent(`আসসালামু আলাইকুম Karishma Shop BD, আমি এই পণ্যটি সরাসরি অর্ডার করতে চাচ্ছি:\n\nপণ্য: ${product.nameBn || product.name}\nমূল্য: ৳${product.price}\nকালার: ${activeColor?.nameBn || activeColor?.name || 'Standard'}\nসাইজ: ${selectedSize}\nপরিমাণ: ${quantity} টি\n\nঅনুগ্রহ করে কনফার্ম করুন। ধন্যবাদ!`)}`}
+              href={`https://wa.me/88${(settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`আসসালামু আলাইকুম KARISHMASHOPBD, আমি এই পণ্যটি সরাসরি অর্ডার করতে চাচ্ছি:\n\nপণ্য: ${product.nameBn || product.name}\nমূল্য: ৳${product.price}\nকালার: ${activeColor?.nameBn || activeColor?.name || 'Standard'}\nসাইজ: ${selectedSize}\nপরিমাণ: ${quantity} টি\n\nঅনুগ্রহ করে কনফার্ম করুন। ধন্যবাদ!`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition active:scale-95"

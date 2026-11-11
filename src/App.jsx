@@ -41,6 +41,8 @@ function ScrollToTop() {
 
 export default function App() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // Agency Secret: Pressing Ctrl+Shift+A opens hidden Admin Panel
   React.useEffect(() => {
@@ -55,9 +57,9 @@ export default function App() {
   }, [navigate]);
 
   return (
-    <div className="flex flex-col min-h-screen w-full overflow-x-hidden relative bg-brand-canvas text-brand-textDark selection:bg-brand-gold selection:text-brand-noir">
+    <div className={`flex flex-col min-h-screen w-full ${isAdminRoute ? 'bg-[#080B11] text-slate-100' : 'overflow-x-hidden relative bg-brand-canvas text-brand-textDark selection:bg-brand-gold selection:text-brand-noir'}`}>
       <ScrollToTop />
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
 
       <main className="flex-1">
         <Suspense fallback={<PageSkeleton />}>
@@ -75,10 +77,10 @@ export default function App() {
         </Suspense>
       </main>
 
-      <Footer />
-      <CartDrawer />
-      <CustomerAuthModal />
-      <FloatingWhatsApp />
+      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <CartDrawer />}
+      {!isAdminRoute && <CustomerAuthModal />}
+      {!isAdminRoute && <FloatingWhatsApp />}
     </div>
   );
 }

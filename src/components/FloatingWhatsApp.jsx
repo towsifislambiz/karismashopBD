@@ -7,7 +7,7 @@ export default function FloatingWhatsApp() {
   const { lang } = useLanguage();
   const { settings } = useStoreSettings();
 
-  const waRaw = (settings?.whatsappNumber || '01819305805').replace(/[^0-9]/g, '');
+  const waRaw = (settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '');
   const waNumber = waRaw.startsWith('880') ? waRaw : waRaw.startsWith('0') ? '88' + waRaw : '880' + waRaw;
 
   const defaultMsg = encodeURIComponent(

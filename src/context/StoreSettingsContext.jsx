@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS = {
   tagline: 'Your Quality Shopping Destination • Customers Satisfaction Is Our First Priority',
   taglineBn: 'ইউর কোয়ালিটি শপিং ডেস্টিনেশন • কাস্টমার সন্তুষ্টিই আমাদের প্রথম অগ্রাধিকার',
   hotline: '01819305805',
-  whatsappNumber: '01819305805',
+  whatsappNumber: '01965643684',
   bkashNumber: '01819305805',
   nagadNumber: '01819305805',
   email: 'karishmashop786@gmail.com',
@@ -40,7 +40,7 @@ export const StoreSettingsProvider = ({ children }) => {
         ...DEFAULT_SETTINGS,
         ...parsed,
         email: 'karishmashop786@gmail.com',
-        whatsappNumber: '01819305805',
+        whatsappNumber: '01965643684',
         hotline: '01819305805',
         bkashNumber: '01819305805',
         nagadNumber: '01819305805'

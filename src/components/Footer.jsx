@@ -145,12 +145,12 @@ export default function Footer() {
                 <Phone className="size-4 text-brand-gold shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <a
-                    href="https://wa.me/8801819305805"
+                    href={`https://wa.me/88${(settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-brand-gold font-mono font-bold text-slate-100 flex items-center gap-1.5 transition"
                   >
-                    <span>01819305805</span>
+                    <span>{settings?.whatsappNumber || '01965643684'}</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-sans font-semibold">WhatsApp</span>
                   </a>
                 </div>

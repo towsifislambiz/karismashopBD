@@ -55,7 +55,7 @@ export default function OrderSuccessPage() {
     }
   };
 
-  const rawWa = (settings?.whatsappNumber || '01819305805').replace(/[^0-9]/g, '');
+  const rawWa = (settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '');
   const waNumber = rawWa.startsWith('880') ? rawWa : rawWa.startsWith('0') ? '88' + rawWa : '880' + rawWa;
   const waMsg = encodeURIComponent(
     `আসসালামু আলাইকুম Karishma Shop BD, আমার অর্ডার #${displayId} কনফার্ম হয়েছে। বিস্তারিত আপডেট জানাতে অনুরোধ করছি। ধন্যবাদ!`

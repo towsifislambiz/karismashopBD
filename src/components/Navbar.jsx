@@ -95,14 +95,14 @@ export default function Navbar() {
           {/* Hotline & WhatsApp */}
           <div className="flex items-center gap-4 text-[11px] sm:text-xs">
             <a
-              href="https://wa.me/8801819305805"
+              href={`https://wa.me/88${(settings?.whatsappNumber || '01965643684').replace(/[^0-9]/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-brand-gold hover:text-brand-goldLight transition font-semibold"
             >
               <Phone className="size-3.5" />
-              <span className="hidden sm:inline">WhatsApp / কল:</span>
-              <span className="font-mono">01819305805</span>
+              <span className="hidden sm:inline">WhatsApp:</span>
+              <span className="font-mono">{settings?.whatsappNumber || '01965643684'}</span>
             </a>
             <span className="hidden md:inline-block text-slate-600">|</span>
             <span className="hidden md:inline-flex items-center gap-1 text-slate-300">
