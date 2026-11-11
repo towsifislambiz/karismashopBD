@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import {
   collection,
@@ -8,7 +8,6 @@ import {
   doc,
   getDoc,
   deleteDoc,
-  getDocs,
   serverTimestamp
 } from 'firebase/firestore';
 
@@ -71,12 +70,36 @@ const INITIAL_DEMO_ORDERS = [
         },
         quantity: 1,
         selectedColor: 'Pearl White',
-        selectedSize: 'Medium Tote (13\" × 10\" × 5\")'
+        selectedSize: 'Medium Tote (13" × 10" × 5")'
       }
     ],
     createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
   }
 ];
+
+// Pleasant Web Audio Chime for new real-time orders
+function playNewOrderChime() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15); // A5
+
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.6);
+  } catch {}
+}
 
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState(() => {
@@ -89,6 +112,8 @@ export const OrderProvider = ({ children }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [isCloudSynced, setIsCloudSynced] = useState(false);
+  const isInitialSnapshot = useRef(true);
 
   useEffect(() => {
     try {
@@ -98,11 +123,23 @@ export const OrderProvider = ({ children }) => {
     }
   }, [orders]);
 
-  // Firestore sync for orders
+  // Firestore Real-Time Sync for orders
   useEffect(() => {
+    let unsubscribe = null;
     try {
       const ordersRef = collection(db, 'karishma_orders');
-      const unsubscribe = onSnapshot(ordersRef, (snapshot) => {
+      unsubscribe = onSnapshot(ordersRef, (snapshot) => {
+        setIsCloudSynced(true);
+
+        // Play chime on new order after initial load
+        if (!isInitialSnapshot.current) {
+          const hasNewOrder = snapshot.docChanges().some((change) => change.type === 'added');
+          if (hasNewOrder) {
+            playNewOrderChime();
+          }
+        }
+        isInitialSnapshot.current = false;
+
         const list = [];
         snapshot.forEach((d) => {
           const data = d.data();
@@ -112,20 +149,26 @@ export const OrderProvider = ({ children }) => {
             createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString())
           });
         });
+
         if (list.length > 0) {
           list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           setOrders(list);
         }
       }, (err) => {
-        console.warn('Orders firestore listener fallback to local:', err.message);
+        console.warn('Orders Firestore listener fallback to local:', err.message);
+        setIsCloudSynced(false);
       });
-      return () => unsubscribe();
     } catch (e) {
       console.warn('Orders listener setup error:', e);
+      setIsCloudSynced(false);
     }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
-  // Place Order
+  // Place Order (Real-Time Firestore + Local Fallback)
   const placeOrder = async (orderData) => {
     setLoading(true);
     const orderId = `KS-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -149,6 +192,7 @@ export const OrderProvider = ({ children }) => {
         newOrder.id = docRef.id;
         setOrders(prev => prev.map(o => o.orderTrackingId === orderId ? { ...o, id: docRef.id } : o));
       }
+      setIsCloudSynced(true);
     } catch (err) {
       console.warn('Order saved to local storage:', err);
     } finally {
@@ -246,9 +290,10 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  // Update bKash Payment Status (received, not_received, pending)
+  // Update bKash/Nagad Payment Status (received, not_received, pending)
   const updatePaymentStatus = async (orderId, newPaymentStatus) => {
     setOrders(prev => prev.map(o => (o.id === orderId || o.orderTrackingId === orderId) ? { ...o, paymentStatus: newPaymentStatus } : o));
+
     try {
       const target = orders.find(o => o.id === orderId || o.orderTrackingId === orderId);
       const docId = target?.id || orderId;
@@ -279,6 +324,7 @@ export const OrderProvider = ({ children }) => {
       value={{
         orders,
         loading,
+        isCloudSynced,
         placeOrder,
         updateOrderStatus,
         updatePaymentStatus,

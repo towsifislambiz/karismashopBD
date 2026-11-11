@@ -31,8 +31,8 @@ import { convertToWebP } from '../utils/imageOptimizer';
 
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
-  const { orders, updateOrderStatus, updatePaymentStatus, deleteOrder } = useOrders();
-  const { products, addProduct, updateProduct, deleteProduct, resetToDefault } = useProducts();
+  const { orders, updateOrderStatus, updatePaymentStatus, deleteOrder, isCloudSynced: isOrdersSynced } = useOrders();
+  const { products, addProduct, updateProduct, deleteProduct, resetToDefault, isCloudSynced: isProductsSynced, syncAllToFirestore, isSyncing } = useProducts();
   const { settings, updateSettings } = useStoreSettings();
 
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateProduct = (e) => {
+  const handleCreateProduct = async (e) => {
     e.preventDefault();
     if (!newProductForm.nameBn.trim() || !newProductForm.price) {
       alert('পণ্যের নাম ও মূল্য প্রদান করুন');
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
       gowns: 'মডেস্ট গাউন',
       handbags: 'হ্যান্ডব্যাগ ও পার্স'
     };
-    const created = addProduct({
+    const created = await addProduct({
       nameBn: newProductForm.nameBn.trim(),
       name: newProductForm.name.trim() || newProductForm.nameBn.trim(),
       category: newProductForm.category,
@@ -266,10 +266,16 @@ export default function AdminDashboard() {
             <Crown className="size-6 fill-brand-noir" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-white">
-              Karishma Shop BD — অ্যাডমিন কন্ট্রোল
-            </h1>
-            <p className="text-xs text-slate-400">অর্ডার ম্যানেজমেন্ট, পেমেন্ট ভেরিফিকেশন ও স্টোর সেটিংস</p>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-white">
+                Karishma Shop BD — অ্যাডমিন কন্ট্রোল
+              </h1>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Firebase Live Database</span>
+              </span>
+            </div>
+            <p className="text-xs text-slate-400">রিয়েল-টাইম অর্ডার ম্যানেজমেন্ট, পেমেন্ট ভেরিফিকেশন ও ক্লাউড স্টোর সেটিংস</p>
           </div>
         </div>
 
@@ -572,13 +578,27 @@ export default function AdminDashboard() {
               <p className="text-[11px] text-slate-400">সকল আবায়া, থ্রি-পিস, গাউন ও ব্যাগের স্টক ও মূল্য নিয়ন্ত্রণ করুন</p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setIsAddProductOpen(true)}
                 className="px-3.5 py-2 rounded-xl bg-brand-gold text-brand-noir text-xs font-bold flex items-center gap-1.5 shadow-gold-glow hover:brightness-110 transition active:scale-95"
               >
                 <Plus className="size-4" />
                 <span>নতুন পণ্য যোগ করুন (WebP)</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  await syncAllToFirestore();
+                  setCatalogSuccess('সকল পণ্য সফলভাবে Firebase ক্লাউড ডাটাবেজে সিঙ্ক হয়েছে!');
+                  setTimeout(() => setCatalogSuccess(''), 3000);
+                }}
+                disabled={isSyncing}
+                className="px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-xs font-bold border border-emerald-500/40 flex items-center gap-1.5 transition active:scale-95"
+                title="Firebase ডাটাবেজে সিঙ্ক করুন"
+              >
+                <RefreshCw className={`size-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                <span>ক্লাউড সিঙ্ক (Firebase)</span>
               </button>
 
               <button
