@@ -40,7 +40,9 @@ import {
   Layers,
   ArrowUpRight,
   Sliders,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  Calendar
 } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useProducts } from '../context/ProductContext';
@@ -172,7 +174,51 @@ export default function AdminDashboard() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 5 Tabs Navigation State: 'orders' | 'products' | 'branding' | 'banners' | 'settings'
+  // 5-Day Month-End Calculation & Automated Order Data Backup Logic
+  // Triggered automatically starting 5 days before the month ends (e.g. 25th-30th)
+  const monthEndInfo = useMemo(() => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentDate = now.getDate();
+    const lastDateOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const daysRemaining = lastDateOfMonth - currentDate;
+
+    // Trigger alert if 5 days or fewer left in current month
+    const isFiveDaysBeforeEnd = daysRemaining <= 5 && daysRemaining >= 0;
+    const isNewMonthStart = currentDate <= 3;
+
+    const monthNameBn = now.toLocaleString('bn-BD', { month: 'long', year: 'numeric' });
+    const monthNameEn = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+    return {
+      currentDate,
+      lastDateOfMonth,
+      daysRemaining,
+      isFiveDaysBeforeEnd,
+      isNewMonthStart,
+      monthNameBn,
+      monthNameEn
+    };
+  }, []);
+
+  const [showMonthEndNoticePreview, setShowMonthEndNoticePreview] = useState(true);
+  const [isMonthEndAlertDismissed, setIsMonthEndAlertDismissed] = useState(false);
+  const [isDownloadingMonthlyPDF, setIsDownloadingMonthlyPDF] = useState(false);
+
+  const handleDownloadMonthlyDataPDF = () => {
+    try {
+      setIsDownloadingMonthlyPDF(true);
+      generateMonthlyReportPDF(orders, settings);
+    } catch (e) {
+      console.error('Failed to generate monthly PDF:', e);
+      alert('PDF তৈরি করতে সমস্যা হয়েছে: ' + (e?.message || 'Error'));
+    } finally {
+      setTimeout(() => setIsDownloadingMonthlyPDF(false), 800);
+    }
+  };
+
+  // 6 Tabs Navigation State: 'orders' | 'products' | 'branding' | 'banners' | 'settings' | 'security'
   const [activeTab, setActiveTab] = useState('orders');
   const [orderFilter, setOrderFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -955,7 +1001,7 @@ export default function AdminDashboard() {
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
-              <span>অ্যাডমিন: <strong className="text-teal-300 font-mono">Afzal_1393</strong></span>
+              <span>অ্যাডমিন: <strong className="text-teal-300 font-mono">{settings?.adminUsername || 'Afzal_1393'}</strong></span>
               <span>•</span>
               <span>ক্লাউড সিঙ্ক সক্রিয়</span>
             </p>
@@ -1002,6 +1048,73 @@ export default function AdminDashboard() {
           </button>
         </div>
       </header>
+
+      {/* ========================================================================= */}
+      {/* 5-DAY MONTH-END EMERGENCY ORDER DATA BACKUP ALERT BANNER */}
+      {/* (Triggered automatically 5 days before month-end, e.g. 25th-30th) */}
+      {/* ========================================================================= */}
+      {(!isMonthEndAlertDismissed && (monthEndInfo.isFiveDaysBeforeEnd || showMonthEndNoticePreview)) && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-950/90 via-[#18111D] to-amber-950/80 border-2 border-rose-500/60 p-4 sm:p-5 shadow-2xl shadow-rose-950/50 animate-fadeIn">
+          {/* Glowing background aura */}
+          <div className="absolute -top-12 -left-12 size-40 bg-rose-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -right-12 size-40 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            {/* Left side: Alert Icons & Warning message */}
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="size-13 sm:size-14 rounded-2xl bg-gradient-to-br from-rose-600 to-amber-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-rose-900/50 relative">
+                <AlertTriangle className="size-7 animate-bounce" />
+                <span className="absolute -top-1 -right-1 size-3.5 rounded-full bg-amber-400 border-2 border-[#18111D] animate-ping" />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[11px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                    <Clock className="size-3" />
+                    <span>জরুরি ডাটা ব্যাকআপ নোটিশ</span>
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-bold">
+                    ⏳ মাস শেষ হতে আর মাত্র {monthEndInfo.daysRemaining} দিন বাকি (শেষ দিন: {monthEndInfo.lastDateOfMonth} তারিখ)
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold">
+                    প্রতি মাসের ৩০ তারিখের ৫ দিন আগের সতর্কবার্তা
+                  </span>
+                </div>
+
+                <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2 flex-wrap">
+                  <span>চলতি মাসের অর্ডারের সমস্ত ডাটা এখনই PDF ফাইল আকারে ডাউনলোড করে নিন!</span>
+                </h3>
+
+                <p className="text-xs sm:text-[13px] text-rose-200/90 leading-relaxed max-w-3xl font-medium">
+                  ⚠️ <strong>সতর্কবার্তা:</strong> নতুন মাস শুরু হলে পূর্ববর্তী মাসের সমস্ত অর্ডারের ডাটা হারিয়ে যেতে পারে। আপনার ব্যবসার হিসাব সুরক্ষিত রাখতে সকল অর্ডারের বিস্তারিত তথ্য এখনই অফিসিয়াল PDF রিপোর্ট আকারে ডাউনলোড করে নিজের ডাটা নিজে সাবধানে নিরাপদে রাখুন।
+                </p>
+              </div>
+            </div>
+
+            {/* Right side: Action Buttons */}
+            <div className="flex items-center gap-2.5 self-stretch lg:self-auto justify-end flex-wrap">
+              <button
+                type="button"
+                onClick={handleDownloadMonthlyDataPDF}
+                disabled={isDownloadingMonthlyPDF}
+                className="flex-1 lg:flex-initial px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-amber-500/20 transition active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Download className={`size-4 ${isDownloadingMonthlyPDF ? 'animate-bounce' : ''}`} />
+                <span>{isDownloadingMonthlyPDF ? 'PDF তৈরি হচ্ছে...' : 'চলতি মাসের PDF ডাউনলোড করুন'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsMonthEndAlertDismissed(true)}
+                className="px-3 py-3 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-400 hover:text-white text-xs font-bold border border-slate-700/60 transition active:scale-95 cursor-pointer flex items-center justify-center"
+                title="এই সেশনের জন্য নোটিশটি হাইড করুন"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4 Statistics Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
@@ -1161,6 +1274,54 @@ export default function AdminDashboard() {
       {/* ========================================================================= */}
       {activeTab === 'orders' && (
         <section className="space-y-4">
+          {/* Monthly Order Backup & Security Policy Card */}
+          <div className="p-5 rounded-3xl bg-gradient-to-r from-[#0F141F] via-[#141A29] to-[#0F141F] border border-amber-500/30 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="size-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                <FileText className="size-6" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-bold text-white text-sm">মাসিক ডাটা ব্যাকআপ পলিসি (৩০ তারিখের ৫ দিন আগের অ্যালার্ট)</h4>
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-mono text-[10px] border border-amber-500/30 font-bold">
+                    আজকের তারিখ: {monthEndInfo.currentDate} | মাসের শেষ দিন: {monthEndInfo.lastDateOfMonth} তারিখ (বাকি: {monthEndInfo.daysRemaining} দিন)
+                  </span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed max-w-2xl font-medium">
+                  ⚠️ প্রতি মাসের ৩০ তারিখের ৫ দিন আগে (২৫ তারিখ থেকে) স্বয়ংক্রিয়ভাবে জরুরি অ্যালার্ট চালু হয়। নতুন মাস শুরু হলে পূর্ববর্তী মাসের সমস্ত অর্ডারের ডাটা হারিয়ে যেতে পারে, তাই যথাসময়ে সমস্ত অর্ডারের বিবরণী PDF ফাইল আকারে ডাউনলোড করে নিজের ডাটা নিজে সাবধানে নিরাপদে রাখুন।
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 self-stretch md:self-auto justify-end shrink-0 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMonthEndNoticePreview(!showMonthEndNoticePreview);
+                  setIsMonthEndAlertDismissed(false);
+                }}
+                className={`px-3 py-2 rounded-xl text-[11px] font-bold border transition active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                  showMonthEndNoticePreview && !isMonthEndAlertDismissed
+                    ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                }`}
+                title="টপ অ্যালার্ট ব্যানারের দৃশ্যমানতা টগল করুন"
+              >
+                <AlertTriangle className="size-3.5" />
+                <span>{showMonthEndNoticePreview && !isMonthEndAlertDismissed ? 'ব্যানার দেখানো হচ্ছে' : 'ব্যানার দেখুন'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadMonthlyDataPDF}
+                disabled={isDownloadingMonthlyPDF}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:brightness-110 text-slate-950 font-black text-xs transition active:scale-95 cursor-pointer flex items-center gap-2 shadow-md"
+              >
+                <Download className={`size-3.5 ${isDownloadingMonthlyPDF ? 'animate-bounce' : ''}`} />
+                <span>{isDownloadingMonthlyPDF ? 'ডাউনলোড হচ্ছে...' : 'চলতি মাসের PDF ডাউনলোড'}</span>
+              </button>
+            </div>
+          </div>
           <div className="p-4 rounded-3xl bg-[#0F141F] border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
               {['all', 'Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'].map((statusKey) => (
