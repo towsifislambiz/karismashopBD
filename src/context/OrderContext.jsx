@@ -3,10 +3,14 @@ import { db } from '../services/firebase';
 import {
   collection,
   addDoc,
+  setDoc,
   onSnapshot,
   updateDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
+  where,
   deleteDoc,
   serverTimestamp
 } from 'firebase/firestore';
@@ -143,17 +147,18 @@ export const OrderProvider = ({ children }) => {
         const list = [];
         snapshot.forEach((d) => {
           const data = d.data();
+          const firestoreDocId = d.id;
           list.push({
-            id: d.id,
             ...data,
+            firestoreDocId: firestoreDocId,
+            id: firestoreDocId, // ALWAYS maintain real Firestore doc ID as primary id
+            orderTrackingId: data.orderTrackingId || data.id || firestoreDocId,
             createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString())
           });
         });
 
-        if (list.length > 0) {
-          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          setOrders(list);
-        }
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setOrders(list);
       }, (err) => {
         console.warn('Orders Firestore listener fallback to local:', err.message);
         setIsCloudSynced(false);
@@ -168,30 +173,28 @@ export const OrderProvider = ({ children }) => {
     };
   }, []);
 
-  // Place Order (Real-Time Firestore + Local Fallback)
+  // Place Order (Real-Time Firestore with consistent Tracking ID as Document ID)
   const placeOrder = async (orderData) => {
     setLoading(true);
-    const orderId = `KS-${Math.floor(100000 + Math.random() * 900000)}`;
+    const trackingCode = `KS-${Math.floor(100000 + Math.random() * 900000)}`;
     const newOrder = {
       ...orderData,
-      id: orderId,
-      orderTrackingId: orderId,
+      id: trackingCode,
+      orderTrackingId: trackingCode,
+      firestoreDocId: trackingCode,
       status: 'Pending',
       paymentStatus: (orderData.paymentMethod === 'bkash' || orderData.paymentMethod === 'nagad') ? (orderData.paymentStatus || 'pending') : 'cod',
       createdAt: new Date().toISOString()
     };
 
-    setOrders(prev => [newOrder, ...prev]);
+    setOrders(prev => [newOrder, ...prev.filter(o => o.orderTrackingId !== trackingCode)]);
 
     try {
-      const docRef = await addDoc(collection(db, 'karishma_orders'), {
+      const orderDocRef = doc(db, 'karishma_orders', trackingCode);
+      await setDoc(orderDocRef, {
         ...newOrder,
         createdAt: serverTimestamp()
       });
-      if (docRef?.id) {
-        newOrder.id = docRef.id;
-        setOrders(prev => prev.map(o => o.orderTrackingId === orderId ? { ...o, id: docRef.id } : o));
-      }
       setIsCloudSynced(true);
     } catch (err) {
       console.warn('Order saved to local storage:', err);
@@ -278,12 +281,17 @@ export const OrderProvider = ({ children }) => {
       coinsReversed = false;
     }
 
-    setOrders(prev => prev.map(o => (o.id === orderId || o.orderTrackingId === orderId) ? { ...o, status: newStatus, coinsReversed } : o));
+    setOrders(prev => prev.map(o => (o.id === orderId || o.orderTrackingId === orderId || o.firestoreDocId === orderId) ? { ...o, status: newStatus, coinsReversed } : o));
 
     try {
-      const docId = target?.id || orderId;
+      const docId = target?.firestoreDocId || target?.id || orderId;
       if (docId) {
         await updateDoc(doc(db, 'karishma_orders', docId), { status: newStatus, coinsReversed });
+      }
+      if (target?.orderTrackingId && target.orderTrackingId !== docId) {
+        try {
+          await updateDoc(doc(db, 'karishma_orders', target.orderTrackingId), { status: newStatus, coinsReversed });
+        } catch {}
       }
     } catch (e) {
       console.warn('Status update local only:', e);
@@ -292,30 +300,93 @@ export const OrderProvider = ({ children }) => {
 
   // Update bKash/Nagad Payment Status (received, not_received, pending)
   const updatePaymentStatus = async (orderId, newPaymentStatus) => {
-    setOrders(prev => prev.map(o => (o.id === orderId || o.orderTrackingId === orderId) ? { ...o, paymentStatus: newPaymentStatus } : o));
+    setOrders(prev => prev.map(o => (o.id === orderId || o.orderTrackingId === orderId || o.firestoreDocId === orderId) ? { ...o, paymentStatus: newPaymentStatus } : o));
 
     try {
-      const target = orders.find(o => o.id === orderId || o.orderTrackingId === orderId);
-      const docId = target?.id || orderId;
+      const target = orders.find(o => o.id === orderId || o.orderTrackingId === orderId || o.firestoreDocId === orderId);
+      const docId = target?.firestoreDocId || target?.id || orderId;
       if (docId) {
         await updateDoc(doc(db, 'karishma_orders', docId), { paymentStatus: newPaymentStatus });
+      }
+      if (target?.orderTrackingId && target.orderTrackingId !== docId) {
+        try {
+          await updateDoc(doc(db, 'karishma_orders', target.orderTrackingId), { paymentStatus: newPaymentStatus });
+        } catch {}
       }
     } catch (e) {
       console.warn('Payment status update local only:', e);
     }
   };
 
-  // Delete Order
-  const deleteOrder = async (orderId) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId && o.orderTrackingId !== orderId));
+  // Delete Order (Real-Time Firestore + Local Storage Synchronization)
+  const deleteOrder = async (orderId, optionalTrackingId) => {
+    // 1. Immediately remove from React state
+    setOrders(prev => prev.filter(o => 
+      o.id !== orderId && 
+      o.orderTrackingId !== orderId && 
+      o.firestoreDocId !== orderId &&
+      (!optionalTrackingId || o.orderTrackingId !== optionalTrackingId)
+    ));
+
+    // 2. Immediately update localStorage
     try {
-      const target = orders.find(o => o.id === orderId || o.orderTrackingId === orderId);
-      const docId = target?.id || orderId;
+      const currentSaved = JSON.parse(localStorage.getItem('karishma_orders') || '[]');
+      const remaining = currentSaved.filter(o => 
+        o.id !== orderId && 
+        o.orderTrackingId !== orderId && 
+        o.firestoreDocId !== orderId &&
+        (!optionalTrackingId || o.orderTrackingId !== optionalTrackingId)
+      );
+      localStorage.setItem('karishma_orders', JSON.stringify(remaining));
+    } catch {}
+
+    try {
+      const target = orders.find(o => 
+        o.id === orderId || 
+        o.orderTrackingId === orderId || 
+        o.firestoreDocId === orderId ||
+        (optionalTrackingId && o.orderTrackingId === optionalTrackingId)
+      );
+
+      const docId = target?.firestoreDocId || target?.id || orderId;
+      const trackingCode = optionalTrackingId || target?.orderTrackingId || (typeof orderId === 'string' && orderId.startsWith('KS-') ? orderId : null);
+
+      // Direct deletion by docId
       if (docId) {
-        await deleteDoc(doc(db, 'karishma_orders', docId));
+        try {
+          await deleteDoc(doc(db, 'karishma_orders', docId));
+        } catch (err) {
+          console.warn('Direct deleteDoc attempt:', err);
+        }
+      }
+
+      // Direct deletion by trackingCode if different
+      if (trackingCode && trackingCode !== docId) {
+        try {
+          await deleteDoc(doc(db, 'karishma_orders', trackingCode));
+        } catch {}
+      }
+
+      // Query deletion by orderTrackingId in Firestore to ensure NO lingering doc
+      if (trackingCode) {
+        try {
+          const q1 = query(collection(db, 'karishma_orders'), where('orderTrackingId', '==', trackingCode));
+          const snap1 = await getDocs(q1);
+          snap1.forEach(async (d) => {
+            await deleteDoc(doc(db, 'karishma_orders', d.id));
+          });
+
+          const q2 = query(collection(db, 'karishma_orders'), where('id', '==', trackingCode));
+          const snap2 = await getDocs(q2);
+          snap2.forEach(async (d) => {
+            await deleteDoc(doc(db, 'karishma_orders', d.id));
+          });
+        } catch (qErr) {
+          console.warn('Query deletion error:', qErr);
+        }
       }
     } catch (e) {
-      console.warn('Delete order local only:', e);
+      console.warn('Delete order error:', e);
     }
   };
 

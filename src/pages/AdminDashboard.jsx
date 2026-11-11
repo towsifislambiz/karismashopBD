@@ -1526,7 +1526,7 @@ export default function AdminDashboard() {
                       <button
                         onClick={() => {
                           if (window.confirm(`অর্ডার #${order.orderTrackingId || order.id} ডিলিট করতে চান?`)) {
-                            deleteOrder(order.id);
+                            deleteOrder(order.id, order.orderTrackingId);
                           }
                         }}
                         className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer"

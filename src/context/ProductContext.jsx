@@ -68,7 +68,7 @@ export const ProductProvider = ({ children }) => {
         if (!snapshot.empty) {
           const cloudList = [];
           snapshot.forEach((docSnap) => {
-            cloudList.push({ id: docSnap.id, ...docSnap.data() });
+            cloudList.push({ ...docSnap.data(), id: docSnap.id });
           });
           setProducts(cloudList);
           setIsCloudSynced(true);
