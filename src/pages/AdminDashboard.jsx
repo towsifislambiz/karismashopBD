@@ -378,7 +378,7 @@ export default function AdminDashboard() {
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="text-xl sm:text-2xl font-serif font-bold text-white">
-                Karishma Shop BD — অ্যাডমিন কন্ট্রোল
+                KARISHMASHOPBD — অ্যাডমিন কন্ট্রোল
               </h1>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                 <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />

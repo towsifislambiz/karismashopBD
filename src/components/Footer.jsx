@@ -37,18 +37,21 @@ export default function Footer() {
             <Link
               to="/"
               onClick={handleFooterLogoClick}
-              className="flex items-center gap-2.5 cursor-pointer select-none"
-              title="Karishma Shop BD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
+              className="flex items-center gap-3 cursor-pointer select-none"
+              title="KARISHMASHOPBD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
             >
-              <div className="size-11 rounded-xl bg-brand-surface p-1 border border-brand-gold/40 flex items-center justify-center active:scale-95 transition">
-                <img src="/assets/brand/ks-logo.svg" alt="Karishma Shop" className="size-full object-contain" />
+              <div className="size-12 rounded-2xl bg-white p-1 border border-brand-gold/40 flex items-center justify-center active:scale-95 transition shadow-sm">
+                <img src="/assets/brand/ks-logo.webp" alt="KARISHMASHOPBD" className="size-full object-contain" />
               </div>
               <div>
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-wide text-gold-gradient block">
-                  KARISHMA SHOP BD
+                <span className="font-serif text-xl sm:text-2xl font-black tracking-wide text-gold-gradient block">
+                  KARISHMASHOPBD
                 </span>
-                <span className="text-[10px] tracking-widest text-slate-500 uppercase font-bold">
-                  EXCLUSIVE BOUTIQUE & ABAYA
+                <span className="text-[10px] tracking-wide text-amber-200/90 font-bold block">
+                  Your Quality Shopping Destination
+                </span>
+                <span className="text-[9px] tracking-wide text-slate-400 font-medium block">
+                  Customers Satisfaction Is Our First Priority
                 </span>
               </div>
             </Link>

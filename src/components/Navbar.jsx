@@ -147,22 +147,22 @@ export default function Navbar() {
           <Link
             to="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-2 group shrink-0 min-w-0 cursor-pointer select-none"
-            title="Karishma Shop BD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
+            className="flex items-center gap-2.5 group shrink-0 min-w-0 cursor-pointer select-none"
+            title="KARISHMASHOPBD (লোগোতে ৫ বার ক্লিক করলে অ্যাডমিন প্যানেল ওপেন হবে)"
           >
-            <div className="relative size-9 sm:size-12 rounded-xl bg-brand-noir p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-gold-soft transition flex items-center justify-center shrink-0 overflow-hidden active:scale-95">
+            <div className="relative size-10 sm:size-12 rounded-2xl bg-white p-1 border border-brand-gold/40 group-hover:border-brand-gold shadow-sm transition flex items-center justify-center shrink-0 overflow-hidden active:scale-95">
               <img
-                src="/assets/brand/ks-logo.svg"
-                alt="Karishma Shop BD"
-                className="size-full object-contain filter drop-shadow group-hover:scale-105 transition duration-300"
+                src="/assets/brand/ks-logo.webp"
+                alt="KARISHMASHOPBD"
+                className="size-full object-contain filter drop-shadow-sm group-hover:scale-105 transition duration-300"
               />
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="font-serif text-sm sm:text-2xl font-bold tracking-tight text-slate-900 group-hover:text-brand-goldDark transition leading-tight">
-                KARISHMA SHOP
+              <span className="font-serif text-base sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-brand-goldDark transition leading-tight">
+                KARISHMASHOPBD
               </span>
-              <span className="hidden xs:block text-[8px] sm:text-[10px] font-sans tracking-widest text-brand-goldDark uppercase font-bold -mt-0.5">
-                BOUTIQUE & ABAYA • BD
+              <span className="hidden xs:block text-[8px] sm:text-[10px] font-sans tracking-wide text-brand-goldDark font-bold -mt-0.5 truncate">
+                Your Quality Shopping Destination
               </span>
             </div>
           </Link>

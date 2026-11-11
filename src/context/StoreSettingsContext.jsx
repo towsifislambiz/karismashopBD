@@ -5,9 +5,9 @@ import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 const StoreSettingsContext = createContext();
 
 const DEFAULT_SETTINGS = {
-  storeName: 'Karishma Shop BD',
-  tagline: 'Exclusive Three-Piece, Dubai Abaya & Luxury Handbags',
-  taglineBn: 'এক্সক্লুসিভ থ্রি-পিস, দুবাই আবায়া ও লাক্সারি হ্যান্ডব্যাগ',
+  storeName: 'KARISHMASHOPBD',
+  tagline: 'Your Quality Shopping Destination • Customers Satisfaction Is Our First Priority',
+  taglineBn: 'ইউর কোয়ালিটি শপিং ডেস্টিনেশন • কাস্টমার সন্তুষ্টিই আমাদের প্রথম অগ্রাধিকার',
   hotline: '01819305805',
   whatsappNumber: '01819305805',
   bkashNumber: '01819305805',
