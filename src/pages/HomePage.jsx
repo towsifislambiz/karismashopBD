@@ -82,7 +82,7 @@ export default function HomePage() {
               👗 {lang === 'bn' ? 'বুটিক কালেকশন' : 'PREMIUM FESTIVE'}
             </span>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-              {lang === 'bn' ? 'আল-চিস্তি এক্সক্লুসিভ থ্রি-পিস' : 'Exclusive Three-Piece Collection'}
+              {lang === 'bn' ? 'এক্সক্লুসিভ বুটিক থ্রি-পিস' : 'Exclusive Boutique Three-Piece'}
             </h2>
           </div>
           <Link

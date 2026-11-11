@@ -21,7 +21,7 @@ const SLIDES = [
     title: 'Where Royal Heritage Meets Modern Elegance',
     titleBn: 'রাজকীয় আভিজাত্য ও আধুনিক বুটিকের নিখুঁত মেলবন্ধন',
     subtitle: 'Handcrafted threadwork embroidery, premium soft linens, and bespoke silk dupattas tailored for statement occasions.',
-    subtitleBn: 'হাতে বোনা নিখুঁত সুতার কাজ, প্রিমিয়াম সফট লিনেন ফেব্রিক ও রেশমি সিল্ক ওড়নায় সাজানো আল-চিস্তি বুটিক কালেকশন।',
+    subtitleBn: 'হাতে বোনা নিখুঁত সুতার কাজ, প্রিমিয়াম সফট লিনেন ফেব্রিক ও রেশমি সিল্ক ওড়নায় সাজানো কারিশমা বুটিক কালেকশন।',
     image: '/assets/products/threepiece_black_white.webp',
     link: '/shop?category=three-piece',
     buttonText: 'কালেকশন দেখুন',

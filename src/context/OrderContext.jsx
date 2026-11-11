@@ -33,8 +33,8 @@ const INITIAL_DEMO_ORDERS = [
       {
         product: {
           id: 'ks-tp-01',
-          name: 'Al-Chishty Embroidered Monochrome Festive Three-Piece',
-          nameBn: 'আল-চিস্তি এক্সক্লুসিভ ব্ল্যাক & হোয়াইট এমব্রয়ডারি থ্রি-পিস',
+          name: 'Exclusive Embroidered Monochrome Festive Three-Piece',
+          nameBn: 'এক্সক্লুসিভ ব্ল্যাক & হোয়াইট এমব্রয়ডারি বুটিক থ্রি-পিস',
           price: 2450,
           image: '/assets/products/threepiece_black_white.webp'
         },

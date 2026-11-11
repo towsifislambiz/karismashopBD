@@ -216,8 +216,8 @@ export const initialProducts = [
   // ==========================================
   {
     id: 'ks-tp-01',
-    name: 'Al-Chishty Embroidered Monochrome Festive Three-Piece',
-    nameBn: 'আল-চিস্তি এক্সক্লুসিভ ব্ল্যাক & হোয়াইট এমব্রয়ডারি থ্রি-পিস',
+    name: 'Exclusive Embroidered Monochrome Festive Three-Piece',
+    nameBn: 'এক্সক্লুসিভ ব্ল্যাক & হোয়াইট এমব্রয়ডারি বুটিক থ্রি-পিস',
     category: 'three-piece',
     categoryBn: 'থ্রি-পিস',
     price: 2450,
@@ -246,7 +246,7 @@ export const initialProducts = [
   },
   {
     id: 'ks-tp-02',
-    name: 'Al-Chishty Royal Kashmiri Embroidered Lavender Three-Piece',
+    name: 'Royal Kashmiri Embroidered Lavender Three-Piece',
     nameBn: 'কাশ্মীরি রয়াল ল্যাভেন্ডার এমব্রয়ডারি বুটিক থ্রি-পিস',
     category: 'three-piece',
     categoryBn: 'থ্রি-পিস',
@@ -307,7 +307,7 @@ export const initialProducts = [
   },
   {
     id: 'ks-tp-04',
-    name: 'Al-Chishty Ivory Cream & Indigo Paisley Summer Linen Three-Piece',
+    name: 'Ivory Cream & Indigo Paisley Summer Linen Three-Piece',
     nameBn: 'আইভরি ক্রিম ও ইন্ডিগো পেইসলে লাক্সারি লিনেন থ্রি-পিস',
     category: 'three-piece',
     categoryBn: 'থ্রি-পিস',
