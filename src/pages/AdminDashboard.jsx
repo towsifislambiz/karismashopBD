@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Crown,
@@ -18,6 +18,7 @@ import {
   Plus,
   Save,
   ShieldCheck,
+  ShieldAlert,
   Phone,
   RefreshCw,
   Lock,
@@ -53,6 +54,60 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
+
+  // 2-Minute Lockout on 5 Consecutive Failed Attempts (Rate Limiting)
+  const MAX_FAILED_ATTEMPTS = 5;
+  const LOCKOUT_DURATION_MS = 2 * 60 * 1000; // 2 minutes (120,000 ms)
+
+  const [failedAttempts, setFailedAttempts] = useState(() => {
+    return parseInt(localStorage.getItem('karishma_admin_failed_attempts') || '0', 10);
+  });
+  const [lockoutUntil, setLockoutUntil] = useState(() => {
+    const stored = localStorage.getItem('karishma_admin_lockout_until');
+    const val = stored ? parseInt(stored, 10) : 0;
+    return val > Date.now() ? val : 0;
+  });
+  const [lockoutRemainingSeconds, setLockoutRemainingSeconds] = useState(() => {
+    const stored = localStorage.getItem('karishma_admin_lockout_until');
+    const val = stored ? parseInt(stored, 10) : 0;
+    return val > Date.now() ? Math.ceil((val - Date.now()) / 1000) : 0;
+  });
+
+  // Real-time countdown timer for the 2-minute lockout
+  useEffect(() => {
+    if (!lockoutUntil) {
+      setLockoutRemainingSeconds(0);
+      return;
+    }
+
+    const checkTimer = () => {
+      const now = Date.now();
+      if (lockoutUntil > now) {
+        const remaining = Math.ceil((lockoutUntil - now) / 1000);
+        setLockoutRemainingSeconds(remaining);
+      } else {
+        // Lockout expired: restore access & reset counters
+        setLockoutUntil(0);
+        setFailedAttempts(0);
+        setLockoutRemainingSeconds(0);
+        localStorage.removeItem('karishma_admin_lockout_until');
+        localStorage.removeItem('karishma_admin_failed_attempts');
+        setLoginError('');
+      }
+    };
+
+    checkTimer();
+    const interval = setInterval(checkTimer, 1000);
+    return () => clearInterval(interval);
+  }, [lockoutUntil]);
+
+  const isLockedOut = lockoutRemainingSeconds > 0;
+
+  const formatCountdown = (totalSeconds) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Dashboard Tabs & Filters
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'products' | 'settings'
@@ -90,9 +145,11 @@ export default function AdminDashboard() {
   const [settingsSuccess, setSettingsSuccess] = useState('');
   const [catalogSuccess, setCatalogSuccess] = useState('');
 
-  // Handle Login with Afzal_1393 / SAZ632935
+  // Handle Login with Afzal_1393 / SAZ632935 and 5-attempt rate limiter
   const handleLoginSubmit = (e) => {
     e.preventDefault();
+    if (isLockedOut) return;
+
     const cleanUser = username.trim();
     const cleanPass = password.trim();
 
@@ -108,9 +165,26 @@ export default function AdminDashboard() {
     if (isUserMatch && isPassMatch) {
       setIsAdminAuthenticated(true);
       localStorage.setItem('karishma_admin_auth', 'true');
+      setFailedAttempts(0);
+      setLockoutUntil(0);
+      localStorage.removeItem('karishma_admin_failed_attempts');
+      localStorage.removeItem('karishma_admin_lockout_until');
       setLoginError('');
     } else {
-      setLoginError('ভুল ইউজারনেম অথবা পাসওয়ার্ড! পুনরায় চেষ্টা করুন।');
+      const nextCount = failedAttempts + 1;
+      setFailedAttempts(nextCount);
+      localStorage.setItem('karishma_admin_failed_attempts', nextCount.toString());
+
+      if (nextCount >= MAX_FAILED_ATTEMPTS) {
+        const lockTime = Date.now() + LOCKOUT_DURATION_MS;
+        setLockoutUntil(lockTime);
+        localStorage.setItem('karishma_admin_lockout_until', lockTime.toString());
+        setLockoutRemainingSeconds(120);
+        setLoginError('টানা ৫ বার ভুল ইউজারনেম/পাসওয়ার্ড দেওয়া হয়েছে! নিরাপত্তার স্বার্থে লগইন ২ মিনিটের জন্য সাময়িকভাবে লক করা হয়েছে।');
+      } else {
+        const remainingChances = MAX_FAILED_ATTEMPTS - nextCount;
+        setLoginError(`ভুল ইউজারনেম অথবা পাসওয়ার্ড! আর ${remainingChances} বার ভুল তথ্য দিলে ২ মিনিটের জন্য লগইন বন্ধ হয়ে যাবে।`);
+      }
     }
   };
 
@@ -290,13 +364,33 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Error Message */}
-          {loginError && (
+          {/* Error & Lockout Message */}
+          {isLockedOut ? (
+            <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs space-y-2.5 animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex items-center gap-2 font-bold text-rose-300">
+                <ShieldAlert className="size-4 shrink-0 text-rose-400 animate-bounce" />
+                <span>নিরাপত্তা লক সক্রিয় (Security Lock Active)</span>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                টানা ৫ বার ভুল তথ্য দেওয়া হয়েছে! অননুমোদিত প্রবেশ রোধে লগইন সাময়িকভাবে স্থগিত করা হয়েছে। অনুগ্রহ করে অপেক্ষা করুন:
+              </p>
+              <div className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-black/50 border border-rose-500/30 shadow-inner">
+                <Clock className="size-4 text-amber-400 animate-spin-slow" />
+                <span className="font-mono text-2xl font-black text-amber-300 tracking-widest">
+                  {formatCountdown(lockoutRemainingSeconds)}
+                </span>
+                <span className="text-[11px] text-slate-300 font-semibold">মিনিট বাকি</span>
+              </div>
+              <p className="text-[10px] text-slate-400 text-center">
+                ২ মিনিট শেষ হলে স্বয়ংক্রিয়ভাবে পুনরায় চেষ্টা করতে পারবেন।
+              </p>
+            </div>
+          ) : loginError ? (
             <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2">
               <AlertTriangle className="size-4 shrink-0 text-rose-400" />
               <span>{loginError}</span>
             </div>
-          )}
+          ) : null}
 
           {/* Login Form (Username + Password) */}
           <form onSubmit={handleLoginSubmit} className="space-y-4">
@@ -307,11 +401,16 @@ export default function AdminDashboard() {
               </label>
               <input
                 type="text"
+                disabled={isLockedOut}
                 value={username}
                 onChange={(e) => { setUsername(e.target.value); setLoginError(''); }}
-                placeholder="Afzal_1393"
-                className="w-full bg-[#161D2B] border border-slate-700/80 focus:border-teal-400 rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition shadow-inner font-mono"
-                autoFocus
+                placeholder={isLockedOut ? "লগইন সাময়িক স্থগিত রয়েছে..." : "Afzal_1393"}
+                className={`w-full border rounded-2xl px-4 py-3 text-sm text-white focus:outline-none transition shadow-inner font-mono ${
+                  isLockedOut
+                    ? 'bg-slate-900/60 border-slate-800 text-slate-500 cursor-not-allowed opacity-60'
+                    : 'bg-[#161D2B] border-slate-700/80 focus:border-teal-400 placeholder-slate-500'
+                }`}
+                autoFocus={!isLockedOut}
                 required
               />
             </div>
@@ -324,16 +423,22 @@ export default function AdminDashboard() {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  disabled={isLockedOut}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setLoginError(''); }}
                   placeholder="••••••••••"
-                  className="w-full bg-[#161D2B] border border-slate-700/80 focus:border-teal-400 rounded-2xl pl-4 pr-11 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition shadow-inner font-mono"
+                  className={`w-full border rounded-2xl pl-4 pr-11 py-3 text-sm text-white focus:outline-none transition shadow-inner font-mono ${
+                    isLockedOut
+                      ? 'bg-slate-900/60 border-slate-800 text-slate-500 cursor-not-allowed opacity-60'
+                      : 'bg-[#161D2B] border-slate-700/80 focus:border-teal-400 placeholder-slate-500'
+                  }`}
                   required
                 />
                 <button
                   type="button"
+                  disabled={isLockedOut}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition"
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white transition disabled:opacity-30"
                   title={showPassword ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখুন'}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -344,10 +449,24 @@ export default function AdminDashboard() {
             {/* Login Action Button */}
             <button
               type="submit"
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#0B4F5B] via-[#147A8C] to-[#0B4F5B] hover:brightness-115 text-white font-black text-sm tracking-wide shadow-lg shadow-teal-500/20 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isLockedOut}
+              className={`w-full py-3.5 rounded-2xl font-black text-sm tracking-wide shadow-lg transition flex items-center justify-center gap-2 ${
+                isLockedOut
+                  ? 'bg-slate-800/80 text-slate-500 border border-slate-700/60 cursor-not-allowed shadow-none'
+                  : 'bg-gradient-to-r from-[#0B4F5B] via-[#147A8C] to-[#0B4F5B] hover:brightness-115 text-white shadow-teal-500/20 active:scale-95 cursor-pointer'
+              }`}
             >
-              <Lock className="size-4" />
-              <span>লগইন করুন (Sign In)</span>
+              {isLockedOut ? (
+                <>
+                  <Lock className="size-4 text-amber-400" />
+                  <span>অপেক্ষা করুন ({formatCountdown(lockoutRemainingSeconds)})</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="size-4" />
+                  <span>লগইন করুন (Sign In)</span>
+                </>
+              )}
             </button>
           </form>
 
