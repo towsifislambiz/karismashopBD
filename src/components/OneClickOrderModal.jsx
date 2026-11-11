@@ -28,7 +28,7 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
   const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(initialColor || product?.colors?.[0]?.name || 'Standard');
+  const [selectedColor, setSelectedColor] = useState(initialColor || product?.colors?.[0]?.nameBn || product?.colors?.[0]?.name || 'Standard');
   const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || 'Free Size');
 
   const [customerName, setCustomerName] = useState('');
@@ -43,7 +43,7 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
 
   useEffect(() => {
     if (product) {
-      setSelectedColor(initialColor || product.colors?.[0]?.name || 'Standard');
+      setSelectedColor(initialColor || product.colors?.[0]?.nameBn || product.colors?.[0]?.name || 'Standard');
       setSelectedSize(product.sizes?.[0] || 'Free Size');
       setQuantity(1);
       setErrorMsg('');
@@ -62,7 +62,7 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
   const grandTotal = subtotal + effectiveDeliveryFee;
 
   // Selected color image
-  const colorObj = product.colors?.find(c => c.name === selectedColor);
+  const colorObj = product.colors?.find(c => c.name === selectedColor || c.nameBn === selectedColor);
   const previewImage = colorObj?.image || product.image || product.images?.[0] || '/assets/brand/logo.webp';
 
   const handleCopyNumber = (num) => {
@@ -225,21 +225,25 @@ export default function OneClickOrderModal({ isOpen, onClose, product, initialCo
             <div className="space-y-1.5">
               <label className="block font-bold text-slate-700">কালার নির্বাচন করুন:</label>
               <div className="flex flex-wrap gap-2">
-                {product.colors.map((c, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setSelectedColor(c.name)}
-                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${
-                      selectedColor === c.name
-                        ? 'border-brand-gold bg-amber-50 text-slate-900 ring-1 ring-brand-gold/40'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400'
-                    }`}
-                  >
-                    <span className="size-3 rounded-full border border-black/30" style={{ backgroundColor: c.hex }} />
-                    <span>{lang === 'bn' ? c.nameBn : c.name}</span>
-                  </button>
-                ))}
+                {product.colors.map((c, idx) => {
+                  const cName = c.nameBn || c.name;
+                  const isSelected = selectedColor === c.name || selectedColor === c.nameBn;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedColor(cName)}
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        isSelected
+                          ? 'border-brand-gold bg-amber-50 text-slate-900 ring-1 ring-brand-gold/40'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400'
+                      }`}
+                    >
+                      <span className="size-3 rounded-full border border-black/30" style={{ backgroundColor: c.hex }} />
+                      <span>{lang === 'bn' ? (c.nameBn || c.name) : (c.name || c.nameBn)}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

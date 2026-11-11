@@ -63,7 +63,7 @@ export default function ProductDetailsPage() {
 
   const currentImages = product.images || (product.image ? [product.image] : ['/assets/brand/logo.webp']);
   const displayImage = currentImages[selectedImage] || currentImages[0] || '/assets/brand/logo.webp';
-  const activeColor = product.colors?.[selectedColorIdx] || null;
+  const activeColor = product.colors?.[selectedColorIdx] || product.colors?.[0] || null;
   const isFav = isInWishlist(product.id);
 
   const relatedProducts = products
@@ -236,7 +236,7 @@ export default function ProductDetailsPage() {
                 <span className="text-slate-700">
                   {lang === 'bn' ? 'কালার বেছে নিন:' : 'Select Color:'}{' '}
                   <strong className="text-brand-goldDark font-bold">
-                    {lang === 'bn' ? activeColor?.nameBn : activeColor?.name}
+                    {lang === 'bn' ? (activeColor?.nameBn || activeColor?.name) : (activeColor?.name || activeColor?.nameBn)}
                   </strong>
                 </span>
               </div>
@@ -246,7 +246,7 @@ export default function ProductDetailsPage() {
                     key={idx}
                     type="button"
                     onClick={() => handleColorSelect(idx)}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition ${
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
                       selectedColorIdx === idx
                         ? 'border-brand-gold bg-amber-50 text-slate-900 ring-2 ring-brand-gold/40 shadow-sm'
                         : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-gold'
@@ -256,7 +256,7 @@ export default function ProductDetailsPage() {
                       className="size-3.5 rounded-full border border-black/30 shadow-xs"
                       style={{ backgroundColor: c.hex }}
                     />
-                    <span>{lang === 'bn' ? c.nameBn : c.name}</span>
+                    <span>{lang === 'bn' ? (c.nameBn || c.name) : (c.name || c.nameBn)}</span>
                   </button>
                 ))}
               </div>

@@ -51,6 +51,24 @@ import { useLanguage } from '../context/LanguageContext';
 import { generateMonthlyReportPDF, downloadVisitingCardPDF } from '../utils/pdfGenerator';
 import { convertToWebP } from '../utils/imageOptimizer';
 
+// 14 Popular Fashion & Boutique Color Presets for Quick 1-Click Selection
+const POPULAR_COLOR_PRESETS = [
+  { name: 'Imperial Jet Black', nameBn: 'জেট ব্ল্যাক', hex: '#0D0E12' },
+  { name: 'Pearl White', nameBn: 'পার্ল হোয়াইট', hex: '#FFFFFF' },
+  { name: 'Royal Gold', nameBn: 'রয়েল গোল্ড', hex: '#D4AF37' },
+  { name: 'Maroon Wine', nameBn: 'মেরুন ওয়াইন', hex: '#581825' },
+  { name: 'Emerald Green', nameBn: 'পান্না সবুজ', hex: '#064E3B' },
+  { name: 'Royal Navy Blue', nameBn: 'রয়েল নেভি ব্লু', hex: '#1E3A8A' },
+  { name: 'Smoky Grey', nameBn: 'স্মোকি গ্রে', hex: '#6E737E' },
+  { name: 'Royal Olive', nameBn: 'রয়েল অলিভ', hex: '#586A41' },
+  { name: 'Mocha Coffee', nameBn: 'মোকা কফি', hex: '#9E7A6B' },
+  { name: 'Lilac Lavender', nameBn: 'ল্যাভেন্ডার', hex: '#9E82A8' },
+  { name: 'Pastel Baby Pink', nameBn: 'পেস্টেল পিঙ্ক', hex: '#F472B6' },
+  { name: 'Crimson Red', nameBn: 'ডিপ রেড', hex: '#DC2626' },
+  { name: 'Sky Blue', nameBn: 'আকাশি ব্লু', hex: '#38BDF8' },
+  { name: 'Beige Tan', nameBn: 'বেইজ ট্যান', hex: '#DED5C3' }
+];
+
 export default function AdminDashboard() {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
@@ -259,7 +277,8 @@ export default function AdminDashboard() {
     stockCount: 15,
     fabricBn: '',
     descriptionBn: '',
-    image: ''
+    image: '',
+    colors: []
   });
 
   // Edit Product Modal State
@@ -277,8 +296,18 @@ export default function AdminDashboard() {
     isFlashSale: false,
     fabricBn: '',
     descriptionBn: '',
-    image: ''
+    image: '',
+    colors: []
   });
+
+  // Interactive Color Picker & Variants Management State
+  const [editColorHex, setEditColorHex] = useState('#0D0E12');
+  const [editColorName, setEditColorName] = useState('');
+  const [editSelectedColorIdx, setEditSelectedColorIdx] = useState(null);
+
+  const [addColorHex, setAddColorHex] = useState('#0D0E12');
+  const [addColorName, setAddColorName] = useState('');
+  const [addSelectedColorIdx, setAddSelectedColorIdx] = useState(null);
 
   // Branding Tab State (Logo & Visiting Card)
   const [logoPreview, setLogoPreview] = useState(settings?.siteLogo || '/assets/brand/ks-logo.webp');
@@ -599,9 +628,111 @@ export default function AdminDashboard() {
       isFlashSale: !!prod.isFlashSale,
       fabricBn: prod.fabricBn || '',
       descriptionBn: prod.descriptionBn || '',
-      image: prod.image || ''
+      image: prod.image || '',
+      colors: Array.isArray(prod.colors) ? [...prod.colors] : []
     });
+    setEditColorHex('#0D0E12');
+    setEditColorName('');
+    setEditSelectedColorIdx(null);
     setIsEditProductOpen(true);
+  };
+
+  // Color Variant Handlers for Edit Modal
+  const handleAddColorToEditForm = () => {
+    const hex = editColorHex || '#000000';
+    const name = editColorName.trim() || hex;
+    const nameBn = editColorName.trim() || hex;
+    const newColor = { name, nameBn, hex };
+
+    if (editSelectedColorIdx !== null && editSelectedColorIdx >= 0) {
+      setEditProductForm(prev => {
+        const nextColors = [...(prev.colors || [])];
+        nextColors[editSelectedColorIdx] = { ...nextColors[editSelectedColorIdx], ...newColor };
+        return { ...prev, colors: nextColors };
+      });
+      setEditSelectedColorIdx(null);
+    } else {
+      setEditProductForm(prev => ({
+        ...prev,
+        colors: [...(prev.colors || []), newColor]
+      }));
+    }
+    setEditColorName('');
+  };
+
+  const handleEditColorInEditForm = (idx) => {
+    const col = editProductForm.colors?.[idx];
+    if (!col) return;
+    setEditColorHex(col.hex || '#0D0E12');
+    setEditColorName(col.nameBn || col.name || '');
+    setEditSelectedColorIdx(idx);
+  };
+
+  const handleRemoveColorFromEditForm = (idx) => {
+    setEditProductForm(prev => ({
+      ...prev,
+      colors: (prev.colors || []).filter((_, i) => i !== idx)
+    }));
+    if (editSelectedColorIdx === idx) {
+      setEditSelectedColorIdx(null);
+      setEditColorName('');
+    }
+  };
+
+  const handleClearAllColorsFromEditForm = () => {
+    if (window.confirm('আপনি কি এই পণ্যের সকল কালার মুছে ফেলতে চান?')) {
+      setEditProductForm(prev => ({ ...prev, colors: [] }));
+      setEditSelectedColorIdx(null);
+      setEditColorName('');
+    }
+  };
+
+  // Color Variant Handlers for Add Modal
+  const handleAddColorToAddForm = () => {
+    const hex = addColorHex || '#000000';
+    const name = addColorName.trim() || hex;
+    const nameBn = addColorName.trim() || hex;
+    const newColor = { name, nameBn, hex };
+
+    if (addSelectedColorIdx !== null && addSelectedColorIdx >= 0) {
+      setNewProductForm(prev => {
+        const nextColors = [...(prev.colors || [])];
+        nextColors[addSelectedColorIdx] = { ...nextColors[addSelectedColorIdx], ...newColor };
+        return { ...prev, colors: nextColors };
+      });
+      setAddSelectedColorIdx(null);
+    } else {
+      setNewProductForm(prev => ({
+        ...prev,
+        colors: [...(prev.colors || []), newColor]
+      }));
+    }
+    setAddColorName('');
+  };
+
+  const handleEditColorInAddForm = (idx) => {
+    const col = newProductForm.colors?.[idx];
+    if (!col) return;
+    setAddColorHex(col.hex || '#0D0E12');
+    setAddColorName(col.nameBn || col.name || '');
+    setAddSelectedColorIdx(idx);
+  };
+
+  const handleRemoveColorFromAddForm = (idx) => {
+    setNewProductForm(prev => ({
+      ...prev,
+      colors: (prev.colors || []).filter((_, i) => i !== idx)
+    }));
+    if (addSelectedColorIdx === idx) {
+      setAddSelectedColorIdx(null);
+      setAddColorName('');
+    }
+  };
+
+  const handleClearAllColorsFromAddForm = () => {
+    setNewProductForm(prev => ({ ...prev, colors: [] }));
+    setAddSelectedColorIdx(null);
+    setAddColorName('');
   };
 
   // Save Edited Product
@@ -630,7 +761,8 @@ export default function AdminDashboard() {
       isFlashSale: !!editProductForm.isFlashSale,
       fabricBn: editProductForm.fabricBn.trim(),
       descriptionBn: editProductForm.descriptionBn.trim(),
-      image: editProductForm.image || '/assets/brand/ks-logo.webp'
+      image: editProductForm.image || '/assets/brand/ks-logo.webp',
+      colors: editProductForm.colors || []
     });
 
     setCatalogSuccess('পণ্যটির সকল তথ্য সফলভাবে আপডেট হয়েছে!');
@@ -709,7 +841,8 @@ export default function AdminDashboard() {
       rating: 5.0,
       reviewsCount: 1,
       badge: 'নতুন কালেকশন',
-      badgeEn: 'New Arrival'
+      badgeEn: 'New Arrival',
+      colors: newProductForm.colors || []
     });
 
     setCatalogSuccess(`'${created.nameBn}' সফলভাবে ক্যাটালগে যুক্ত হয়েছে! (WebP অপ্টিমাইজড)`);
@@ -723,8 +856,12 @@ export default function AdminDashboard() {
       stockCount: 15,
       fabricBn: '',
       descriptionBn: '',
-      image: ''
+      image: '',
+      colors: []
     });
+    setAddColorHex('#0D0E12');
+    setAddColorName('');
+    setAddSelectedColorIdx(null);
     setConversionStats(null);
     setTimeout(() => setCatalogSuccess(''), 3500);
   };
@@ -1885,6 +2022,177 @@ export default function AdminDashboard() {
                     />
                   </div>
 
+                  {/* COLOR VARIANTS MANAGEMENT SECTION */}
+                  <div className="p-3.5 rounded-2xl bg-[#161D2B] border border-slate-700 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                        <Palette className="size-4 text-teal-400" />
+                        <span>পণ্যের কালার ভ্যারিয়েন্ট (Color Picker)</span>
+                        <span className="text-[10px] text-teal-300 font-normal px-2 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20">
+                          {(editProductForm.colors || []).length} টি কালার
+                        </span>
+                      </label>
+                      {(editProductForm.colors || []).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAllColorsFromEditForm}
+                          className="text-[10px] text-red-400 hover:text-red-300 underline cursor-pointer"
+                        >
+                          সব কালার মুছুন
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Current Colors Badges */}
+                    <div className="flex flex-wrap gap-2 min-h-[38px] p-2 rounded-xl bg-[#0F141F] border border-slate-800 items-center">
+                      {(!editProductForm.colors || editProductForm.colors.length === 0) ? (
+                        <span className="text-[11px] text-slate-500 italic">
+                          কোনো কালার যোগ করা হয়নি (পণ্যটি একক কালারে থাকবে)
+                        </span>
+                      ) : (
+                        editProductForm.colors.map((c, idx) => (
+                          <div
+                            key={idx}
+                            className={`flex items-center gap-1.5 pl-2 pr-1.5 py-1 rounded-lg text-xs font-medium border transition ${
+                              editSelectedColorIdx === idx
+                                ? 'bg-teal-500/20 border-teal-400 text-teal-200 ring-1 ring-teal-400/50'
+                                : 'bg-[#161D2B] border-slate-700 text-slate-200'
+                            }`}
+                          >
+                            <span
+                              className="size-3.5 rounded-full border border-white/40 shrink-0 shadow-xs"
+                              style={{ backgroundColor: c.hex }}
+                            />
+                            <span className="text-[11px] font-bold">{c.nameBn || c.name}</span>
+                            <span className="text-[9px] text-slate-400 font-mono">({c.hex})</span>
+
+                            {/* Edit color button */}
+                            <button
+                              type="button"
+                              title="এডিট করুন"
+                              onClick={() => handleEditColorInEditForm(idx)}
+                              className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-teal-300 cursor-pointer transition ml-0.5"
+                            >
+                              <Edit3 className="size-3" />
+                            </button>
+
+                            {/* Delete color button */}
+                            <button
+                              type="button"
+                              title="ডিলিট করুন"
+                              onClick={() => handleRemoveColorFromEditForm(idx)}
+                              className="p-1 rounded hover:bg-red-500/20 text-slate-400 hover:text-red-400 cursor-pointer transition"
+                            >
+                              <X className="size-3" />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Interactive Picker & Inputs */}
+                    <div className="space-y-2 pt-1 border-t border-slate-800">
+                      <div className="flex items-center gap-2">
+                        {/* Native Color Picker */}
+                        <div className="relative shrink-0">
+                          <input
+                            type="color"
+                            value={editColorHex}
+                            onChange={(e) => setEditColorHex(e.target.value)}
+                            className="size-9 rounded-xl border border-slate-700 bg-transparent cursor-pointer p-0.5"
+                            title="কালার পিকার থেকে পছন্দ করুন"
+                          />
+                        </div>
+
+                        {/* Hex Input */}
+                        <input
+                          type="text"
+                          value={editColorHex}
+                          onChange={(e) => setEditColorHex(e.target.value)}
+                          placeholder="#0D0E12"
+                          className="w-24 bg-[#0F141F] border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:border-teal-400 focus:outline-none"
+                        />
+
+                        {/* Color Name Input */}
+                        <input
+                          type="text"
+                          value={editColorName}
+                          onChange={(e) => setEditColorName(e.target.value)}
+                          placeholder="কালারের নাম (যেমন: জেট ব্ল্যাক)"
+                          className="flex-1 bg-[#0F141F] border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:border-teal-400 focus:outline-none"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddColorToEditForm();
+                            }
+                          }}
+                        />
+
+                        {/* Add / Update Button */}
+                        <button
+                          type="button"
+                          onClick={handleAddColorToEditForm}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition flex items-center gap-1 cursor-pointer ${
+                            editSelectedColorIdx !== null
+                              ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm'
+                              : 'bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-sm'
+                          }`}
+                        >
+                          {editSelectedColorIdx !== null ? (
+                            <>
+                              <Check className="size-3.5" />
+                              <span>আপডেট</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="size-3.5" />
+                              <span>যুক্ত করুন</span>
+                            </>
+                          )}
+                        </button>
+
+                        {editSelectedColorIdx !== null && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditSelectedColorIdx(null);
+                              setEditColorName('');
+                            }}
+                            className="px-2 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
+                          >
+                            বাতিল
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Quick Popular Color Preset Chips */}
+                      <div>
+                        <span className="text-[10px] text-slate-400 block mb-1">
+                          জনপ্রিয় কালার প্যালেট (১-ক্লিকে সিলেক্ট করুন):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {POPULAR_COLOR_PRESETS.map((preset, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              onClick={() => {
+                                setEditColorHex(preset.hex);
+                                setEditColorName(preset.nameBn);
+                              }}
+                              className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F141F] hover:bg-slate-800 border border-slate-800 hover:border-teal-500/50 text-[10px] text-slate-300 transition cursor-pointer"
+                            >
+                              <span
+                                className="size-2.5 rounded-full border border-black/40"
+                                style={{ backgroundColor: preset.hex }}
+                              />
+                              <span>{preset.nameBn}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={isConvertingEditImage}
@@ -2032,6 +2340,177 @@ export default function AdminDashboard() {
                       rows="2"
                       className="w-full bg-[#161D2B] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-teal-400 focus:outline-none resize-none"
                     />
+                  </div>
+
+                  {/* COLOR VARIANTS MANAGEMENT SECTION */}
+                  <div className="p-3.5 rounded-2xl bg-[#161D2B] border border-slate-700 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                        <Palette className="size-4 text-teal-400" />
+                        <span>পণ্যের কালার ভ্যারিয়েন্ট (Color Picker)</span>
+                        <span className="text-[10px] text-teal-300 font-normal px-2 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20">
+                          {(newProductForm.colors || []).length} টি কালার
+                        </span>
+                      </label>
+                      {(newProductForm.colors || []).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAllColorsFromAddForm}
+                          className="text-[10px] text-red-400 hover:text-red-300 underline cursor-pointer"
+                        >
+                          সব কালার মুছুন
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Current Colors Badges */}
+                    <div className="flex flex-wrap gap-2 min-h-[38px] p-2 rounded-xl bg-[#0F141F] border border-slate-800 items-center">
+                      {(!newProductForm.colors || newProductForm.colors.length === 0) ? (
+                        <span className="text-[11px] text-slate-500 italic">
+                          কোনো কালার যোগ করা হয়নি (পণ্যটি একক কালারে থাকবে)
+                        </span>
+                      ) : (
+                        newProductForm.colors.map((c, idx) => (
+                          <div
+                            key={idx}
+                            className={`flex items-center gap-1.5 pl-2 pr-1.5 py-1 rounded-lg text-xs font-medium border transition ${
+                              addSelectedColorIdx === idx
+                                ? 'bg-teal-500/20 border-teal-400 text-teal-200 ring-1 ring-teal-400/50'
+                                : 'bg-[#161D2B] border-slate-700 text-slate-200'
+                            }`}
+                          >
+                            <span
+                              className="size-3.5 rounded-full border border-white/40 shrink-0 shadow-xs"
+                              style={{ backgroundColor: c.hex }}
+                            />
+                            <span className="text-[11px] font-bold">{c.nameBn || c.name}</span>
+                            <span className="text-[9px] text-slate-400 font-mono">({c.hex})</span>
+
+                            {/* Edit color button */}
+                            <button
+                              type="button"
+                              title="এডিট করুন"
+                              onClick={() => handleEditColorInAddForm(idx)}
+                              className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-teal-300 cursor-pointer transition ml-0.5"
+                            >
+                              <Edit3 className="size-3" />
+                            </button>
+
+                            {/* Delete color button */}
+                            <button
+                              type="button"
+                              title="ডিলিট করুন"
+                              onClick={() => handleRemoveColorFromAddForm(idx)}
+                              className="p-1 rounded hover:bg-red-500/20 text-slate-400 hover:text-red-400 cursor-pointer transition"
+                            >
+                              <X className="size-3" />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Interactive Picker & Inputs */}
+                    <div className="space-y-2 pt-1 border-t border-slate-800">
+                      <div className="flex items-center gap-2">
+                        {/* Native Color Picker */}
+                        <div className="relative shrink-0">
+                          <input
+                            type="color"
+                            value={addColorHex}
+                            onChange={(e) => setAddColorHex(e.target.value)}
+                            className="size-9 rounded-xl border border-slate-700 bg-transparent cursor-pointer p-0.5"
+                            title="কালার পিকার থেকে পছন্দ করুন"
+                          />
+                        </div>
+
+                        {/* Hex Input */}
+                        <input
+                          type="text"
+                          value={addColorHex}
+                          onChange={(e) => setAddColorHex(e.target.value)}
+                          placeholder="#0D0E12"
+                          className="w-24 bg-[#0F141F] border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:border-teal-400 focus:outline-none"
+                        />
+
+                        {/* Color Name Input */}
+                        <input
+                          type="text"
+                          value={addColorName}
+                          onChange={(e) => setAddColorName(e.target.value)}
+                          placeholder="কালারের নাম (যেমন: জেট ব্ল্যাক)"
+                          className="flex-1 bg-[#0F141F] border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white focus:border-teal-400 focus:outline-none"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddColorToAddForm();
+                            }
+                          }}
+                        />
+
+                        {/* Add / Update Button */}
+                        <button
+                          type="button"
+                          onClick={handleAddColorToAddForm}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition flex items-center gap-1 cursor-pointer ${
+                            addSelectedColorIdx !== null
+                              ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm'
+                              : 'bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-sm'
+                          }`}
+                        >
+                          {addSelectedColorIdx !== null ? (
+                            <>
+                              <Check className="size-3.5" />
+                              <span>আপডেট</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="size-3.5" />
+                              <span>যুক্ত করুন</span>
+                            </>
+                          )}
+                        </button>
+
+                        {addSelectedColorIdx !== null && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAddSelectedColorIdx(null);
+                              setAddColorName('');
+                            }}
+                            className="px-2 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
+                          >
+                            বাতিল
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Quick Popular Color Preset Chips */}
+                      <div>
+                        <span className="text-[10px] text-slate-400 block mb-1">
+                          জনপ্রিয় কালার প্যালেট (১-ক্লিকে সিলেক্ট করুন):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {POPULAR_COLOR_PRESETS.map((preset, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              onClick={() => {
+                                setAddColorHex(preset.hex);
+                                setAddColorName(preset.nameBn);
+                              }}
+                              className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#0F141F] hover:bg-slate-800 border border-slate-800 hover:border-teal-500/50 text-[10px] text-slate-300 transition cursor-pointer"
+                            >
+                              <span
+                                className="size-2.5 rounded-full border border-black/40"
+                                style={{ backgroundColor: preset.hex }}
+                              />
+                              <span>{preset.nameBn}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <button
